@@ -347,6 +347,35 @@ END;
 $$
 LANGUAGE plpgsql
   
+  ---------------------------------------------------FUNC_ADD_USER_GROUP
+  
+  CREATE OR REPLACE FUNCTION common.add_user_group(
+	name	text
+)
+RETURNS integer AS
+$BODY$
+DECLARE
+	_group_id	integer;
+BEGIN
+	IF EXISTS (
+		SELECT *
+		FROM common.user_groups
+		WHERE group_name = $1
+	)
+	THEN
+		RETURN -1;
+	END IF;
+
+	INSERT 
+	INTO common.user_groups ( group_name )
+	VALUES ( $1 )
+	RETURNING id INTO _group_id;
+
+	RETURN _group_id;
+END;
+$BODY$
+  LANGUAGE plpgsql
+  
   ---------------------------------------------------FUNC_ADD_USER_COMMENT
   
   COMMENT ON FUNCTION common.add_user(text, text, text) IS '
@@ -356,7 +385,15 @@ LANGUAGE plpgsql
 to user_members with created user id and his group id.
 
 Return:    [-1] - If user with given name is already exists
-               Otherwise - id of added user.';
+           Otherwise - id of added user.';
+
+---------------------------------------------------FUNC_ADD_USER_GROUP_COMMENT
+	       
+COMMENT ON FUNCTION common.add_user_group(text) IS '
+Action    - Adds empty group for users.
+
+Return    - [-1] If group with given name is already exists.
+                  - Otherwise returns added group id.';
   
 -----------------------------------------------------------------------------------------
 ------------------------------------------------<< SCHEMA COMMON ------------------------
