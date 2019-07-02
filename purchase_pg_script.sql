@@ -298,17 +298,6 @@ END;
 $BODY$
   LANGUAGE plpgsql
   
-  ---------------------------------------------------FUNC_ADD_RECORD_COMMENT
-  
-  COMMENT ON FUNCTION common.add_user(text, text, text) IS '
-    Creates user with given arguments of name, info and picture. 
-    Picture expected to be on device.
-    It also creates group for this user which contains only him and creates record
-to user_members with created user id and his group id.
-
-Return:    [-1] - If user with given name is already exists
-               Otherwise - id of added user.';
-  
   ---------------------------------------------------FUNC_GET_RECORDS
   
   CREATE OR REPLACE FUNCTION common.get_records(IN group_id integer)
@@ -358,6 +347,16 @@ END;
 $$
 LANGUAGE plpgsql
   
+  ---------------------------------------------------FUNC_ADD_USER_COMMENT
+  
+  COMMENT ON FUNCTION common.add_user(text, text, text) IS '
+    Creates user with given arguments of name, info and picture. 
+    Picture expected to be on device.
+    It also creates group for this user which contains only him and creates record
+to user_members with created user id and his group id.
+
+Return:    [-1] - If user with given name is already exists
+               Otherwise - id of added user.';
   
 -----------------------------------------------------------------------------------------
 ------------------------------------------------<< SCHEMA COMMON ------------------------
