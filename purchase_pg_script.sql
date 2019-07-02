@@ -55,6 +55,32 @@ $BODY$
   LANGUAGE plpgsql
   
   
+  CREATE OR REPLACE FUNCTION service.add_single_user_group (
+	user_id		integer,
+	user_name	text
+)
+RETURNS integer AS
+$$
+DECLARE
+	_group_id	integer;
+BEGIN
+	_group_id := 0;
+	
+	INSERT
+	INTO common.user_groups( group_name )
+	VALUES ( $2 )
+	RETURNING id INTO _group_id;
+
+	INSERT
+	INTO common.user_members
+	VALUES ( $1, _group_id );
+
+	RETURN _group_id;
+END;
+$$
+LANGUAGE plpgsql
+  
+  
   ---------------------------------------------------------------------------------------
 ------------------------------------------------<< SCHEMA SERVICE ---------------------
 ---------------------------------------------------------------------------------------
@@ -272,6 +298,17 @@ END;
 $BODY$
   LANGUAGE plpgsql
   
+  ---------------------------------------------------FUNC_ADD_RECORD_COMMENT
+  
+  COMMENT ON FUNCTION common.add_user(text, text, text) IS '
+    Creates user with given arguments of name, info and picture. 
+    Picture expected to be on device.
+    It also creates group for this user which contains only him and creates record
+to user_members with created user id and his group id.
+
+Return:    [-1] - If user with given name is already exists
+               Otherwise - id of added user.';
+  
   ---------------------------------------------------FUNC_GET_RECORDS
   
   CREATE OR REPLACE FUNCTION common.get_records(IN group_id integer)
@@ -286,6 +323,41 @@ BEGIN
 END;
 $BODY$
   LANGUAGE plpgsql
+  
+  ---------------------------------------------------FUNC_ADD_USER
+  
+  CREATE OR REPLACE FUNCTION common.add_user (
+	name		text,
+	info		text DEFAULT ''::text,
+	pic		text DEFAULT ''::text
+)
+RETURNS integer AS
+$$
+DECLARE
+	_user_id	integer;
+	_group_id	integer;
+BEGIN
+	IF EXISTS (
+		SELECT * 
+		FROM common.users AS u
+		WHERE u.user_name = $1
+	)
+	THEN
+		RETURN -1;
+	END IF;
+
+	INSERT 
+	INTO common.users( user_name, user_info, user_picture )
+	VALUES ( $1, $2, $3 )
+	RETURNING id INTO _user_id;
+
+	_group_id = service.add_single_user_group( _user_id, $1 );
+
+	RETURN _user_id;
+END;
+$$
+LANGUAGE plpgsql
+  
   
 -----------------------------------------------------------------------------------------
 ------------------------------------------------<< SCHEMA COMMON ------------------------
