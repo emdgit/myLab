@@ -438,6 +438,24 @@ END;
 $BODY$
   LANGUAGE plpgsql
   
+---------------------------------------------------FUNC_GET_ROOT_GROUPS
+  
+  CREATE OR REPLACE FUNCTION common.get_root_groups()
+RETURNS TABLE (
+	id		integer,
+	name		text
+) AS
+$$
+BEGIN
+	RETURN QUERY
+
+	SELECT g.id, g.group_name
+	FROM common.groups AS g
+	WHERE g.group_parent_id IS NULL;								
+END;
+$$
+LANGUAGE plpgsql;
+  
   ---------------------------------------------------FUNC_ADD_USER_COMMENT
   
   COMMENT ON FUNCTION common.add_user(text, text, text) IS '
@@ -465,6 +483,14 @@ Action    -    Adds good''s group with given name and set it''s parent to group 
 
 Return    - [-1] If group with given parent_id doesn''t exists
                - [-2] If given name is already exists.';
+
+---------------------------------------------------FUNC_ADD_PURCHASE_COMMENT
+
+COMMENT ON FUNCTION common.add_purchase(integer, integer, real, date) IS 'Action    - Adds purchase.
+
+
+Return    - [-1] If user_group with given u_group_id doesn''t exists.
+               - [-2] If record with given record_id doesn''t exists.';
 
   
 -----------------------------------------------------------------------------------------
