@@ -52,8 +52,7 @@ BEGIN
 	RETURN FALSE;
 END;
 $BODY$
-  LANGUAGE plpgsql
-  
+  LANGUAGE plpgsql;
   
   CREATE OR REPLACE FUNCTION service.add_single_user_group (
 	user_id		integer,
@@ -78,8 +77,39 @@ BEGIN
 	RETURN _group_id;
 END;
 $$
-LANGUAGE plpgsql
+LANGUAGE plpgsql;
   
+  CREATE OR REPLACE FUNCTION service.user_group_exists (
+	u_group_id	integer
+)
+RETURNS boolean AS
+$$
+BEGIN
+	RETURN
+	EXISTS (
+		SELECT *
+		FROM common.user_groups AS ug
+		WHERE ug.id = $1
+	);
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION service.record_exists (
+	recors_id	integer
+)
+RETURNS boolean AS
+$$
+BEGIN
+	RETURN
+	EXISTS (
+		SELECT *
+		FROM common.records AS r
+		WHERE r.id = $1
+	);
+END;
+$$
+LANGUAGE plpgsql;
   
   ---------------------------------------------------------------------------------------
 ------------------------------------------------<< SCHEMA SERVICE ---------------------
@@ -376,6 +406,38 @@ END;
 $BODY$
   LANGUAGE plpgsql
   
+---------------------------------------------------FUNC_ADD_PURCHASE
+  
+  CREATE OR REPLACE FUNCTION common.add_purchase(
+    u_group_id integer,
+    record_id integer,
+    p_summ real,
+    p_date date)
+  RETURNS integer AS
+$BODY$
+DECLARE
+	_purchase_id	integer;
+BEGIN
+	IF NOT service.user_group_exists( $1 )
+	THEN
+		RETURN -1;	-- Required user_group doesn't exists
+	END IF;
+
+	IF NOT service.record_exists( $2 )
+	THEN
+		RETURN -2;	-- Required record doesn't exists
+	END IF;
+
+	INSERT
+	INTO common.purchases ( user_group_id, record_id, summ, date )
+	VALUES ( $1, $2, $3, $4 )
+	RETURNING id INTO _purchase_id;
+
+	RETURN _purchase_id;
+END;
+$BODY$
+  LANGUAGE plpgsql
+  
   ---------------------------------------------------FUNC_ADD_USER_COMMENT
   
   COMMENT ON FUNCTION common.add_user(text, text, text) IS '
@@ -394,6 +456,16 @@ Action    - Adds empty group for users.
 
 Return    - [-1] If group with given name is already exists.
                   - Otherwise returns added group id.';
+				  
+---------------------------------------------------FUNC_GROUP_COMMENT
+				  
+COMMENT ON FUNCTION common.add_group(text, integer) IS '
+Action    -    Adds good''s group with given name and set it''s parent to group with given parent_id.
+
+
+Return    - [-1] If group with given parent_id doesn''t exists
+               - [-2] If given name is already exists.';
+
   
 -----------------------------------------------------------------------------------------
 ------------------------------------------------<< SCHEMA COMMON ------------------------
