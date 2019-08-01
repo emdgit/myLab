@@ -1,5 +1,11 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
+        <file>Rectangle.qml</file>
+        <file>WindowButton.qml</file>
+        <file>about.png</file>
+        <file>exit.png</file>
+        <file>About.qml</file>
+        <file>Common.qml</file>
     </qresource>
 </RCC>
