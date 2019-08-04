@@ -11,6 +11,7 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     auto mo = new MObject();
+    mo->randomIcon();
 
     QQmlApplicationEngine engine;
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));

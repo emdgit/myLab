@@ -7,5 +7,7 @@
         <file>exit.png</file>
         <file>About.qml</file>
         <file>Common.qml</file>
+        <file>Block.qml</file>
+        <file>main.js</file>
     </qresource>
 </RCC>

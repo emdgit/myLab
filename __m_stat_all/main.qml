@@ -2,6 +2,8 @@ import QtQuick 2.9
 import QtQuick.Window 2.2
 import QtQuick.Controls 2.2
 
+import "main.js" as Main
+
 Window {
     visible: true
     width: 640
@@ -14,6 +16,10 @@ Window {
         color: "black"
         anchors.fill: parent
         focus: true
+
+        Keys.onPressed: {
+                Main.handleKey()
+        }
 
         About
         {
