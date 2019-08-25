@@ -1,5 +1,15 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
+        <file>MenuButton.qml</file>
+        <file>MenuBar.qml</file>
+        <file>TopLabel.qml</file>
+        <file>TextRect.qml</file>
+        <file>Common.js</file>
+    </qresource>
+    <qresource prefix="/img">
+        <file>graphs.jpg</file>
+        <file>qqq.jpg</file>
+        <file>users.png</file>
     </qresource>
 </RCC>

@@ -2,3 +2,9 @@
 *.orig
 *.sql~
 *.user
+*.stash
+*.exe
+*.o
+*moc_*
+*Makefile*
+*qrc_*.cpp
