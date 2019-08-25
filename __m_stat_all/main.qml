@@ -7,6 +7,19 @@ Window {
     width: 640
     height: 480
     title: qsTr("Uot tak uot")
+
+    MenuBar {
+        id: bar
+
+        onButtonClicked: {
+            topLabel.setText( name )
+        }
+    }
+
+    TopLabel {
+        id: topLabel
+        anchors.left: bar.right
+    }
 }
 
 
