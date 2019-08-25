@@ -1,4 +1,4 @@
-build-__*
+*BuildDebug/*
 *.~
 *.orig
 *.sql~
