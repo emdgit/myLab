@@ -1,24 +1,27 @@
 import QtQuick 2.0
 
-Item {
+import OwlComponents 1.0
 
-    id: menuBar
-    z: 10
-    width: 80
-    height: parent.height
-    anchors.left: parent.left
-    anchors.top: parent.top
+Rectangle {
+
+    id:             menuBar
+
+    z:              10
+    width:          80
+    height:         parent.height
+
+    color:          "#2A2440"
+
+    anchors.left:   parent.left
+    anchors.top:    parent.top
     anchors.bottom: parent.bottom
 
     signal buttonClicked ( string name )
 
     Column {
 
-        spacing: 30
-
         MenuButton {
             id: groups
-            imgSource: "qrc:/img/qqq.jpg"
 
             onReleased: {
                 buttonClicked( "groups" )
@@ -27,21 +30,40 @@ Item {
 
         MenuButton {
             id: plots
-            imgSource: "qrc:/img/graphs.jpg"
 
             onReleased: {
                 buttonClicked( "graphs" )
+            }
+
+            Chart {
+                id: chart
+                x: 0
+                y: 0
+                pWidth: 2
+                color: "red"
+                width: parent.width
+                height: parent.height
+                marker: 0
+
+                Behavior on marker {
+                    NumberAnimation {
+                        duration: 300
+                    }
+                }
+            }
+
+            onHoveredChanged: {
+                plots.hovered ? chart.marker = plots.width
+                              : chart.marker = 0
             }
         }
 
         MenuButton {
             id: users
-            imgSource: "qrc:/img/users.png"
 
             onReleased: {
                 buttonClicked( "users" )
             }
         }
-
     }
 }
