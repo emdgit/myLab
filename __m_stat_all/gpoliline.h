@@ -9,15 +9,16 @@ public:
     GPoliLine();
 
     void                    drawGraph(QPainter * const & painter) const override;
-    void                    addLine( const qreal &k, const qreal &d,
-                                     const qreal &start, const qreal &end,
-                                     qreal * const &marker ) noexcept;
     void                    addLine( GLine * const &line ) noexcept;
+
+    GLine *                 operator[]( const int &i ) noexcept;
+
+    inline size_t           size() const noexcept { return _lines.size(); }
 
 
 private:
 
-    std::list<GLine*>       _lines;
+    std::vector<GLine*>     _lines;
 
 
 };

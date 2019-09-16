@@ -20,6 +20,8 @@ Rectangle {
 
     Column {
 
+        id: column
+
         MenuButton {
             id: groups
 
@@ -53,8 +55,7 @@ Rectangle {
             }
 
             onHoveredChanged: {
-                plots.hovered ? chart.marker = plots.width
-                              : chart.marker = 0
+                column.onGraphHovered( plots.hovered )
             }
         }
 
@@ -65,5 +66,15 @@ Rectangle {
                 buttonClicked( "users" )
             }
         }
-    }
+
+        function onGraphHovered( hovered ) {
+
+            if ( hovered === true ) {
+                chart.makeNewGraphs()
+                chart.marker = plots.width
+            } else {
+                chart.marker = 0
+            }
+        }// onGraphHovered
+    }// Column
 }

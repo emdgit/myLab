@@ -2,12 +2,12 @@
 #define PRIVATE_H
 
 #define DECLARE_PRIVATE(Class) \
-    inline Class##Private* owl_func() \
-    { Q_CAST_IGNORE_ALIGN(return reinterpret_cast<Class##Private *>(qGetPtrHelper(owl_ptr));) } \
-    inline const Class##Private* owl_func() const \
-    { Q_CAST_IGNORE_ALIGN(return reinterpret_cast<const Class##Private *>(qGetPtrHelper(owl_ptr));) } \
+    inline Class##Private* m_func() \
+    { return reinterpret_cast<Class##Private *>(qGetPtrHelper(m_ptr)); } \
+    inline const Class##Private* m_func() const \
+    { return reinterpret_cast<const Class##Private *>(qGetPtrHelper(m_ptr)); } \
     friend class Class##Private;
 
-#define QQ(Class) Class##Private * const d = owl_func()
+#define QQ(Class) Class##Private * const m = m_func()
 
 #endif // PRIVATE_H

@@ -7,26 +7,19 @@ class GLine : public GraphBase
 {
 public:
     GLine();
-    GLine( const qreal &k, const qreal &d );
-    GLine( const qreal &k, const qreal &d,
-           const qreal &start, const qreal &end,
-           qreal * const &marker );
+    GLine( const QColor &color );
 
     void                    drawGraph(QPainter * const & painter) const override;
-
-    inline void             setK( const qreal &k ) noexcept { _k = k; }
-    inline void             setD( const qreal &d ) noexcept { _d = d; }
-
-    inline const qreal &    kCoef() const noexcept  { return _k; }
-    inline const qreal &    dCoef() const noexcept  { return _d; }
+    void                    addPoint( const QPointF &p ) noexcept;
+    void                    addPoint( const qreal &x, const qreal &y ) noexcept;
+    void                    swapVectors(QVector<QPointF> &other ) noexcept;
 
 
 private:
 
-    /*!
-     * \brief   f(x) = kx + d
-     */
-    qreal                   _k, _d;
+    QVector< QPointF >      _points;
+
+    QColor                  _color;
 
 };
 

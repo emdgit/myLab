@@ -1,9 +1,6 @@
 #include "gpoliline.h"
 
-GPoliLine::GPoliLine()
-{
-
-}
+GPoliLine::GPoliLine() {}
 
 void GPoliLine::drawGraph(QPainter * const & painter) const
 {
@@ -11,14 +8,14 @@ void GPoliLine::drawGraph(QPainter * const & painter) const
         _l->drawGraph( painter );
 }
 
-void GPoliLine::addLine( const qreal & k, const qreal & d,
-                         const qreal & start, const qreal & end, qreal * const & marker) noexcept
-{
-    auto l = new GLine( k, d, start, end, marker );
-    addLine( l );
-}
-
-void GPoliLine::addLine(GLine * const & line) noexcept
+void GPoliLine::addLine(GLine * const &line) noexcept
 {
     _lines.push_back( line );
 }
+
+GLine *GPoliLine::operator[](const int &i) noexcept
+{
+    return _lines[ static_cast<size_t>( i ) ];
+}
+
+

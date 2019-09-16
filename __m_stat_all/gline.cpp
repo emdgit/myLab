@@ -1,32 +1,49 @@
 #include "gline.h"
 
-GLine::GLine() {}
+GLine::GLine() : _color( Qt::red ) {}
 
-GLine::GLine(const qreal & k, const qreal & d) : _k(k), _d(d) {}
-
-GLine::GLine(const qreal & k, const qreal & d, const qreal & start, const qreal & end, qreal * const & marker)
-{
-    setK( k );
-    setD( d );
-    setStart( start );
-    setEnd( end );
-    _xMarker = marker;
-}
+GLine::GLine(const QColor &color) : _color(color) {}
 
 void GLine::drawGraph(QPainter * const & painter) const
 {
-    if ( _xMarker )
-        if ( *_xMarker < _startPoint )
-            return;
+    if ( _points.size() < 2 )
+        return;
 
-    QPointF p1( _startPoint, _k * _startPoint + _d );
+    painter->setPen( _color );
 
-    auto end = _xMarker ? *_xMarker > _endPoint ? _endPoint
-                                                : *_xMarker
-                                                : _endPoint;
-    QPointF p2( end, _k * end + _d );
+    for ( auto i(0); i < _points.size() - 1; ++i )
+    {
+        auto p1 = _points[i];
+        auto p2 = _points[i+1];
 
-    QLineF line( p1, p2 );
+        if ( *_xMarker < p1.x() )
+            break;
 
-    painter->drawLine( line );
+        if ( *_xMarker < p2.x() )
+        {
+            auto y = ( ( (*_xMarker) - p1.x() ) * ( p2.y() - p1.y() ) ) / ( p2.x() - p1.x() ) + p1.y();
+            p2 = { *_xMarker, y };
+        }
+
+        painter->drawLine( p1, p2 );
+    }
+}
+
+void GLine::addPoint(const QPointF &p) noexcept
+{
+    _points << p;
+
+    std::sort( _points.begin(), _points.end(), []( const QPointF &p1, const QPointF &p2 ){
+        return p1.x() < p2.x();
+    } );
+}
+
+void GLine::addPoint(const qreal &x, const qreal &y) noexcept
+{
+    addPoint( { x, y } );
+}
+
+void GLine::swapVectors(QVector<QPointF> &other) noexcept
+{
+    _points.swap( other );
 }

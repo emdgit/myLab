@@ -6,6 +6,10 @@
 
 #include "graphbase.h"
 #include "private.h"
+#include "gpoliline.h"
+
+class ChartPrivate;
+typedef ChartPrivate        ChartP;
 
 class Chart : public QQuickPaintedItem
 {
@@ -18,6 +22,7 @@ class Chart : public QQuickPaintedItem
 
 public:
     Chart( QQuickItem *parent = nullptr );
+    ~Chart() override;
 
 // QQuickPaintedItem interface
     void                    paint(QPainter * painter) override;
@@ -30,6 +35,8 @@ public:
     inline const qreal &    pWidth() const noexcept                  { return _width;  }
     inline const qreal &    marker() const noexcept                  { return _marker; }
 
+    Q_INVOKABLE void        makeNewGraphs() const noexcept;
+
 
 signals:
 
@@ -39,7 +46,10 @@ signals:
 
 private:
 
-    GraphBase *             _graph;
+    ChartP *                m_ptr;
+    DECLARE_PRIVATE(Chart)
+
+    GPoliLine *             _graph;
 
     QColor                  _color;
 

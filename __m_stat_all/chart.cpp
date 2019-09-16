@@ -3,10 +3,88 @@
 #include <QPen>
 #include <QPainter>
 
-#include "gpoliline.h"
+#include <random>
+#include <ctime>
+
+static constexpr int    _linesCount = 2;
 
 static constexpr qreal  _dxOrdinate = 0.15;    //  Procent value
 static constexpr qreal  _dyAbscissa = 0.15;    //  Procent value
+
+class ChartPrivate
+{
+public:
+    ChartPrivate ( Chart * const &chart ) :_chart(chart) {}
+
+    void initPolyLine() const noexcept
+    {
+        _chart->_graph = new GPoliLine();
+
+        for ( int i(0); i < _linesCount; ++i )
+        {
+            auto line = new GLine();
+            line->setMarker( &_chart->_marker );
+            _chart->_graph->addLine( line );
+        }
+    }
+
+    void resetLines() const noexcept
+    {
+        for ( size_t i(0); i < _chart->_graph->size(); ++i )
+        {
+            auto line = (*_chart->_graph)[ static_cast<int>( i )];
+
+            auto w = _chart->width() * ( 1 - _dxOrdinate );
+            auto h = _chart->height() * ( 1 - _dyAbscissa );
+
+            std::default_random_engine engine( static_cast<unsigned int>( time(nullptr) ) );
+            std::uniform_real_distribution<qreal> distrX( _chart->width() - w, _chart->width() );
+            std::uniform_real_distribution<qreal> distrY( _chart->height() - h, _chart->height() );
+            std::uniform_int_distribution<size_t> distrC( 3, 5 );
+
+            auto count = distrC( engine );
+
+            auto minXDistance = ( w / static_cast<qreal>( count ) ) / 5;
+
+            std::vector<qreal> xVal;
+            xVal.assign( count, 0 );
+
+            auto genX = [&]() {
+                for ( size_t i(0); i < count; ++i )
+                    xVal[i] = distrX( engine );
+
+                std::sort( xVal.begin(), xVal.end() );
+            };
+
+            auto checkX = [&]() -> bool {
+                    for ( size_t i(0); i < count - 1; ++i )
+                    if ( xVal[i+1] - xVal[i] < minXDistance )
+                    return false;
+            return true;
+            };
+
+            genX();
+
+            while ( !checkX() )
+            genX();
+
+            QVector< QPointF > pVec;
+
+            for ( size_t i(0); i < count; ++i )
+            {
+                pVec << QPointF( xVal[i], distrY( engine ) );
+            }
+
+            line->swapVectors( pVec );
+        }
+    }
+
+private:
+
+    Chart *     _chart;
+
+};
+
 
 Chart::Chart(QQuickItem * parent) : QQuickPaintedItem (parent)
 {
@@ -14,12 +92,15 @@ Chart::Chart(QQuickItem * parent) : QQuickPaintedItem (parent)
     setHeight( 100 );
     _marker = 100;
 
-    auto poly = new GPoliLine();
-    poly->addLine( 1.5, 10, 10, 50, &_marker );
-    poly->addLine( 1.5, 15, 10, 80, &_marker );
+    m_ptr = new ChartP( this );
 
-    _graph = poly;
+    QQ( Chart );
+
+    m->initPolyLine();
+    m->resetLines();
 }
+
+Chart::~Chart() {}
 
 void Chart::paint(QPainter * painter)
 {
@@ -53,4 +134,11 @@ void Chart::setMarker(const qreal & m) noexcept
 {
     _marker = m;
     update();
+}
+
+void Chart::makeNewGraphs() const noexcept
+{
+    QQ ( const Chart );
+
+    m->resetLines();
 }
