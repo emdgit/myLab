@@ -1,0 +1,11 @@
+#include "pgfunction.h"
+
+PgFunction::PgFunction()
+{
+    
+}
+
+void PgFunction::makePgScript(QSqlQuery * const & query) const noexcept
+{
+    
+}

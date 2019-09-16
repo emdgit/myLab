@@ -1,0 +1,20 @@
+#ifndef PGFUNCTION_H
+#define PGFUNCTION_H
+
+#include <QSqlQuery>
+
+struct InArg
+{
+    
+};
+
+class PgFunction
+{
+public:
+    PgFunction();
+    
+    void                makePgScript( QSqlQuery * const &query ) const noexcept;
+    
+};
+
+#endif // PGFUNCTION_H
