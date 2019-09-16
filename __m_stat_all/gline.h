@@ -13,6 +13,7 @@ public:
     void                    addPoint( const QPointF &p ) noexcept;
     void                    addPoint( const qreal &x, const qreal &y ) noexcept;
     void                    swapVectors(QVector<QPointF> &other ) noexcept;
+    void                    setColor( const QColor &color ) noexcept;
 
 
 private:

@@ -25,22 +25,25 @@ public:
             auto line = new GLine();
             line->setMarker( &_chart->_marker );
             _chart->_graph->addLine( line );
+
+            if ( !i )
+                line->setColor( "#FF8B00" );
         }
     }
 
     void resetLines() const noexcept
     {
+        auto w = _chart->width() * ( 1 - _dxOrdinate );
+        auto h = _chart->height() * ( 1 - _dyAbscissa );
+
+        std::default_random_engine engine( static_cast<unsigned int>( time(nullptr) ) );
+        std::uniform_real_distribution<qreal> distrX( _chart->width() - w, _chart->width() );
+        std::uniform_real_distribution<qreal> distrY( _chart->height() - h, _chart->height() );
+        std::uniform_int_distribution<size_t> distrC( 3, 5 );
+
         for ( size_t i(0); i < _chart->_graph->size(); ++i )
         {
             auto line = (*_chart->_graph)[ static_cast<int>( i )];
-
-            auto w = _chart->width() * ( 1 - _dxOrdinate );
-            auto h = _chart->height() * ( 1 - _dyAbscissa );
-
-            std::default_random_engine engine( static_cast<unsigned int>( time(nullptr) ) );
-            std::uniform_real_distribution<qreal> distrX( _chart->width() - w, _chart->width() );
-            std::uniform_real_distribution<qreal> distrY( _chart->height() - h, _chart->height() );
-            std::uniform_int_distribution<size_t> distrC( 3, 5 );
 
             auto count = distrC( engine );
 

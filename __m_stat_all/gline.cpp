@@ -47,3 +47,8 @@ void GLine::swapVectors(QVector<QPointF> &other) noexcept
 {
     _points.swap( other );
 }
+
+void GLine::setColor(const QColor &color) noexcept
+{
+    _color = color;
+}
