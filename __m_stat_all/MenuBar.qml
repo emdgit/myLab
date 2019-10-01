@@ -25,6 +25,21 @@ Rectangle {
         MenuButton {
             id: groups
 
+            Text {
+                id: groupsText
+
+                text: qsTr("Groups")
+
+                font.family:    "Franklin Gothic Medium Cond"
+                font.pixelSize: 22
+
+                color: "#F2EEDC"
+
+                anchors.fill: parent
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment:   Text.AlignVCenter
+            }
+
             onReleased: {
                 buttonClicked( "groups" )
             }
@@ -61,6 +76,21 @@ Rectangle {
 
         MenuButton {
             id: users
+
+            Text {
+                id: usersText
+
+                text: qsTr("Users")
+
+                font.family:    "Franklin Gothic Medium Cond"
+                font.pixelSize: 22
+
+                color: "#F2EEDC"
+
+                anchors.fill: parent
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment:   Text.AlignVCenter
+            }
 
             onReleased: {
                 buttonClicked( "users" )

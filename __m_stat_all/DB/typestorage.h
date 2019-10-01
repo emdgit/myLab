@@ -14,8 +14,9 @@ public:
     TypeStorage();
     ~TypeStorage();
 
-    static FieldPtr                 field( const QString &name,
-                                           const QString &type ) noexcept;
+    static FieldPtr                 field( const QString &name ) noexcept;
+
+    static void                     registerField( const QString &name ) noexcept;
 
 
 private:
@@ -23,7 +24,6 @@ private:
     QScopedPointer<TSPrivate>       m_ptr;
     DECLARE_PRIVATE(TypeStorage)
 
-    static FieldSet                 _allFields;
 
 };
 

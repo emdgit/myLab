@@ -1,0 +1,16 @@
+release/main.o
+release/chart.o
+release/gline.o
+release/graphbase.o
+release/gpoliline.o
+release/templates.o
+release/data.o
+release/head.o
+release/field.o
+release/entity.o
+release/pgfunction.o
+release/typestorage.o
+release/testmodel.o
+release/qrc_qml.o
+release/moc_chart.o
+release/moc_testmodel.o

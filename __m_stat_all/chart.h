@@ -3,6 +3,7 @@
 
 #include <QQuickPaintedItem>
 #include <QColor>
+#include <QQmlInfo>
 
 #include "graphbase.h"
 #include "private.h"

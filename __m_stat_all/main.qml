@@ -22,6 +22,14 @@ Window {
         id: topLabel
         anchors.left: bar.right
     }
+
+    Rectangle {
+
+        x: 300
+        y: 300
+        width: 300
+        height: 300
+    }
 }
 
 

@@ -1,7 +1,7 @@
 QT          +=  quick
 QT          +=  sql
 
-CONFIG      +=  c++11
+CONFIG      +=  c++17
 
 DEFINES     +=  QT_DEPRECATED_WARNINGS
 
@@ -20,7 +20,8 @@ SOURCES     +=        \
             DB/field.cpp    \
             DB/entity.cpp    \
             DB/pgfunction.cpp \
-            DB/typestorage.cpp
+            DB/typestorage.cpp \
+    testmodel.cpp
 
 RESOURCES   +=  qml.qrc
 
@@ -36,5 +37,7 @@ HEADERS     +=      \
             DB/field.h    \
             DB/entity.h    \
             DB/pgfunction.h \
-            DB/typestorage.h
+            DB/typestorage.h \
+    testmodel.h \
+    DB/ptrset.h
 
