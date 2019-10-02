@@ -28,7 +28,7 @@ BEGIN
 		END;
 END;
 $BODY$
-  LANGUAGE plpgsql
+  LANGUAGE plpgsql;
   
   
 CREATE OR REPLACE FUNCTION service.group_exists(group_id integer)
