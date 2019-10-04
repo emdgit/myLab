@@ -4,10 +4,8 @@ release/gline.o
 release/graphbase.o
 release/gpoliline.o
 release/templates.o
-release/data.o
 release/head.o
 release/field.o
-release/entity.o
 release/pgfunction.o
 release/typestorage.o
 release/testmodel.o

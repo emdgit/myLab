@@ -5,6 +5,12 @@ class PgFunction
 {
 public:
     PgFunction();
+
+
+private:
+
+
+
 };
 
 #endif // PGFUNCTION_H

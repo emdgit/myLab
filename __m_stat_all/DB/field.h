@@ -3,6 +3,8 @@
 
 #include <QtCore>
 
+#include <memory>
+
 #define FIELD_DEBUG
 
 struct Field
@@ -17,9 +19,13 @@ struct Field
     {
         return ( name == other.name );
     }
+
+    bool                        operator< ( const Field &other ) noexcept
+    {
+        return ( name < other.name );
+    }
 };
 
-typedef QSharedPointer<Field>   FieldPtr;
-
+typedef std::shared_ptr<Field>  FieldPtr;
 
 #endif // FIELD_H

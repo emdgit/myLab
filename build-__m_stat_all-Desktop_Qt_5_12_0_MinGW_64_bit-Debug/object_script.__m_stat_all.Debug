@@ -4,10 +4,8 @@ debug/gline.o
 debug/graphbase.o
 debug/gpoliline.o
 debug/templates.o
-debug/data.o
 debug/head.o
 debug/field.o
-debug/entity.o
 debug/pgfunction.o
 debug/typestorage.o
 debug/testmodel.o

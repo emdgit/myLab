@@ -64,7 +64,12 @@ select * from test.testGetInfo(
 )
 
 
-CREATE OR REPLACE FUNCTION test.testGetInfo(
+
+----------------------------------------------------------------------------------------------------
+-------------------------------------FUNCTION INFO--------------------------------------------------
+----------------------------------------------------------------------------------------------------
+--DROP FUNCTION test.testgetinfo(oidvector, oid[], boolean, oid, character varying);
+CREATE OR REPLACE FUNCTION test.testGetInfo1(
 	in_types_oid	oidvector,
 	all_types_oid	oid[],
 	is_record	boolean,
@@ -72,28 +77,97 @@ CREATE OR REPLACE FUNCTION test.testGetInfo(
 	func_name	character varying
 	
 )
-RETURNS TABLE (
-	in_arg		text,
-	out_arg		text,
-	f_name		character varying
-) AS
+RETURNS SETOF RECORD AS
 $$
 DECLARE
 	_in_types	oid[] := $1::oid[];
 	_in_count	integer := array_length( _in_types, 1 );
+	_rec		record;
 BEGIN
 	IF ( $3 )
-	THEN
-		RETURN QUERY
+	THEN		-- is record
+
+		FOR i IN 0..( _in_count - 1 ) LOOP
+			WITH 
+				in_column AS	( select unnest( _in_types )::oid in_col )
+				
+			SELECT DISTINCT
+				ir.data_type::text		AS IN_ARG, 
+				''::text			AS OUT_ARG,
+				$5
+			INTO	_rec
+			FROM	
+				in_column 			AS ic,
+				pg_catalog.pg_type		AS pt
+			JOIN 	
+				information_schema.routines	AS ir	
+			ON 	
+				ir.type_udt_name = pt.typname
+			WHERE 	
+				pt.oid = ic.in_col
+			OFFSET	i
+			LIMIT	1;
+
+			RETURN NEXT _rec;
+		END LOOP;
+
+		FOR i IN _in_count..NULLIF(0, array_length( $2, 1 )) LOOP
+			WITH 
+				all_types AS	( select unnest( $2 )::oid all_col )
+				
+			SELECT DISTINCT
+				''::text			AS IN_ARG,
+				ir.data_type::text		AS OUT_ARG, 
+				$5
+			INTO	_rec
+			FROM	
+				all_types 			AS at,
+				pg_catalog.pg_type		AS pt
+			JOIN 	
+				information_schema.routines	AS ir	
+			ON 	
+				ir.type_udt_name = pt.typname
+			WHERE 	
+				pt.oid = at.all_col
+			OFFSET	i
+			LIMIT	1;
+
+			RETURN NEXT _rec;
+		END LOOP;
+	ELSE
+		FOR i IN 0..( _in_count - 1 ) LOOP
+			WITH 
+				in_column AS	( select unnest( _in_types )::oid in_col )
+				
+			SELECT DISTINCT
+				ir.data_type::text		AS IN_ARG, 
+				''::text			AS OUT_ARG,
+				$5
+			INTO	_rec
+			FROM	
+				in_column 			AS ic,
+				pg_catalog.pg_type		AS pt
+			JOIN 	
+				information_schema.routines	AS ir	
+			ON 	
+				ir.type_udt_name = pt.typname
+			WHERE 	
+				pt.oid = ic.in_col
+			OFFSET	i
+			LIMIT	1;
+
+			RETURN NEXT _rec;
+		END LOOP;
+
 
 		WITH 
-			in_column AS	( select unnest( _in_types )::oid in_col ),
-			out_column AS	( select unnest( $2 )::oid out_col OFFSET _in_count )
-			
+				in_column AS	( select unnest( _in_types )::oid in_col )
+				
 		SELECT DISTINCT
-			ir.data_type::text		AS IN_ARG, 
-			''::text			AS OUT_ARG,
+			''::text			AS IN_ARG,
+			ir.data_type::text		AS OUT_ARG, 
 			$5
+		INTO	_rec
 		FROM	
 			in_column 			AS ic,
 			pg_catalog.pg_type		AS pt
@@ -102,57 +176,9 @@ BEGIN
 		ON 	
 			ir.type_udt_name = pt.typname
 		WHERE 	
-			pt.oid = ic.in_col
-
-		UNION ALL
-
-		SELECT DISTINCT
-			''::text			AS IN_ARG,
-			ir.data_type::text		AS OUT_ARG,
-			$5
-		FROM	
-			out_column			AS oc,
-			pg_catalog.pg_type		AS pt
-		JOIN 	
-			information_schema.routines 	AS ir	
-		ON 	
-			ir.type_udt_name = pt.typname
-		WHERE 	
-			pt.oid = oc.out_col;
-	ELSE
-		RETURN QUERY
-
-		WITH 
-			in_column AS	( select unnest( _in_types )::oid in_col )
-			
-		SELECT DISTINCT
-			ir.data_type::text		AS IN_ARG, 
-			''::text			AS OUT_ARG,
-			$5
-		FROM	
-			in_column 			AS ic,
-			pg_catalog.pg_type		AS pt
-		JOIN 	
-			information_schema.routines 	AS ir	
-		ON 	
-			ir.type_udt_name = pt.typname
-		WHERE 	
-			pt.oid = ic.in_col
-		
-		UNION ALL
-		
-		SELECT DISTINCT
-			''::text			AS IN_ARG,
-			ir.data_type::text		AS OUT_ARG,
-			$5
-		FROM	
-			pg_catalog.pg_type		AS pt
-		JOIN 	
-			information_schema.routines 	AS ir	
-		ON 	
-			ir.type_udt_name = pt.typname
-		WHERE 	
 			pt.oid = $4;
+
+		RETURN NEXT _rec;
 		
 	END IF;
 	
@@ -161,96 +187,8 @@ $$
 LANGUAGE plpgsql;
 
 
-----------------------------------------------------------------------------------------------------
--------------------------------------IF OUT IS A RECORD---------------------------------------------
-----------------------------------------------------------------------------------------------------
-with in_par AS	( select '23 25 20'::oidvector as in_args ),
-all_par AS 	( select '{23,25,20,23}'::oid[] as all_args ),
-in_array AS 	( select i.in_args::oid[] AS in_arr FROM in_par AS i ),
-in_column AS	( select unnest( in_arr )::oid in_col FROM in_array ),
-out_column AS	( select unnest( ap.all_args )::oid out_col FROM all_par ap, in_array ia OFFSET 3 ),
-out_type AS	( select 22::oid as out_type )
-SELECT DISTINCT
-	ir.data_type::text	AS IN_ARG, 
-	''::text		AS OUT_ARG
-FROM	
-	in_par			AS ip,
-	in_column 		AS ic,
-	pg_catalog.pg_type	AS pt
-JOIN 	
-	information_schema.routines AS ir	
-ON 	
-	ir.type_udt_name = pt.typname
-WHERE 	
-	pt.oid = ic.in_col
-
-UNION ALL
-
-SELECT DISTINCT
-	''::text		AS IN_ARG,
-	ir.data_type::text	AS OUT_ARG
-FROM	
-	out_column		AS oc,
-	pg_catalog.pg_type	AS pt
-JOIN 	
-	information_schema.routines AS ir	
-ON 	
-	ir.type_udt_name = pt.typname
-WHERE 	
-	pt.oid = oc.out_col
 
 
-----------------------------------------------------------------------------------------------------
--------------------------------------IF OUT IS A SIMPLE TYPE----------------------------------------
-----------------------------------------------------------------------------------------------------
-with in_par AS	( select '23 25 20'::oidvector as in_args ),
-all_par AS 	( select '{23,25,20,23}'::oid[] as all_args ),
-in_array AS 	( select i.in_args::oid[] AS in_arr FROM in_par AS i ),
-in_column AS	( select unnest( in_arr )::oid in_col FROM in_array ),
-out_column AS	( select unnest( ap.all_args )::oid out_col FROM all_par ap, in_array ia OFFSET 3 ),
-out_type AS	( select 1114::oid as out_t )
-SELECT DISTINCT
-	ir.data_type::text	AS IN_ARG, 
-	''::text		AS OUT_ARG
-FROM	
-	in_par			AS ip,
-	in_column 		AS ic,
-	pg_catalog.pg_type	AS pt
-JOIN 	
-	information_schema.routines AS ir	
-ON 	
-	ir.type_udt_name = pt.typname
-WHERE 	
-	pt.oid = ic.in_col
-
-UNION ALL
-
-SELECT DISTINCT
-	''::text		AS IN_ARG,
-	ir.data_type::text	AS OUT_ARG
-FROM	
-	out_type		AS ot,
-	pg_catalog.pg_type	AS pt
-JOIN 	
-	information_schema.routines AS ir	
-ON 	
-	ir.type_udt_name = pt.typname
-WHERE 	
-	pt.oid = ot.out_t
-
-
-
-SELECT 
-	ir.data_type::text	AS IN_ARG, 
-	''::text		AS OUT_ARG
-FROM	
-	pg_catalog.pg_type	AS pt
-JOIN 	
-	information_schema.routines AS ir	
-ON 	
-	ir.type_udt_name = pt.typname
-WHERE 	
-	pt.oid = 16
 
 
 SELECT 	data_type, type_udt_name
@@ -268,36 +206,13 @@ FROM	pg_catalog.pg_type
 WHERE 	oid = 1028 or oid = 16
 
 
-WITH RECURSIVE t(n,i) AS (
-	with arr as ( select '{1,2,3,4,5}'::integer[] as arr ),
-	ind as ( select 1 as i )
-	select 	
-		case when ind.i < 2 then arr[i] + 500	
-		else arr[i] + 1000 
-		end, 1
-	from arr, ind
-	
-	UNION ALL
-	
-	SELECT 
-		case when i < 2 then arr[i+1] + 700	
-		else arr[i+1] + 1000 
-		end, i + 1
-	FROM t, arr WHERE i < 5
-)
-SELECT * FROM t;
 
-select * from test.testFunc( 'Third', 4257 )
-select * from test.testGetMore( 100 )
-select * from test.testGetString()
-insert into test.test_table_2 values ( 4224, 2 )
-
-
-
-with f_head AS (
+----------------------------------------------------------------------------------------------------
+-------------------------------------FUNCTION TYPES FULL--------------------------------------------
+----------------------------------------------------------------------------------------------------
+with f_head 	AS (
 	select 
 		specific_schema	AS m_schema,
-		specific_name	AS m_name,
 		routine_name,
 		data_type,
 		type_udt_name
@@ -305,77 +220,85 @@ with f_head AS (
 	where 
 		specific_schema != 'pg_catalog' and
 		specific_schema != 'information_schema'
-)
-select 
-	(f_h).*,
-	proc.proname,
-	proc.pronargs		AS in_arg_count,
-	proc.pronargdefaults	AS in_arg_def_count,
-	proc.prorettype		AS out_type_oid,
-	proc.proargtypes	AS in_types_oid,
-	proc.proallargtypes	AS all_types_oid,
-	proc.proargmodes,
-	proc.proargnames	AS allArgNames,
-	proc.proargdefaults
-from pg_catalog.pg_proc as proc, f_head as f_h
-where 
-	proname = f_h.routine_name
+),
+f_body 		AS (
+	select 
+		(f_h).*,
+		proc.pronargdefaults	AS in_arg_def_count,
+		proc.prorettype		AS out_type_oid,
+		proc.proargtypes	AS in_types_oid,
+		proc.proallargtypes	AS all_types_oid,
+		proc.proargnames	AS allArgNames
+	from pg_catalog.pg_proc as proc, f_head as f_h
+	where 
+		proname = f_h.routine_name
+),
+f_names		AS ( select routine_name from f_head )
+select  
+		(b).*,
+		(res).*
+from 		
+		f_body AS b, 
+		test.testGetInfo( 
+			b.in_types_oid,
+			b.all_types_oid,
+			b.type_udt_name = 'record',
+			b.out_type_oid,
+			b.routine_name
+		) AS res( 
+			_in 	text, 
+			_out	text,
+			_func	character varying 
+		)
+--
 
 
 
 
-with f_head AS (
-		select 
-			specific_schema	AS m_schema,
-			routine_name,
-			data_type
-		from information_schema.routines
-		where 
-			specific_schema != 'pg_catalog' and
-			specific_schema != 'information_schema'
-	),
-	f_body AS (
-		select 
-			(f_h).*,
-			proc.pronargdefaults	AS in_arg_def_count,
-			proc.prorettype		AS out_type_oid,
-			proc.proargtypes	AS in_types_oid,
-			proc.proallargtypes	AS all_types_oid,
-			proc.proargnames	AS allArgNames
-		from pg_catalog.pg_proc as proc, f_head as f_h
-		where 
-			proname = f_h.routine_name
-	),
-	f_names AS ( select routine_name from f_head ),
-	select test.testGetInfo( 
-		b.in_types_oid,
-		b.all_types_oid,
-		
-	)
-	from f_body b
-
-
-	
-
-
-
-with arr as ( select '{1,2,3,4,5}'::integer[] as arr ),
-col as ( select unnest( arr )::integer ii from arr )
-select array_agg( c.ii ) from col c
-
-with arr as ( select '{1,2,3,4,5}'::integer[] as arr )
-select unnest( arr )::integer ii from arr 
-
-select case when true then 1 end, case when true then 2 end
-
-
-with recursive rec(_name, _number, _func) AS (
-
-	select name, number from test.test_table_1
-
-)
-
-
-
+----------------------------------------------------------------------------------------------------
+-------------------------------------FUNCTION TYPES SHORT-------------------------------------------
+----------------------------------------------------------------------------------------------------
+with f_head 	AS (
+	select 
+		specific_schema	AS m_schema,
+		routine_name,
+		data_type,
+		type_udt_name
+	from information_schema.routines
+	where 
+		specific_schema != 'pg_catalog' and
+		specific_schema != 'information_schema'
+),
+f_body 		AS (
+	select 
+		(f_h).*,
+		proc.pronargdefaults	AS in_arg_def_count,
+		proc.prorettype		AS out_type_oid,
+		proc.proargtypes	AS in_types_oid,
+		proc.proallargtypes	AS all_types_oid,
+		proc.proargnames	AS allArgNames
+	from pg_catalog.pg_proc as proc, f_head as f_h
+	where 
+		proname = f_h.routine_name
+),
+f_names		AS ( select routine_name from f_head )
+select  
+		b.m_schema,
+		b.routine_name,
+		res._in,
+		res._out
+from 		
+		f_body AS b, 
+		test.testGetInfo1( 
+			b.in_types_oid,
+			b.all_types_oid,
+			b.type_udt_name = 'record',
+			b.out_type_oid,
+			b.routine_name
+		) AS res( 
+			_in 	text, 
+			_out	text,
+			_func	character varying 
+		)
 
 
