@@ -30,7 +30,7 @@ public:
 
     std::optional<Ptr>          find( const T &val ) const noexcept
     {
-        for ( const auto p : _set )
+        for ( const auto &p : _set )
             if ( *p.get() == val )
                 return p;
 

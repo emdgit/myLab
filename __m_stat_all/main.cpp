@@ -10,6 +10,7 @@
 #include "templates.h"
 #include "testmodel.h"
 #include "head.h"
+#include "Set.h"
 
 int main(int argc, char *argv[])
 {
@@ -27,23 +28,14 @@ int main(int argc, char *argv[])
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
 
-    set<QString> s1;
-    s1.insert( "name" );
-    s1.insert( "value" );
-    s1.insert( "id" );
+    MPSet<int> s1;
+    s1.insert( make_shared<int>(4) );
+    s1.insert( make_shared<int>(5) );
+    s1.insert( make_shared<int>(1) );
+    s1.insert( make_shared<int>(-4) );
+    s1.insert( make_shared<int>(4) );
 
-    for ( auto i : s1 )
-        qDebug() << i;
-
-    qDebug("\n");
-
-    set<shared_ptr<QString>> s2;
-    s2.insert( std::make_shared<QString>( "name" ) );
-    s2.insert( std::make_shared<QString>( "value" ) );
-    s2.insert( std::make_shared<QString>( "id" ) );
-
-
-    for ( auto i : s2 )
+    for ( const auto &i : s1 )
         qDebug() << *i.get();
 
 

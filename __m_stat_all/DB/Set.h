@@ -8,61 +8,103 @@ typedef unsigned int uint;
 template <typename T>
 struct CompareBase
 {
-	static inline bool less(const T &v1, const T &v2) { return ( v1 < v2 ); }
-	static inline bool equal(const T &v1, const T &v2) { return (v1 == v2); }
+    static inline bool less(const T &v1, const T &v2)  { return ( v1 < v2 ); }
+    static inline bool equal(const T &v1, const T &v2) { return (v1 == v2); }
 };
 
 template <typename T>
-struct ComparePtr : CompareBase<T>
+struct ComparePtr : CompareBase<std::shared_ptr< T >>
 {
 	typedef typename std::shared_ptr< T >	_Ptr;
-	static inline bool less(const _Ptr &v1, const _Ptr &v2) { return (*v1.get() < *v2.get()); }
-	static inline bool equal(const _Ptr &v1, const _Ptr &v2) { return (*v1.get() == *v2.get()); }
+    static inline bool less(const _Ptr &v1, const _Ptr &v2) { return (*v1.get() < *v2.get()); }
+    static inline bool equal(const _Ptr &v1, const _Ptr &v2) { return (*v1.get() == *v2.get()); }
 };
 
 template <typename T, typename Compare = CompareBase<T>>
-struct TreeBase
+struct AdderBase
 {
-	using _comp = Compare;
+    using _comp     = Compare;
 
-	TreeBase() = delete;
-	TreeBase(const T &val) : data(val), left(nullptr), right(nullptr), parent(nullptr) {}
-	TreeBase(const T &val, TreeBase<T> * const &par) : data(val), left(nullptr), right(nullptr), parent(par) {}
-	virtual ~TreeBase() { std::cout << "~TreeBase(" << data << ")" << std::endl; }
+    /*!
+     * \brief add
+     * \param _counter
+     * \param _to
+     * \param _from
+     * \return  true - if need continue after doing this func
+     */
+    static inline bool add( uint &_counter, const T &_to, const T &_from ) noexcept
+    {
+        (void)_counter;
+        if ( _comp::equal( _to, _from ) )
+            return false;
+        return true;
+    }
+};
 
-	bool				push(const T &val) noexcept
+template <typename T, typename Compare = CompareBase<T>>
+struct AdderMulti : AdderBase<T,Compare>
+{
+    using _comp     = Compare;
+
+    static inline bool add( uint &_counter, const T &_to, const T &_from ) noexcept
+    {
+        if ( _comp::equal( _to, _from ) )
+        {
+            ++_counter;
+            return false;
+        }
+        return true;
+    }
+};
+
+template <typename T,
+          typename Compare = CompareBase<T>,
+          typename Adder = AdderBase<T,Compare>>
+struct Tree
+{
+
+    using _comp     = Compare;
+    using _adder    = Adder;
+    using Node      = Tree<T,_comp,_adder>;
+
+    Tree() = delete;
+    Tree(const T &val) : data(val), left(nullptr), right(nullptr), parent(nullptr) {}
+    Tree(const T &val, Node * const &par) : data(val), left(nullptr), right(nullptr), parent(par) {}
+    ~Tree() {}
+
+    bool            push(const T &val) noexcept
 	{
-		if ( _comp::equal( val, data ) )
-			return false;
+        if ( !_adder::add( count, data, val ) )
+            return false;
 
 		auto tree = _comp::less( val , data ) ? &left : &right;
 
 		if (*tree)
 			return (*tree)->push(val);
 		else
-			*tree = new TreeBase<T>(val, this);
+            *tree = new Node(val, this);
 
 		return true;
 	}
 
-	TreeBase<T> *		min() const noexcept
+    Node *          min() const noexcept
 	{
 		if (!left)
-			return const_cast< TreeBase<T>* >(this);
+            return const_cast< Node* >(this);
 
 		return left->min();
 	}
-	TreeBase<T> *		max() const noexcept
+    Node *          max() const noexcept
 	{
 		if (!right)
-			return const_cast<TreeBase<T>*>(this);
+            return const_cast<Node*>(this);
 
 		return right->max();
 	}
-	TreeBase<T> *		find(const T &val) const noexcept
+    Node *          find(const T &val) const noexcept
 	{
 		if ( _comp::equal( val, data ) )
-			return const_cast<TreeBase<T>*>(this);
+            return const_cast<Node*>(this);
 
 		auto node = _comp::less(val, data) ? left : right;
 
@@ -72,7 +114,7 @@ struct TreeBase
 		return node->find(val);
 	}
 
-	void				clear() noexcept
+    void			clear() noexcept
 	{
 		if (left)
 		{
@@ -88,39 +130,33 @@ struct TreeBase
 	}
 
 
-	T					data;
+    T               data;
 
-	TreeBase<T> *		left;
-	TreeBase<T> *		right;
-	TreeBase<T> *		parent;
+    uint            count = 1;
+
+    Node *          left;
+    Node *          right;
+    Node *          parent;
 };
 
-template <typename T, typename Compare = ComparePtr<T>>
-struct PtrTree : TreeBase<T, Compare>
-{
-	PtrTree() = delete;
-	PtrTree(const T &val) : TreeBase<T, ComparePtr<T>>( val ) {}
-	PtrTree(const T &val, TreeBase<T> * const &par) : TreeBase<T, ComparePtr<T>>(val, par) {}
-	~PtrTree() { std::cout << "~Tree(" << data << ")" << std::endl; }
 
-};
-
-template <typename T, typename TreeType = TreeBase<T>>
+template <typename T,
+          typename Compare = CompareBase<T>,
+          typename Adder = AdderBase<T,Compare>>
 class Set
 {
 public:
 	Set() : _root(nullptr), _size(0) {}
 	~Set() {}
 
+    using _Tree = Tree<T,Compare,Adder>;
 
 	class Iterator
 	{
 
-		using Node = TreeType;
-
 	public:
 		Iterator() = delete;
-		Iterator(Node * const &node) : _node(node) {}
+        Iterator(_Tree * const &node) : _node(node) {}
 
 		T &				operator*()
 		{
@@ -129,9 +165,15 @@ public:
 
 		Iterator &		operator++()
 		{
+            if ( _node->count > _index )
+            {
+                ++_index;
+                return *this;
+            }
 			if (_node->right)
 			{
 				_node = _node->right->min();
+                _index = 1;
 				return *this;
 			}
 
@@ -141,9 +183,15 @@ public:
 		}
 		Iterator &		operator--()
 		{
+            if ( _index > 1 )
+            {
+                --_index;
+                return *this;
+            }
 			if (_node->left)
 			{
 				_node = _node->left->max();
+                _index = _node->count;
 				return *this;
 			}
 
@@ -179,6 +227,7 @@ public:
 		void			_stepUp() noexcept
 		{
 			auto parent = _node->parent;
+            _index = 1;
 
 			if (!parent)
 			{
@@ -208,17 +257,21 @@ public:
 			if (_node == parent->right)
 			{
 				_node = parent;
+                _index = _node->count;
 				return;
 			}
 
 			_node = parent;
+            _index = _node->count;
 			_stepDown();
 		}
 
 
 	private:
 
-		Node *			_node;
+        _Tree *			_node;
+
+        uint            _index = 1;
 
 	};
 
@@ -232,7 +285,7 @@ public:
 		if (!_root)
 			return Iterator(_root);
 
-		return Iterator(_root->min());
+        return Iterator(_root->min());
 	}
 	Iterator			end() noexcept
 	{
@@ -250,7 +303,7 @@ public:
 	{
 		if (!_root)
 		{
-			_root = new TreeType(val);
+            _root = new _Tree(val);
 			++_size;
 			return;
 		}
@@ -334,13 +387,22 @@ public:
 
 protected:
 
-	TreeType *			_root;
+    _Tree *             _root;
 
 	uint				_size;
 };
 
 
-template <typename T, typename TreeType = PtrTree<T>>
-class PtrSet : public Set<T, TreeType>
+template <typename T, typename D = std::shared_ptr<T>, typename Compare = ComparePtr<T>>
+class PSet : public Set<D, Compare>
+{};
+
+template <typename T, typename Compare = CompareBase<T>, typename Add = AdderMulti<T,Compare>>
+class MSet : public Set<T,Compare,Add>
+{};
+
+template <typename T, typename D = std::shared_ptr<T>,
+          typename Compare = ComparePtr<T>, typename Add = AdderMulti<D,Compare>>
+class MPSet : public Set<D,Compare,Add>
 {};
 

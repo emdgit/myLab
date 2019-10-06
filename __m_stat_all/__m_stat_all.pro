@@ -15,11 +15,12 @@ SOURCES     +=        \
             graphbase.cpp \
             gpoliline.cpp  \
             templates.cpp   \
-            DB/head.cpp    \
-            DB/field.cpp    \
+            testmodel.cpp    \
+            DB/Set.cpp     \
+            DB/head.cpp     \
+            DB/field.cpp     \
             DB/pgfunction.cpp \
-            DB/typestorage.cpp \
-    testmodel.cpp
+            DB/typestorage.cpp
 
 RESOURCES   +=  qml.qrc
 
@@ -30,10 +31,11 @@ HEADERS     +=      \
             gpoliline.h \
             graphbase.h  \
             templates.h   \
+            testmodel.h    \
+            DB/Set.h    \
             DB/head.h    \
             DB/field.h    \
+            DB/ptrset.h    \
             DB/pgfunction.h \
-            DB/typestorage.h \
-    testmodel.h \
-    DB/ptrset.h
+            DB/typestorage.h
 
