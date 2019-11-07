@@ -3,8 +3,8 @@
 
 #include <memory>
 #include <optional>
-#include <set>
 
+#include "Set.h"
 #include "templates.h"
 
 template < typename T >
@@ -28,13 +28,11 @@ public:
         return _set.size();
     }
 
-    std::optional<Ptr>          find( const T &val ) const noexcept
+    std::optional<Ptr>          find( const Ptr &val ) const noexcept
     {
-        for ( const auto &p : _set )
-            if ( *p.get() == val )
-                return p;
-
-        return std::nullopt;
+        auto it = _set.find( val );
+        return it == _set.end() ? std::nullopt
+                                : std::make_optional<Ptr>( *it );
     }
 
     inline decltype ( auto )    begin()  noexcept       { return _set.begin();  }
@@ -65,7 +63,7 @@ public:
 
 private:
 
-    std::set<Ptr>               _set;
+    Owl::MPSet<T>               _set;
 
 };
 

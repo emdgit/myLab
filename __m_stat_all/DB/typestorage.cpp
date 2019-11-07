@@ -21,7 +21,7 @@ TypeStorage::~TypeStorage() {}
 
 TypeStorage::FieldOpt TypeStorage::field(const QString &name) noexcept
 {
-    return _fields.find( { name } );
+    return _fields.find( std::make_shared< Field >( name ) );
 }
 
 void TypeStorage::registerField(const QString &name) noexcept

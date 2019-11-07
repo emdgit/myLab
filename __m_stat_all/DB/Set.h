@@ -306,14 +306,14 @@ public:
 
 	inline bool			isEmpty() const noexcept { return _size == 0; }
 
-	Iterator			begin() noexcept
+    Iterator			begin() const noexcept
 	{
 		if (!_root)
 			return Iterator(_end);
 
 		return Iterator(_root->min());
 	}
-	inline Iterator		end() noexcept { return Iterator(_end); }
+    inline Iterator		end() const noexcept { return Iterator(_end); }
 	Iterator			find(const T &val) const noexcept
 	{
 		if (!_root)
