@@ -1,16 +1,44 @@
-QT += quick
-CONFIG += c++11
+QT          +=  quick
+QT          +=  sql
 
-DEFINES += QT_DEPRECATED_WARNINGS
+CONFIG      +=  c++17
 
-SOURCES += \
-        main.cpp
+DEFINES     +=  QT_DEPRECATED_WARNINGS
 
-RESOURCES += qml.qrc
+INCLUDEPATH +=  $$PWD/DB/
+DEPENDPATH  +=  $$PWD/DB/
 
-QML_IMPORT_PATH =
+SOURCES     +=        \
+            main.cpp   \
+            chart.cpp   \
+            gline.cpp    \
+            graphbase.cpp \
+            gpoliline.cpp  \
+            templates.cpp   \
+            testmodel.cpp    \
+            DB/Set.cpp     \
+            DB/head.cpp     \
+            DB/field.cpp     \
+            DB/pgfunction.cpp \
+            DB/typestorage.cpp \
+    DB/dbconnecter.cpp
 
-QML_DESIGNER_IMPORT_PATH =
+RESOURCES   +=  qml.qrc
 
-HEADERS +=
+HEADERS     +=      \
+            chart.h  \
+            gline.h   \
+            private.h  \
+            gpoliline.h \
+            graphbase.h  \
+            templates.h   \
+            testmodel.h    \
+            DB/Set.h    \
+            DB/head.h    \
+            DB/field.h    \
+            DB/ptrset.h    \
+            DB/pgfunction.h \
+            DB/typestorage.h \
+    DB/dbconfig.h \
+    DB/dbconnecter.h
 
