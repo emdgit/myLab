@@ -6,11 +6,7 @@
 #include <set>
 
 #include "chart.h"
-#include "field.h"
-#include "templates.h"
 #include "testmodel.h"
-#include "head.h"
-#include "Set.h"
 
 int main(int argc, char *argv[])
 {
