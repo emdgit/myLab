@@ -4,11 +4,12 @@ debug/gline.o
 debug/graphbase.o
 debug/gpoliline.o
 debug/templates.o
+debug/testmodel.o
+debug/Set.o
 debug/head.o
 debug/field.o
 debug/pgfunction.o
 debug/typestorage.o
-debug/testmodel.o
 debug/qrc_qml.o
 debug/moc_chart.o
 debug/moc_testmodel.o
