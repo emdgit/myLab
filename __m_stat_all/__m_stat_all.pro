@@ -21,9 +21,10 @@ SOURCES     +=        \
             DB/field.cpp     \
             DB/pgfunction.cpp \
             DB/typestorage.cpp \
-    DB/dbconnecter.cpp
+            DB/dbconnecter.cpp
 
-RESOURCES   +=  qml.qrc
+RESOURCES   +=  qml.qrc \
+    sql.qrc
 
 HEADERS     +=      \
             chart.h  \
@@ -33,12 +34,12 @@ HEADERS     +=      \
             graphbase.h  \
             templates.h   \
             testmodel.h    \
-            DB/Set.h    \
-            DB/head.h    \
-            DB/field.h    \
-            DB/ptrset.h    \
+            DB/Set.h   \
+            DB/head.h   \
+            DB/field.h   \
+            DB/ptrset.h   \
+            DB/dbconfig.h  \
             DB/pgfunction.h \
             DB/typestorage.h \
-    DB/dbconfig.h \
-    DB/dbconnecter.h
+            DB/dbconnecter.h
 

@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>sql/Func_Info.sql</file>
+    </qresource>
+</RCC>

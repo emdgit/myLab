@@ -4,11 +4,14 @@ release/gline.o
 release/graphbase.o
 release/gpoliline.o
 release/templates.o
+release/testmodel.o
+release/Set.o
 release/head.o
 release/field.o
 release/pgfunction.o
 release/typestorage.o
-release/testmodel.o
+release/dbconnecter.o
 release/qrc_qml.o
+release/qrc_sql.o
 release/moc_chart.o
 release/moc_testmodel.o

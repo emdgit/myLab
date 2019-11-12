@@ -10,6 +10,7 @@ public:
     DBConnecter();
 
     static bool     connect() noexcept;
+    static bool     readFunctions() noexcept;
 
 
 private:

@@ -7,6 +7,8 @@
 
 #include "chart.h"
 #include "testmodel.h"
+#include "dbconfig.h"
+#include "dbconnecter.h"
 
 int main(int argc, char *argv[])
 {
@@ -22,6 +24,19 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
+
+    DBConfig::dbName = "purchase_db";
+    DBConfig::dbHost = "127.0.0.1";
+    DBConfig::dbPort = 5432;
+    DBConfig::dbPswd = "123456qQ";
+    DBConfig::dbUser = "postgres";
+
+    auto b = DBConnecter::connect();
+
+    if ( b )
+    {
+        DBConnecter::readFunctions();
+    }
 
     if (engine.rootObjects().isEmpty())
         return -1;

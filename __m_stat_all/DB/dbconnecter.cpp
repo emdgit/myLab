@@ -1,5 +1,16 @@
+#include <QFile>
+#include <QDebug>
+#include <QSqlQuery>
+#include <QSqlError>
+#include <QSqlRecord>
+
 #include "dbconnecter.h"
 #include "dbconfig.h"
+
+static const QString _in_args = "args";
+static const QString _out_args = "res";
+static const QString _func_name = "proname";
+static const QString _schema = "_schema";
 
 DBConnecter::DBConnecter()
 {
@@ -37,4 +48,31 @@ bool DBConnecter::connect() noexcept
     _db.setPassword( DBConfig::dbPswd );
 
     return _db.open();
+}
+
+bool DBConnecter::readFunctions() noexcept
+{
+    if ( !_db.isValid() || !_db.isOpen() )
+        return false;
+
+    QFile f( ":/sql/Func_Info.sql" );
+
+    if ( !f.open( QIODevice::ReadOnly ) )
+        return false;
+
+    QString queryStr( f.readAll() );
+    QSqlQuery query;
+
+    query.prepare( queryStr );
+    query.exec();
+
+    if ( query.lastError().isValid() )
+        return false;
+
+    while ( query.next() )
+    {
+
+    }
+
+    return true;
 }
