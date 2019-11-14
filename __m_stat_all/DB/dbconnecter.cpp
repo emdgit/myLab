@@ -3,14 +3,82 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QSqlRecord>
+#include <QSqlField>
 
 #include "dbconnecter.h"
 #include "dbconfig.h"
+#include "pgfunction.h"
+#include "exception.h"
+#include "typestorage.h"
 
 static const QString _in_args = "args";
 static const QString _out_args = "res";
 static const QString _func_name = "proname";
 static const QString _schema = "_schema";
+
+static const QString _in_arg_rx = "^(?P<name>\\S+)\\s(?P<type>.+?)(($)|(\\sDEFAULT\\s"
+                                  "(?<default_value>.+)::(?<default_value_type>.+)$))";
+
+class DBConnecterPrivate
+{
+
+    using _FIA = FuncInArgument;
+
+public:
+    DBConnecterPrivate(){}
+
+    static void readInArguments( const QString &&in, PgFunction &f )
+    {
+        if ( in.isEmpty() )
+            return;
+
+        auto lstArgs = in.split( "," );
+
+        QRegularExpression r( _in_arg_rx );
+        auto capGroups = r.namedCaptureGroups();
+
+        for ( const auto &arg : lstArgs )
+        {
+            auto match = r.match( arg );
+
+            if ( match.hasMatch() )
+            {
+                _FIA inArg;
+
+                auto name = match.captured( "name" );
+                auto type = match.captured( "type" );
+                auto defVal = match.captured( "default_value" );
+                auto defValType = match.captured( "default_value_type" );
+
+                if ( !defValType.isEmpty() )
+                {
+                    if ( defValType != type )
+                        throw makeException<DBConnecterPrivate>( std::string( "Wrong arg: " ) + arg.toStdString() );
+
+                    inArg.isDefault = true;
+                }
+
+                auto fld = TypeStorage::field( name );
+
+                if ( !fld )
+                {
+                    TypeStorage::registerField( name );
+
+                    fld = TypeStorage::field( name );
+
+                    if ( !fld )
+                        throw makeException<DBConnecterPrivate>( std::string( "Cannot register field: " ) +
+                                                                 name.toStdString() );
+                }
+
+                inArg.field = fld.value();
+            }
+        }
+    }
+
+};
+
+typedef DBConnecterPrivate D;
 
 DBConnecter::DBConnecter()
 {
@@ -71,7 +139,13 @@ bool DBConnecter::readFunctions() noexcept
 
     while ( query.next() )
     {
+        PgFunction func;
 
+        auto str = query.record().field( _in_args ).value().toString();
+
+        D::readInArguments( std::move( str ), func );
+
+        qDebug() << str;
     }
 
     return true;

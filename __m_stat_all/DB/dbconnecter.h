@@ -2,6 +2,7 @@
 #define DBCONNECTER_H
 
 #include <QSqlDatabase>
+#include <QScopedPointer>
 
 class DBConnecter
 {

@@ -41,5 +41,6 @@ HEADERS     +=      \
             DB/dbconfig.h  \
             DB/pgfunction.h \
             DB/typestorage.h \
-            DB/dbconnecter.h
+            DB/dbconnecter.h \
+    exception.h
 

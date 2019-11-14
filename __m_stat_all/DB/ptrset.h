@@ -31,8 +31,9 @@ public:
     std::optional<Ptr>          find( const Ptr &val ) const noexcept
     {
         auto it = _set.find( val );
-        return it == _set.end() ? std::nullopt
-                                : std::make_optional<Ptr>( *it );
+        auto opt = it == _set.end() ? std::nullopt
+                                    : std::make_optional<Ptr>( std::forward<Ptr>( *it ) );
+        return opt;
     }
 
     inline decltype ( auto )    begin()  noexcept       { return _set.begin();  }

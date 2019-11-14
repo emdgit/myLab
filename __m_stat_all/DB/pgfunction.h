@@ -14,7 +14,7 @@ struct FuncArgument
 
 struct FuncInArgument : FuncArgument
 {
-    bool        isDefault;
+    bool        isDefault = false;
 
     QVariant    value;
 };
