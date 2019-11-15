@@ -319,7 +319,9 @@ public:
 		if (!_root)
 			return end();
 
-		return Iterator(_root->find(val));
+        auto n = _root->find( val );
+
+        return n ? n : end();
 	}
 
 	void				insert(const T &val) noexcept

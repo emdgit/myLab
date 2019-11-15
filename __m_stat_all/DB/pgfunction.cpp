@@ -7,22 +7,27 @@ PgFunction::PgFunction()
 
 PgFunction::PgFunction(const QString &name) : _name(name) {}
 
-void PgFunction::setIn(const PgFunction::FieldSetP &&in) noexcept
+void PgFunction::addOut(const FuncArgument &&in) noexcept
 {
-    _in = std::move( in );
+    _outArgs.push_back( std::move( in ) );
 }
 
-void PgFunction::setOut(const PgFunction::FieldSetP &&out) noexcept
+void PgFunction::addIn(const FuncInArgument &&out) noexcept
 {
-    _out = std::move( out );
+    _inArgs.push_back( std::move( out ) );
 }
 
 bool PgFunction::bindValue(const QString &name, const QVariant &&val) noexcept
 {
-    if ( !_in.find( std::make_shared<Field>(name) ) )
+    auto it = std::find_if( _inArgs.begin(), _inArgs.end(), [&] ( const auto &arg ) {
+        return arg.field.get()->name == name;
+    } );
+
+    if ( it == _inArgs.end() )
         return false;
 
-    _inValues.insert( name, std::move( val ) );
+    (*it).value = std::move( val );
 
     return true;
 }
+

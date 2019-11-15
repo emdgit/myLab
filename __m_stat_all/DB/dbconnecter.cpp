@@ -32,7 +32,7 @@ public:
         if ( in.isEmpty() )
             return;
 
-        auto lstArgs = in.split( "," );
+        auto lstArgs = in.split( ",", QString::SkipEmptyParts );
 
         QRegularExpression r( _in_arg_rx );
         auto capGroups = r.namedCaptureGroups();
@@ -71,7 +71,8 @@ public:
                                                                  name.toStdString() );
                 }
 
-                inArg.field = fld.value();
+                inArg.field = (*fld);
+                f.addIn( std::forward<_FIA>( inArg ) );
             }
         }
     }

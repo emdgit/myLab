@@ -32,7 +32,7 @@ public:
     {
         auto it = _set.find( val );
         auto opt = it == _set.end() ? std::nullopt
-                                    : std::make_optional<Ptr>( std::forward<Ptr>( *it ) );
+                                    : std::make_optional<Ptr>( *it );
         return opt;
     }
 

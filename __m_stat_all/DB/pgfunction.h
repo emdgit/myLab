@@ -22,7 +22,8 @@ struct FuncInArgument : FuncArgument
 class PgFunction
 {
 
-    using FieldSetP = PtrSet<Field>;
+    typedef std::vector<FuncArgument>   ArgVec;
+    typedef std::vector<FuncInArgument> ArgInVec;
 
 public:
     PgFunction();
@@ -30,8 +31,8 @@ public:
 
     inline const QString &  name() const noexcept { return _name; }
 
-    void                    setIn( const FieldSetP &&in ) noexcept;
-    void                    setOut( const FieldSetP &&out ) noexcept;
+    void                    addOut(const FuncArgument &&in ) noexcept;
+    void                    addIn( const FuncInArgument &&out ) noexcept;
 
     bool                    bindValue( const QString &name,
                                        const QVariant && val) noexcept;
@@ -41,10 +42,9 @@ private:
 
     QString                 _name;
 
-    FieldSetP               _in;
-    FieldSetP               _out;
+    ArgVec                  _outArgs;
+    ArgInVec                _inArgs;
 
-    QVariantMap             _inValues;
 };
 
 #endif // PGFUNCTION_H
