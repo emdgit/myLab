@@ -8,6 +8,8 @@ typedef unsigned int uint;
 template <typename T>
 struct CompareBase
 {
+    using _base_type = std::decay_t< T >;
+
 	static inline bool less(const T &v1, const T &v2) { return (v1 < v2); }
 	static inline bool equal(const T &v1, const T &v2) { return (v1 == v2); }
 };
@@ -15,9 +17,13 @@ struct CompareBase
 template <typename T>
 struct ComparePtr : CompareBase<std::shared_ptr< T >>
 {
+    using _base_type = typename CompareBase<T>::_base_type;
+
 	typedef typename std::shared_ptr< T >	_Ptr;
 	static inline bool less(const _Ptr &v1, const _Ptr &v2) { return (*v1.get() < *v2.get()); }
+    static inline bool less(const _Ptr &v1, const _base_type &v2) { return ( *v1.get() < v2 );}
 	static inline bool equal(const _Ptr &v1, const _Ptr &v2) { return (*v1.get() == *v2.get()); }
+    static inline bool equal(const _Ptr &v1, const _base_type &v2) { return (*v1.get() == v2); }
 };
 
 template <typename T, typename Compare = CompareBase<T>>
@@ -93,6 +99,7 @@ template <typename T,
 	using _comp = Compare;
 	using _adder = Adder;
 	using Node = Tree<T, _comp, _adder>;
+    using _BaseType = typename Compare::_base_type;
 
 	Tree() : left(nullptr), right(nullptr), parent(nullptr) {}
 	Tree(const T &val) : data(val), left(nullptr), right(nullptr), parent(nullptr) {}
@@ -128,12 +135,20 @@ template <typename T,
 
 		return right->max();
 	}
-	Node *          find(const T &val) const noexcept
+
+    template< typename D >
+    Node *          find(const D &val) const noexcept
 	{
-		if (_comp::equal(val, data))
+        constexpr const auto b =
+                std::is_same_v< std::decay_t<D> , std::decay_t<T> > ||
+                std::is_same_v< std::decay_t<D> , std::decay_t<_BaseType> >;
+
+        static_assert ( b );
+
+        if ( _comp::equal( data, val ) )
 			return const_cast<Node*>(this);
 
-		auto node = _comp::less(val, data) ? left : right;
+        auto node = _comp::less( data,  val ) ? right : left;
 
 		if (!node)
 			return nullptr;
@@ -170,6 +185,9 @@ template <typename T,
 template < typename T, typename Compare, typename Adder>
 	class Owl::Set
 {
+
+    using _BaseType = typename Compare::_base_type;
+
 public:
 	Set() : _root(nullptr), _size(0) { _end = new _Tree(); }
 	~Set() {}
@@ -323,6 +341,15 @@ public:
 
         return n ? n : end();
 	}
+    Iterator            find( const _BaseType &val ) const noexcept
+    {
+        if (!_root)
+            return end();
+
+        auto n = _root->find( val );
+
+        return n ? n : end();
+    }
 
 	void				insert(const T &val) noexcept
 	{

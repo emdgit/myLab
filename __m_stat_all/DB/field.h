@@ -5,7 +5,7 @@
 
 #include <memory>
 
-#define FIELD_DEBUG
+//#define FIELD_DEBUG
 
 struct Field
 {

@@ -28,9 +28,10 @@ public:
         return _set.size();
     }
 
-    std::optional<Ptr>          find( const Ptr &val ) const noexcept
+    std::optional<Ptr>          find( const T &&val ) const noexcept
     {
-        auto it = _set.find( val );
+        auto it = _set.find( std::forward<T>( std::decay_t<T>( val ) ) );
+
         auto opt = it == _set.end() ? std::nullopt
                                     : std::make_optional<Ptr>( *it );
         return opt;

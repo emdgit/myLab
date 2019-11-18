@@ -3,9 +3,7 @@
 
 #include "head.h"
 #include "private.h"
-
-class TypeStoragePrivate;
-typedef TypeStoragePrivate          TSPrivate;
+#include "pgfunction.h"
 
 class TypeStorage
 {
@@ -20,17 +18,14 @@ public:
     static FieldOpt                 field( const QString &name ) noexcept;
 
     static void                     registerField(const QString &name ) noexcept;
+    static void                     registerFunc( const PgFunction &func ) noexcept;
 
 
 private:
 
-    QScopedPointer<TSPrivate>       m_ptr;
-    DECLARE_PRIVATE(TypeStorage)
-
     static PtrSet<Field>            _fields;
 
-    static PtrSet<Head>             _heads;
-
+    static PtrSet<PgFunction>       _funcs;
 
 };
 

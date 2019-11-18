@@ -16,8 +16,10 @@ static const QString _out_args = "res";
 static const QString _func_name = "proname";
 static const QString _schema = "_schema";
 
-static const QString _in_arg_rx = "^(?P<name>\\S+)\\s(?P<type>.+?)(($)|(\\sDEFAULT\\s"
+static const QString _arg_rx = "^(?P<name>\\S+)\\s(?P<type>.+?)(($)|(\\sDEFAULT\\s"
                                   "(?<default_value>.+)::(?<default_value_type>.+)$))";
+
+static const QString _if_out_is_table = "^TABLE\\((.+)\\)$";
 
 class DBConnecterPrivate
 {
@@ -34,11 +36,12 @@ public:
 
         auto lstArgs = in.split( ",", QString::SkipEmptyParts );
 
-        QRegularExpression r( _in_arg_rx );
+        QRegularExpression r( _arg_rx );
         auto capGroups = r.namedCaptureGroups();
 
-        for ( const auto &arg : lstArgs )
+        for ( auto &arg : lstArgs )
         {
+            arg.remove( QRegExp( "(^\\s+)|(\\s+$)" ) );
             auto match = r.match( arg );
 
             if ( match.hasMatch() )
@@ -75,6 +78,16 @@ public:
                 f.addIn( std::forward<_FIA>( inArg ) );
             }
         }
+    }
+
+    static void readOutArguments( const QString &&in, PgFunction &f )
+    {
+        if ( QRegExp( _if_out_is_table ).indexIn( in ) != -1 )
+        {
+            qDebug() << "Table:" << in;
+        }
+        else
+            qDebug() << "Out Argument:" << in;
     }
 
 };
@@ -142,11 +155,22 @@ bool DBConnecter::readFunctions() noexcept
     {
         PgFunction func;
 
-        auto str = query.record().field( _in_args ).value().toString();
+        const auto &&rec = query.record();
 
-        D::readInArguments( std::move( str ), func );
+        auto str = rec.field( _in_args ).value().toString();
+        auto out = rec.field( _out_args ).value().toString();
 
-        qDebug() << str;
+        try {
+            D::readInArguments( std::move( str ), func );
+            D::readOutArguments( std::move( out ), func );
+        }
+        catch ( Owl::Exception::Exception< std::decay_t<D> > &ex )
+        {
+            qDebug() << "Error bleat:" << ex.what();
+            continue;
+        }
+
+        TypeStorage::registerFunc( std::move( func ) );
     }
 
     return true;

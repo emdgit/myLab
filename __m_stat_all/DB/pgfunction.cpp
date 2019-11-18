@@ -31,3 +31,15 @@ bool PgFunction::bindValue(const QString &name, const QVariant &&val) noexcept
     return true;
 }
 
+bool operator<(const PgFunction &l, const PgFunction &r) noexcept
+{
+    return l._schema == r._schema ? ( l._name < r._name )
+                                  : ( l._schema < r._schema );
+}
+
+bool operator==(const PgFunction &l, const PgFunction &r) noexcept
+{
+    return l._schema == r._schema ? ( l._name == r._name )
+                                  : false;
+}
+
