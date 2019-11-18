@@ -31,73 +31,140 @@ public:
 
     static void readInArguments( const QString &&in, PgFunction &f )
     {
-        if ( in.isEmpty() )
+        try {
+            readArguments<_FIA>( std::move( in ), f );
+        }
+        catch ( ... ) {
+            throw;
+        }
+    }
+
+    static void readOutArguments( const QString &&out, PgFunction &f )
+    {
+        QRegExp rxTable( _if_out_is_table );
+
+        QString str;
+
+        if ( rxTable.indexIn( out ) != -1 )
+            str = std::move( std::forward<QString>( rxTable.cap( 1 ) ) );
+        else
+        {
+            TypeStorage::registerField( f.name() );
+            auto fld = TypeStorage::field( f.name() );
+
+            if ( !fld )
+                throw makeException<DBConnecterPrivate>( std::string("cannot register field ") +
+                                                         f.name().toStdString() );
+
+            FuncArgument arg;
+            arg.field = *fld;
+
+            f.addOut( std::move( arg ) );
+            return;
+        }
+
+        try {
+            readArguments<FuncArgument>( std::move( out ), f );
+        }
+        catch ( ... ) {
+            throw;
+        }
+    }
+
+
+private:
+
+    template < typename Arg >
+    static void readArguments( const QString &&str, PgFunction &f )
+    {
+        using namespace Owl::Exception;
+        using namespace std;
+
+        static_assert ( std::is_base_of_v< FuncArgument, Arg > );
+
+        constexpr bool isIn = std::is_same_v< _FIA, Arg >;
+
+        if ( str.isEmpty() )
             return;
 
-        auto lstArgs = in.split( ",", QString::SkipEmptyParts );
+        auto lstArgs = str.split( ",", QString::SkipEmptyParts );
 
-        QRegularExpression r( _arg_rx );
-        auto capGroups = r.namedCaptureGroups();
-
-        for ( auto &arg : lstArgs )
+        for ( const auto &arg : lstArgs )
         {
-            arg.remove( QRegExp( "(^\\s+)|(\\s+$)" ) );
-            auto match = r.match( arg );
+            try {
+                auto inArg = makeArg<Arg>( arg );
 
-            if ( match.hasMatch() )
-            {
-                _FIA inArg;
-
-                auto name = match.captured( "name" );
-                auto type = match.captured( "type" );
-                auto defVal = match.captured( "default_value" );
-                auto defValType = match.captured( "default_value_type" );
-
-                if ( !defValType.isEmpty() )
-                {
-                    if ( defValType != type )
-                        throw makeException<DBConnecterPrivate>( std::string( "Wrong arg: " ) + arg.toStdString() );
-
-                    inArg.isDefault = true;
-                }
-
-                auto fld = TypeStorage::field( name );
-
-                if ( !fld )
-                {
-                    TypeStorage::registerField( name );
-
-                    fld = TypeStorage::field( name );
-
-                    if ( !fld )
-                        throw makeException<DBConnecterPrivate>( std::string( "Cannot register field: " ) +
-                                                                 name.toStdString() );
-                }
-
-                inArg.field = (*fld);
-                f.addIn( std::forward<_FIA>( inArg ) );
+                if ( !inArg )
+                    throw makeException<DBConnecterPrivate>( string( "Wrong IN Argument: " ) +
+                                                             arg.toStdString() );
+                if constexpr ( isIn )
+                    f.addIn( std::move( *inArg ) );
+                else
+                    f.addOut( std::move( *inArg ) );
+            }
+            catch ( ... ) {
+                throw;
             }
         }
     }
 
-    static void readOutArguments( const QString &&in, PgFunction &f )
+    template < typename Arg >
+    [[nodiscard]] static std::optional<Arg> makeArg( QString str )
     {
-        if ( QRegExp( _if_out_is_table ).indexIn( in ) != -1 )
+        static_assert ( std::is_base_of_v< FuncArgument, Arg > );
+
+        constexpr bool isIn = std::is_same_v< _FIA, Arg >;
+
+        QRegularExpression r( _arg_rx );
+        auto capGroups = r.namedCaptureGroups();
+
+        str.remove( QRegExp( "(^\\s+)|(\\s+$)" ) );
+        auto match = r.match( str );
+
+        Arg arg;
+
+        if ( match.hasMatch() )
         {
-            qDebug() << "Table:" << in;
+            auto name = match.captured( "name" );
+            auto type = match.captured( "type" );
+            auto defVal = match.captured( "default_value" );
+            auto defValType = match.captured( "default_value_type" );
+
+            if ( !defValType.isEmpty() )
+            {
+                if ( defValType != type )
+                    throw makeException<DBConnecterPrivate>( std::string( "Wrong arg: " ) + str.toStdString() );
+
+                if constexpr ( isIn )
+                    arg.isDefault = true;
+            }
+
+            auto fld = TypeStorage::field( name );
+
+            if ( !fld )
+            {
+                TypeStorage::registerField( name );
+
+                fld = TypeStorage::field( name );
+
+                if ( !fld )
+                    throw makeException<DBConnecterPrivate>( std::string( "Cannot register field: " ) +
+                                                             name.toStdString() );
+            }
+
+            arg.field = (*fld);
+
+            return std::make_optional<Arg>( arg );
         }
         else
-            qDebug() << "Out Argument:" << in;
+            return std::nullopt;
     }
 
 };
 
 typedef DBConnecterPrivate D;
 
-DBConnecter::DBConnecter()
-{
-
-}
+DBConnecter::DBConnecter() {}
 
 bool DBConnecter::connect() noexcept
 {
@@ -159,6 +226,9 @@ bool DBConnecter::readFunctions() noexcept
 
         auto str = rec.field( _in_args ).value().toString();
         auto out = rec.field( _out_args ).value().toString();
+
+        func.setSchema( rec.field( _schema ).value().toString() );
+        func.setName( rec.field( _func_name ).value().toString() );
 
         try {
             D::readInArguments( std::move( str ), func );

@@ -10,3 +10,5 @@
 *Makefile*
 *qrc_*.cpp
 build-*
+build-__m_stat_all-Desktop_Qt_5_12_0_MinGW_64_bit-Debug/*
+desktop.ini

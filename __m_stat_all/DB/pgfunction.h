@@ -33,6 +33,7 @@ public:
     inline const QString &  schema() const noexcept { return _schema; }
 
     inline void             setSchema( const QString &sch ) noexcept { _schema = sch; }
+    inline void             setName( const QString &name ) noexcept { _name = name; }
     void                    addOut(const FuncArgument &&in ) noexcept;
     void                    addIn( const FuncInArgument &&out ) noexcept;
 
