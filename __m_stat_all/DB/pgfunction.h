@@ -1,6 +1,8 @@
 #ifndef PGFUNCTION_H
 #define PGFUNCTION_H
 
+#include <QSqlQuery>
+
 #include <QString>
 #include <QVariantMap>
 
@@ -19,11 +21,15 @@ struct FuncInArgument : FuncArgument
     QVariant    value;
 };
 
+class PgFunctionPrivate;
+
 class PgFunction
 {
 
     typedef std::vector<FuncArgument>   ArgVec;
     typedef std::vector<FuncInArgument> ArgInVec;
+
+    typedef PgFunctionPrivate           FP;
 
 public:
     PgFunction();
@@ -37,6 +43,8 @@ public:
     void                    addOut(const FuncArgument &&in ) noexcept;
     void                    addIn( const FuncInArgument &&out ) noexcept;
 
+    bool                    isComplete() const noexcept;
+    bool                    prepare( QSqlQuery &query ) const noexcept;
     bool                    bindValue( const QString &name,
                                        const QVariant && val) noexcept;
 
@@ -45,6 +53,9 @@ public:
 
 
 private:
+
+    Q_DECLARE_PRIVATE(PgFunction)
+    FP *                    d_ptr;
 
     QString                 _name;
     QString                 _schema;

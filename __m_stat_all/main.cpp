@@ -8,12 +8,11 @@
 #include "dbconfig.h"
 #include "dbconnecter.h"
 
-#define HOME
+//#define HOME
 
 int main(int argc, char *argv[])
 {
     using namespace std;
-
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     QGuiApplication app(argc, argv);

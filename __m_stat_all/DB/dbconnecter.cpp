@@ -64,7 +64,7 @@ public:
         }
 
         try {
-            readArguments<FuncArgument>( std::move( out ), f );
+            readArguments<FuncArgument>( std::move( str ), f );
         }
         catch ( ... ) {
             throw;
@@ -95,7 +95,7 @@ private:
                 auto inArg = makeArg<Arg>( arg );
 
                 if ( !inArg )
-                    throw makeException<DBConnecterPrivate>( string( "Wrong IN Argument: " ) +
+                    throw makeException<DBConnecterPrivate>( string( "Wrong Argument: " ) +
                                                              arg.toStdString() );
                 if constexpr ( isIn )
                     f.addIn( std::move( *inArg ) );
