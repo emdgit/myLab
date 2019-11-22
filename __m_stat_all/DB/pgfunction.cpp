@@ -8,20 +8,98 @@ public:
 
     PgFunctionPrivate( PgFunction * const &f ) : _func(f) {}
 
-    void prepare( QSqlQuery &query ) const
+    /*!
+     * \param   Prepares the given query and binds values.
+     */
+    void prepare( QSqlQuery &query ) const noexcept
     {
         QString prepareScript = "SELECT ";
+
+        prepareOutArgs( prepareScript );
+
+        prepareScript += "FROM ";
+        prepareScript += _func->_schema + ".";
+        prepareScript += _func->_name;
+
+        prepareInArgs( prepareScript );
+
+        query.prepare( prepareScript );
+
+        bindValues( query );
     }
 
+    /*!
+     * \brief   Sorts funtion's in arguments in correct order.
+     *          Correct order is:
+     *          1 - No default args with valid values first
+     *          2 - Default args with valid values second
+     *          3 - Default args with invalid values last
+     */
     void sortInArgs() const noexcept
     {
         typedef FuncInArgument FIA;
 
         auto pred = [&]( const FIA &l, const FIA &r ) {
-            if ( l.isDefault != r.isDefault )
-                return l.isDefault ? false : true;
+            if ( l.isDefault == r.isDefault )
+                return l.isDefault ? ( l.value.isValid() > r.value.isValid() )
+                                   : true;
+            else
+                return l.isDefault < r.isDefault;
         };
+
+        std::sort( _func->_inArgs.begin(), _func->_inArgs.end(), pred );
     }
+
+
+protected:
+
+    void prepareOutArgs( QString &outQuery ) const noexcept
+    {
+        if ( _func->_outArgs.empty() )
+        {
+            outQuery.append( _func->name() );
+            return;
+        }
+
+        for ( const auto &a : _func->_outArgs )
+            outQuery += a.field.get()->name + ", ";
+
+        outQuery.remove( outQuery.size() - 2, 1 );
+    }
+
+    void prepareInArgs( QString &outQuery ) const noexcept
+    {
+        outQuery += "( ";
+
+        for ( const auto &a : _func->_inArgs )
+        {
+            if ( !a.value.isValid() )
+                break;
+
+            outQuery += a.field.get()->name;
+            outQuery += " := ?, ";
+        }
+
+        if ( QRegExp( ",\\s$" ).indexIn( outQuery ) != -1 )
+            outQuery.remove( outQuery.size() - 2, 1 );
+
+        outQuery += " );";
+    }
+
+    void bindValues( QSqlQuery &query ) const noexcept
+    {
+        int i = 0;
+
+        for ( const auto &a : _func->_inArgs )
+        {
+            if ( !a.value.isValid() )
+                return;
+
+            query.bindValue( i, a.value );
+            ++i;
+        }
+    }
+
 
 private:
 
@@ -43,11 +121,18 @@ void PgFunction::addOut(const FuncArgument &&in) noexcept
 
 void PgFunction::addIn(const FuncInArgument &&out) noexcept
 {
+    Q_D ( PgFunction );
+
     _inArgs.push_back( std::move( out ) );
+
+    d->sortInArgs();
 }
 
 bool PgFunction::isComplete() const noexcept
 {
+    if ( _name.isEmpty() || _schema.isEmpty() )
+        return false;
+
     auto isCompleteArg = [&]( const auto &arg ) -> bool {
 
         if constexpr ( !std::is_base_of_v< decltype ( arg ), FuncArgument > )
@@ -80,15 +165,7 @@ bool PgFunction::prepare(QSqlQuery &query) const noexcept
 
     Q_D ( const PgFunction );
 
-    using namespace Owl::Exception;
-
-    try {
-        d->prepare( query );
-    }
-    catch ( Exception< FP > &ex ) {
-        qDebug() << ex.what();
-        return false;
-    }
+    d->prepare( query );
 
     return true;
 }

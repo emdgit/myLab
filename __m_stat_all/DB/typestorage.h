@@ -1,7 +1,6 @@
 #ifndef TYPESTORAGE_H
 #define TYPESTORAGE_H
 
-#include "head.h"
 #include "private.h"
 #include "pgfunction.h"
 
@@ -9,7 +8,6 @@ class TypeStorage
 {
 
     typedef std::optional<FieldPtr> FieldOpt;
-    typedef std::optional<HeadPtr>  HeadOpt;
 
 public:
     TypeStorage();

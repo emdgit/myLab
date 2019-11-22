@@ -8,6 +8,8 @@
 #include "dbconfig.h"
 #include "dbconnecter.h"
 
+#include "pgfunction.h"
+
 //#define HOME
 
 int main(int argc, char *argv[])
