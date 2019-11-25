@@ -20,7 +20,9 @@ SOURCES     +=        \
             DB/field.cpp     \
             DB/pgfunction.cpp \
             DB/typestorage.cpp \
-            DB/dbconnecter.cpp
+            DB/dbconnecter.cpp \
+    DB/pgworker.cpp \
+    DB/pganswer.cpp
 
 RESOURCES   +=  qml.qrc \
                 sql.qrc
@@ -40,5 +42,7 @@ HEADERS     +=      \
             DB/dbconfig.h  \
             DB/pgfunction.h \
             DB/typestorage.h \
-            DB/dbconnecter.h
+            DB/dbconnecter.h \
+    DB/pgworker.h \
+    DB/pganswer.h
 
