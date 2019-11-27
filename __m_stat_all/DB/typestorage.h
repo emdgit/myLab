@@ -8,12 +8,15 @@ class TypeStorage
 {
 
     typedef std::optional<FieldPtr> FieldOpt;
+    typedef std::optional<FuncPtr>  FuncOpt;
 
 public:
     TypeStorage();
     ~TypeStorage();
 
     static FieldOpt                 field( const QString &name ) noexcept;
+    static FuncOpt                  func( const QString &name,
+                                          const QString &schema ) noexcept;
 
     static void                     registerField(const QString &name ) noexcept;
     static void                     registerFunc( const PgFunction &func ) noexcept;

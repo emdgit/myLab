@@ -9,8 +9,9 @@
 #include "dbconnecter.h"
 
 #include "pgfunction.h"
+#include "typestorage.h"
 
-//#define HOME
+#define HOME
 
 int main(int argc, char *argv[])
 {
@@ -43,6 +44,7 @@ int main(int argc, char *argv[])
 
     if ( b )
     {
+        qDebug() << "Connected to DataBase" << DBConfig::dbName;
         DBConnecter::readFunctions();
     }
     else
@@ -52,6 +54,23 @@ int main(int argc, char *argv[])
 
     if (engine.rootObjects().isEmpty())
         return -1;
+
+    auto funcOpt = TypeStorage::func( "get_root_groups", "common" );
+
+    if ( funcOpt )
+    {
+        auto func = (*funcOpt).get();
+        qDebug() << "Func found:" << func->schema() << "." << func->name();
+
+        auto w = DBConnecter::createWorker();
+        w->execute( *func );
+    }
+    else
+    {
+        qDebug() << "Func hasn't found";
+    }
+
+
 
     return app.exec();
 }

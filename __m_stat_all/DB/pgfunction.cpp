@@ -112,7 +112,21 @@ PgFunction::PgFunction()
     d_ptr = new PgFunctionPrivate( this );
 }
 
-PgFunction::PgFunction(const QString &name) : _name(name) {}
+PgFunction::PgFunction(const QString &name) : _name(name)
+{
+    d_ptr = new PgFunctionPrivate( this );
+}
+
+PgFunction::PgFunction(const PgFunction & other)
+{
+    _name = other._name;
+    _schema = other._schema;
+
+    _outArgs = other._outArgs;
+    _inArgs = other._inArgs;
+
+    d_ptr = new PgFunctionPrivate( this );
+}
 
 void PgFunction::addOut(const FuncArgument &&in) noexcept
 {

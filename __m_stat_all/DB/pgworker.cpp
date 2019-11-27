@@ -8,9 +8,8 @@ public:
 
     PGAnswer * extractAnswer( const QSqlQuery &query ) const noexcept
     {
-        Q_UNUSED( query );
-
-        return nullptr; /// \todo
+        qDebug() << "rows = " << query.size();
+        return nullptr;
     }
 
 };
@@ -33,7 +32,7 @@ PGAnswer *PGWorker::execute(const PgFunction & func) const noexcept
         return nullptr;
     }
 
+    Q_D ( const PGWorker );
 
-
-    return nullptr; /// \todo
+    return d->extractAnswer( query );
 }
