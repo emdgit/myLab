@@ -14,7 +14,7 @@ funcs as (
 	where 
 		r.specific_schema = s._schema
 )
-select 
+select distinct
 	pr.oid, 
 	pr.proname,
 	f._schema,
@@ -27,3 +27,5 @@ from
 	funcs AS 	f
 where
 	pr.proname = f._name
+order by 
+	pr.oid asc

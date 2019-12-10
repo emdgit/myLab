@@ -245,3 +245,11 @@ bool DBConnecter::readFunctions() noexcept
 
     return true;
 }
+
+PGWorker *DBConnecter::createWorker() noexcept
+{
+    if ( !_worker )
+        _worker = new PGWorker( &_db );
+
+    return _worker;
+}

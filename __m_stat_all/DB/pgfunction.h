@@ -34,6 +34,7 @@ class PgFunction
 public:
     PgFunction();
     PgFunction( const QString &name );
+    PgFunction( const PgFunction &other );
 
     inline const QString &  name() const noexcept { return _name; }
     inline const QString &  schema() const noexcept { return _schema; }
@@ -64,5 +65,7 @@ private:
     ArgInVec                _inArgs;
 
 };
+
+typedef std::shared_ptr<PgFunction> FuncPtr;
 
 #endif // PGFUNCTION_H

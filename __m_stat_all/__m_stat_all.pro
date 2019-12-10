@@ -16,15 +16,16 @@ SOURCES     +=        \
             gpoliline.cpp  \
             templates.cpp   \
             testmodel.cpp    \
-            DB/Set.cpp     \
-            DB/head.cpp     \
+            DB/Set.cpp      \
             DB/field.cpp     \
             DB/pgfunction.cpp \
             DB/typestorage.cpp \
-            DB/dbconnecter.cpp
+            DB/dbconnecter.cpp \
+    DB/pgworker.cpp \
+    DB/pganswer.cpp
 
 RESOURCES   +=  qml.qrc \
-    sql.qrc
+                sql.qrc
 
 HEADERS     +=      \
             chart.h  \
@@ -34,13 +35,14 @@ HEADERS     +=      \
             graphbase.h  \
             templates.h   \
             testmodel.h    \
-            DB/Set.h   \
-            DB/head.h   \
+            exception.h     \
+            DB/Set.h    \
             DB/field.h   \
             DB/ptrset.h   \
             DB/dbconfig.h  \
             DB/pgfunction.h \
             DB/typestorage.h \
             DB/dbconnecter.h \
-    exception.h
+    DB/pgworker.h \
+    DB/pganswer.h
 
