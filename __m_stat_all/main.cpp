@@ -5,10 +5,10 @@
 
 #include "chart.h"
 #include "testmodel.h"
-#include "dbconfig.h"
-#include "dbconnecter.h"
+#include "config.h"
+#include "connecter.h"
 
-#include "pgfunction.h"
+#include "function.h"
 #include "typestorage.h"
 
 #define HOME
@@ -27,25 +27,25 @@ int main(int argc, char *argv[])
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
 #ifndef HOME
-    DBConfig::dbName = "purchase_db";
-    DBConfig::dbHost = "127.0.0.1";
-    DBConfig::dbPort = 5432;
-    DBConfig::dbPswd = "123456qQ";
-    DBConfig::dbUser = "postgres";
+    pg::Config::dbName = "purchase_db";
+    pg::Config::dbHost = "127.0.0.1";
+    pg::Config::dbPort = 5432;
+    pg::Config::dbPswd = "123456qQ";
+    pg::Config::dbUser = "postgres";
 #else
-    DBConfig::dbName = "SuperMegaDatabase6000";     //  Some hardcode here,
-    DBConfig::dbHost = "127.0.0.1";                 //  I'll place it to GUI...
-    DBConfig::dbPort = 5433;                        //  ... later... =)
-    DBConfig::dbPswd = "123456qQ";
-    DBConfig::dbUser = "postgres";
+    pg::Config::dbName = "SuperMegaDatabase6000";     //  Some hardcode here,
+    pg::Config::dbHost = "127.0.0.1";                 //  I'll place it to GUI...
+    pg::Config::dbPort = 5433;                        //  ... later... =)
+    pg::Config::dbPswd = "123456qQ";
+    pg::Config::dbUser = "postgres";
 #endif
 
-    auto b = DBConnecter::connect();
+    auto b = pg::Connecter::connect();
 
     if ( b )
     {
-        qDebug() << "Connected to DataBase" << DBConfig::dbName;
-        DBConnecter::readFunctions();
+        qDebug() << "Connected to DataBase" << pg::Config::dbName;
+        pg::Connecter::readFunctions();
     }
     else
     {
@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
         auto func = (*funcOpt).get();
         qDebug() << "Func found:" << func->schema() << "." << func->name();
 
-        auto w = DBConnecter::createWorker();
+        auto w = pg::Connecter::createWorker();
         w->execute( *func );
     }
     else

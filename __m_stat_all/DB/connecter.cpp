@@ -5,9 +5,9 @@
 #include <QSqlRecord>
 #include <QSqlField>
 
-#include "dbconnecter.h"
-#include "dbconfig.h"
-#include "pgfunction.h"
+#include "connecter.h"
+#include "config.h"
+#include "function.h"
 #include "exception.h"
 #include "typestorage.h"
 
@@ -21,15 +21,15 @@ static const QString _arg_rx = "^(?P<name>\\S+)\\s(?P<type>.+?)(($)|(\\sDEFAULT\
 
 static const QString _if_out_is_table = "^TABLE\\((.+)\\)$";
 
-class DBConnecterPrivate
+class ConnecterPrivate
 {
 
     using _FIA = FuncInArgument;
 
 public:
-    DBConnecterPrivate(){}
+    ConnecterPrivate(){}
 
-    static void readInArguments( const QString &&in, PgFunction &f )
+    static void readInArguments( const QString &&in, pg::Function &f )
     {
         try {
             readArguments<_FIA>( std::move( in ), f );
@@ -39,7 +39,7 @@ public:
         }
     }
 
-    static void readOutArguments( const QString &&out, PgFunction &f )
+    static void readOutArguments( const QString &&out, pg::Function &f )
     {
         QRegExp rxTable( _if_out_is_table );
 
@@ -53,8 +53,8 @@ public:
             auto fld = TypeStorage::field( f.name() );
 
             if ( !fld )
-                throw makeException<DBConnecterPrivate>( std::string("cannot register field ") +
-                                                         f.name().toStdString() );
+                throw makeException<ConnecterPrivate>( std::string("cannot register field ") +
+                                                       f.name().toStdString() );
 
             FuncArgument arg;
             arg.field = *fld;
@@ -75,7 +75,7 @@ public:
 private:
 
     template < typename Arg >
-    static void readArguments( const QString &&str, PgFunction &f )
+    static void readArguments( const QString &&str, pg::Function &f )
     {
         using namespace Owl::Exception;
         using namespace std;
@@ -95,8 +95,8 @@ private:
                 auto inArg = makeArg<Arg>( arg );
 
                 if ( !inArg )
-                    throw makeException<DBConnecterPrivate>( string( "Wrong Argument: " ) +
-                                                             arg.toStdString() );
+                    throw makeException<ConnecterPrivate>( string( "Wrong Argument: " ) +
+                                                           arg.toStdString() );
                 if constexpr ( isIn )
                     f.addIn( std::move( *inArg ) );
                 else
@@ -133,7 +133,7 @@ private:
             if ( !defValType.isEmpty() )
             {
                 if ( defValType != type )
-                    throw makeException<DBConnecterPrivate>( std::string( "Wrong arg: " ) + str.toStdString() );
+                    throw makeException<ConnecterPrivate>( std::string( "Wrong arg: " ) + str.toStdString() );
 
                 if constexpr ( isIn )
                     arg.isDefault = true;
@@ -148,8 +148,8 @@ private:
                 fld = TypeStorage::field( name );
 
                 if ( !fld )
-                    throw makeException<DBConnecterPrivate>( std::string( "Cannot register field: " ) +
-                                                             name.toStdString() );
+                    throw makeException<ConnecterPrivate>( std::string( "Cannot register field: " ) +
+                                                           name.toStdString() );
             }
 
             arg.field = (*fld);
@@ -162,13 +162,13 @@ private:
 
 };
 
-typedef DBConnecterPrivate D;
+typedef ConnecterPrivate D;
 
-DBConnecter::DBConnecter() {}
+pg::Connecter::Connecter() {}
 
-bool DBConnecter::connect() noexcept
+bool pg::Connecter::connect() noexcept
 {
-    if ( !DBConfig::isFull() )
+    if ( !pg::Config::isFull() )
         return false;
 
     if ( _db.isValid() )
@@ -176,11 +176,11 @@ bool DBConnecter::connect() noexcept
         //  Check if same connection
         if ( _db.isOpen() )
         {
-            if ( _db.databaseName() == DBConfig::dbName &&
-                 _db.hostName() == DBConfig::dbHost &&
-                 _db.port() == DBConfig::dbPort &&
-                 _db.userName() == DBConfig::dbUser &&
-                 _db.password() == DBConfig::dbPswd )
+            if ( _db.databaseName() == pg::Config::dbName &&
+                 _db.hostName() == pg::Config::dbHost &&
+                 _db.port() == pg::Config::dbPort &&
+                 _db.userName() == pg::Config::dbUser &&
+                 _db.password() == pg::Config::dbPswd )
                 return false;
 
             _db.close();
@@ -190,16 +190,16 @@ bool DBConnecter::connect() noexcept
     }
 
     _db = QSqlDatabase::addDatabase( "QPSQL" );
-    _db.setHostName( DBConfig::dbHost );
-    _db.setPort( DBConfig::dbPort );
-    _db.setDatabaseName( DBConfig::dbName );
-    _db.setUserName( DBConfig::dbUser );
-    _db.setPassword( DBConfig::dbPswd );
+    _db.setHostName( pg::Config::dbHost );
+    _db.setPort( pg::Config::dbPort );
+    _db.setDatabaseName( pg::Config::dbName );
+    _db.setUserName( pg::Config::dbUser );
+    _db.setPassword( pg::Config::dbPswd );
 
     return _db.open();
 }
 
-bool DBConnecter::readFunctions() noexcept
+bool pg::Connecter::readFunctions() noexcept
 {
     if ( !_db.isValid() || !_db.isOpen() )
         return false;
@@ -220,7 +220,7 @@ bool DBConnecter::readFunctions() noexcept
 
     while ( query.next() )
     {
-        PgFunction func;
+        pg::Function func;
 
         const auto &&rec = query.record();
 
@@ -246,10 +246,10 @@ bool DBConnecter::readFunctions() noexcept
     return true;
 }
 
-PGWorker *DBConnecter::createWorker() noexcept
+pg::Worker *pg::Connecter::createWorker() noexcept
 {
     if ( !_worker )
-        _worker = new PGWorker( &_db );
+        _worker = new pg::Worker( &_db );
 
     return _worker;
 }

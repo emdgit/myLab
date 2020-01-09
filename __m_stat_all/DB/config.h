@@ -3,7 +3,11 @@
 
 #include <QString>
 
-struct DBConfig
+namespace pg {
+    struct Config;
+}
+
+struct pg::Config
 {
     static inline QString   dbName = "";
     static inline QString   dbHost = "";

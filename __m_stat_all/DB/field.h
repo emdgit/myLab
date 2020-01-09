@@ -7,25 +7,30 @@
 
 //#define FIELD_DEBUG
 
-struct Field
+namespace pg {
+    struct Field;
+
+    typedef std::shared_ptr<Field>  FieldPtr;
+    typedef std::weak_ptr<Field>    FieldPtrW;
+}
+
+struct pg::Field
 {
-    Field(){}
+    Field();
     Field( const QString &name );
+    Field( const Field &field );
+    Field( Field && field ) noexcept;
     ~Field();
 
     QString                     name;
 
-    bool                        operator== ( const Field &other ) noexcept
-    {
-        return ( name == other.name );
-    }
+    Field &                     operator=( const Field &other ) noexcept;
+    Field &                     operator=( Field &&other ) noexcept;
 
-    bool                        operator< ( const Field &other ) noexcept
-    {
-        return ( name < other.name );
-    }
+    bool                        operator== ( const Field &other ) noexcept;
+    bool                        operator< ( const Field &other ) noexcept;
 };
 
-typedef std::shared_ptr<Field>  FieldPtr;
+
 
 #endif // FIELD_H

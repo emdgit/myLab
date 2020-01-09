@@ -11,7 +11,7 @@
 
 struct FuncArgument
 {
-    FieldPtr    field;
+    pg::FieldPtr  field;
 };
 
 struct FuncInArgument : FuncArgument
@@ -23,7 +23,13 @@ struct FuncInArgument : FuncArgument
 
 class PgFunctionPrivate;
 
-class PgFunction
+namespace pg {
+    class Function;
+
+    typedef std::shared_ptr<Function> FuncPtr;
+}
+
+class pg::Function
 {
 
     typedef std::vector<FuncArgument>   ArgVec;
@@ -32,9 +38,9 @@ class PgFunction
     typedef PgFunctionPrivate           FP;
 
 public:
-    PgFunction();
-    PgFunction( const QString &name );
-    PgFunction( const PgFunction &other );
+    Function();
+    Function( const QString &name );
+    Function( const Function &other );
 
     inline const QString &  name() const noexcept { return _name; }
     inline const QString &  schema() const noexcept { return _schema; }
@@ -49,13 +55,14 @@ public:
     bool                    bindValue( const QString &name,
                                        const QVariant && val) noexcept;
 
-    friend bool operator<( const PgFunction &l, const PgFunction &r ) noexcept;
-    friend bool operator==( const PgFunction &l, const PgFunction &r ) noexcept;
+    bool                    operator<( const pg::Function &other ) noexcept;
+    bool                    operator==( const pg::Function &other ) noexcept;
 
 
 private:
 
     Q_DECLARE_PRIVATE(PgFunction)
+    friend class ::PgFunctionPrivate;
     FP *                    d_ptr;
 
     QString                 _name;
@@ -65,7 +72,5 @@ private:
     ArgInVec                _inArgs;
 
 };
-
-typedef std::shared_ptr<PgFunction> FuncPtr;
 
 #endif // PGFUNCTION_H

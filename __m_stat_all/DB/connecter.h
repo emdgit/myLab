@@ -2,27 +2,30 @@
 #define DBCONNECTER_H
 
 #include <QSqlDatabase>
-#include <QScopedPointer>
 
-#include "pgworker.h"
+#include "worker.h"
 
-class DBConnecter
+namespace pg {
+    class Connecter;
+}
+
+class pg::Connecter
 {
 
 public:
-    DBConnecter();
+    Connecter();
 
     static bool         connect() noexcept;
     static bool         readFunctions() noexcept;
 
-    static PGWorker *   createWorker() noexcept;
+    static pg::Worker * createWorker() noexcept;
 
 
 private:
 
     static inline QSqlDatabase _db;
 
-    static inline PGWorker * _worker = nullptr;
+    static inline pg::Worker * _worker = nullptr;
 
 };
 

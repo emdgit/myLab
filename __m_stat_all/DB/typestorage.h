@@ -2,13 +2,13 @@
 #define TYPESTORAGE_H
 
 #include "private.h"
-#include "pgfunction.h"
+#include "function.h"
 
 class TypeStorage
 {
 
-    typedef std::optional<FieldPtr> FieldOpt;
-    typedef std::optional<FuncPtr>  FuncOpt;
+    typedef std::optional<pg::FieldPtr> FieldOpt;
+    typedef std::optional<pg::FuncPtr>  FuncOpt;
 
 public:
     TypeStorage();
@@ -19,14 +19,14 @@ public:
                                           const QString &schema ) noexcept;
 
     static void                     registerField(const QString &name ) noexcept;
-    static void                     registerFunc( const PgFunction &func ) noexcept;
+    static void                     registerFunc( const pg::Function &func ) noexcept;
 
 
 private:
 
-    static PtrSet<Field>            _fields;
+    static PtrSet<pg::Field>        _fields;
 
-    static PtrSet<PgFunction>       _funcs;
+    static PtrSet<pg::Function>       _funcs;
 
 };
 

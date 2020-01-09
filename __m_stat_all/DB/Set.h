@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <memory>
+#include <algorithm>
 
 typedef unsigned int uint;
 
@@ -332,7 +333,7 @@ public:
 		return Iterator(_root->min());
 	}
     inline Iterator		end() const noexcept { return Iterator(_end); }
-	Iterator			find(const T &val) const noexcept
+    Iterator			find(const _BaseType &val) const noexcept
 	{
 		if (!_root)
 			return end();
@@ -341,15 +342,6 @@ public:
 
         return n ? n : end();
 	}
-    Iterator            find( const _BaseType &val ) const noexcept
-    {
-        if (!_root)
-            return end();
-
-        auto n = _root->find( val );
-
-        return n ? n : end();
-    }
 
 	void				insert(const T &val) noexcept
 	{
@@ -441,6 +433,23 @@ public:
 		_size = 0;
 	}
 
+    bool                operator==( const Owl::Set<T,Compare,Adder> &other ) noexcept
+    {
+        if ( _size != other.size() )
+            return false;
+
+        auto it = this->begin();
+
+        for ( const auto &i : other )
+        {
+            if ( i != *it )
+                return false;
+
+            ++it;
+        }
+
+        return true;
+    }
 
 protected:
 

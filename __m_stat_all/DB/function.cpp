@@ -1,4 +1,4 @@
-#include "pgfunction.h"
+#include "function.h"
 #include "templates.h"
 #include "exception.h"
 
@@ -6,7 +6,7 @@ class PgFunctionPrivate
 {
 public:
 
-    PgFunctionPrivate( PgFunction * const &f ) : _func(f) {}
+    PgFunctionPrivate( pg::Function * const &f ) : _func(f) {}
 
     /*!
      * \param   Prepares the given query and binds values.
@@ -103,21 +103,21 @@ protected:
 
 private:
 
-    PgFunction *    _func;
+    pg::Function *    _func;
 
 };
 
-PgFunction::PgFunction()
+pg::Function::Function()
 {
     d_ptr = new PgFunctionPrivate( this );
 }
 
-PgFunction::PgFunction(const QString &name) : _name(name)
+pg::Function::Function(const QString &name) : _name(name)
 {
     d_ptr = new PgFunctionPrivate( this );
 }
 
-PgFunction::PgFunction(const PgFunction & other)
+pg::Function::Function(const Function & other)
 {
     _name = other._name;
     _schema = other._schema;
@@ -128,12 +128,12 @@ PgFunction::PgFunction(const PgFunction & other)
     d_ptr = new PgFunctionPrivate( this );
 }
 
-void PgFunction::addOut(const FuncArgument &&in) noexcept
+void pg::Function::addOut(const FuncArgument &&in) noexcept
 {
     _outArgs.push_back( std::move( in ) );
 }
 
-void PgFunction::addIn(const FuncInArgument &&out) noexcept
+void pg::Function::addIn(const FuncInArgument &&out) noexcept
 {
     Q_D ( PgFunction );
 
@@ -142,7 +142,7 @@ void PgFunction::addIn(const FuncInArgument &&out) noexcept
     d->sortInArgs();
 }
 
-bool PgFunction::isComplete() const noexcept
+bool pg::Function::isComplete() const noexcept
 {
     if ( _name.isEmpty() || _schema.isEmpty() )
         return false;
@@ -172,7 +172,7 @@ bool PgFunction::isComplete() const noexcept
            std::is_partitioned( _outArgs.begin(), _outArgs.end(), isCompleteArg );
 }
 
-bool PgFunction::prepare(QSqlQuery &query) const noexcept
+bool pg::Function::prepare(QSqlQuery &query) const noexcept
 {
     if ( !isComplete() )
         return false;
@@ -184,7 +184,7 @@ bool PgFunction::prepare(QSqlQuery &query) const noexcept
     return true;
 }
 
-bool PgFunction::bindValue(const QString &name, const QVariant &&val) noexcept
+bool pg::Function::bindValue(const QString &name, const QVariant &&val) noexcept
 {
     auto it = std::find_if( _inArgs.begin(), _inArgs.end(), [&] ( const auto &arg ) {
         return arg.field.get()->name == name;
@@ -198,15 +198,15 @@ bool PgFunction::bindValue(const QString &name, const QVariant &&val) noexcept
     return true;
 }
 
-bool operator<(const PgFunction &l, const PgFunction &r) noexcept
+bool pg::Function::operator<(const pg::Function &other) noexcept
 {
-    return l._schema == r._schema ? ( l._name < r._name )
-                                  : ( l._schema < r._schema );
+    return _schema == other._schema ? ( _name < other._name )
+                                    : ( _schema < other._schema );
 }
 
-bool operator==(const PgFunction &l, const PgFunction &r) noexcept
+bool pg::Function::operator==(const pg::Function &other) noexcept
 {
-    return l._schema == r._schema ? ( l._name == r._name )
-                                  : false;
+    return _schema == other._schema ? ( _name == other._name )
+                                    : false;
 }
 

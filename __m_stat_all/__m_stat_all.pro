@@ -18,11 +18,13 @@ SOURCES     +=        \
             testmodel.cpp    \
             DB/Set.cpp      \
             DB/field.cpp     \
-            DB/pgfunction.cpp \
             DB/typestorage.cpp \
-            DB/dbconnecter.cpp \
-    DB/pgworker.cpp \
-    DB/pganswer.cpp
+    DB/head.cpp \
+    DB/typedfield.cpp \
+    DB/connecter.cpp \
+    DB/answer.cpp \
+    DB/function.cpp \
+    DB/worker.cpp
 
 RESOURCES   +=  qml.qrc \
                 sql.qrc
@@ -39,10 +41,12 @@ HEADERS     +=      \
             DB/Set.h    \
             DB/field.h   \
             DB/ptrset.h   \
-            DB/dbconfig.h  \
-            DB/pgfunction.h \
             DB/typestorage.h \
-            DB/dbconnecter.h \
-    DB/pgworker.h \
-    DB/pganswer.h
+    DB/head.h \
+    DB/typedfield.h \
+    DB/config.h \
+    DB/connecter.h \
+    DB/answer.h \
+    DB/function.h \
+    DB/worker.h
 

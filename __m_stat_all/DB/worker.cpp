@@ -1,12 +1,12 @@
-#include "pgworker.h"
+#include "worker.h"
 
-class PGWorkerPrivate
+class WorkerPrivate
 {
 public:
 
-    PGWorkerPrivate(){}
+    WorkerPrivate(){}
 
-    PGAnswer * extractAnswer( const QSqlQuery &query ) const noexcept
+    pg::Answer * extractAnswer( const QSqlQuery &query ) const noexcept
     {
         qDebug() << "rows = " << query.size();
         return nullptr;
@@ -14,9 +14,9 @@ public:
 
 };
 
-PGWorker::PGWorker(QSqlDatabase * db) : _db(db) {}
+pg::Worker::Worker(QSqlDatabase * db) : _db(db) {}
 
-PGAnswer *PGWorker::execute(const PgFunction & func) const noexcept
+pg::Answer *pg::Worker::execute(const pg::Function &func) const noexcept
 {
     if ( !_db )
         return nullptr;
@@ -32,7 +32,7 @@ PGAnswer *PGWorker::execute(const PgFunction & func) const noexcept
         return nullptr;
     }
 
-    Q_D ( const PGWorker );
+    Q_D ( const Worker );
 
     return d->extractAnswer( query );
 }
