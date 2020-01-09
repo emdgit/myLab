@@ -2,6 +2,7 @@
 #define HEAD_H
 
 #include "typedfield.h"
+#include "Set.h"
 
 namespace pg {
     class Head;
@@ -19,10 +20,12 @@ public:
     void                    insertField( const pg::FieldPtr &fp,
                                          const Type &type ) noexcept;
 
+    bool                    operator== ( const pg::Head &other ) noexcept;
+
 
 private:
 
-    std::vector<TypedField> _fields;
+    Owl::MSet<TypedField>   _fields;
 
 };
 

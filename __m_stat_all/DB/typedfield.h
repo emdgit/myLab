@@ -11,7 +11,7 @@ struct pg::TypedField
 {
     using Type = QMetaType::Type;
 
-    TypedField() = delete;
+    TypedField();
     TypedField( const FieldPtr &field, const Type &t );
     TypedField( const TypedField &tf );
 

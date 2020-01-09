@@ -1,5 +1,10 @@
 #include "typedfield.h"
 
+pg::TypedField::TypedField()
+{
+    type = Type::UnknownType;
+}
+
 pg::TypedField::TypedField(const FieldPtr &field, const TypedField::Type &t) :
     field( field ), type( t ) {}
 

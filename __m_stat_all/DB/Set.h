@@ -343,6 +343,13 @@ public:
         return n ? n : end();
 	}
 
+    template < class ... Args >
+    void                insert( Args &&...args ) noexcept
+    {
+        static_assert ( std::is_constructible_v<T, Args...> , "Cannot construct an object");
+
+        insert( std::forward<Args>( args )... );
+    }
 	void				insert(const T &val) noexcept
 	{
 		if (!_root)
@@ -358,6 +365,7 @@ public:
 		if (_root->push(val))
 			++_size;
 	}
+
 	void				erase(const T &val) noexcept
 	{
 		auto node = _root->find(val);
@@ -440,12 +448,15 @@ public:
 
         auto it = this->begin();
 
-        for ( const auto &i : other )
+        for ( auto &i : other )
         {
-            if ( i != *it )
-                return false;
+            if ( i == *it )
+            {
+                ++it;
+                continue;
+            }
 
-            ++it;
+            return false;
         }
 
         return true;

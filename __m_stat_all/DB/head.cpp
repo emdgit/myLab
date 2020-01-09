@@ -9,5 +9,10 @@ pg::Head::Head()
 
 void pg::Head::insertField(const pg::FieldPtr &fp, const pg::Head::Type &type) noexcept
 {
-    _fields.emplace_back( fp, type );
+    _fields.insert( fp, type );
+}
+
+bool pg::Head::operator==(const pg::Head &other) noexcept
+{
+    return ( _fields == other._fields );
 }
