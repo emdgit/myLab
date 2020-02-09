@@ -16,16 +16,16 @@ namespace pg {
 
 struct pg::Field
 {
-    Field();
-    Field( const QString &name );
-    Field( const Field &field );
-    Field( Field && field ) noexcept;
+    Field() = default;
+    Field( const Field &field ) = default;
+    Field( Field && field ) = default;
+    Field( const QString &name ) noexcept;
     ~Field();
 
     QString                     name;
 
-    Field &                     operator=( const Field &other ) noexcept;
-    Field &                     operator=( Field &&other ) noexcept;
+    Field &                     operator=( const Field &other ) = default;
+    Field &                     operator=( Field &&other ) = default;
 
     bool                        operator== ( const Field &other ) noexcept;
     bool                        operator< ( const Field &other ) noexcept;

@@ -25,8 +25,7 @@ public:
 private:
 
     static PtrSet<pg::Field>        _fields;
-
-    static PtrSet<pg::Function>       _funcs;
+    static PtrSet<pg::Function>     _funcs;
 
 };
 

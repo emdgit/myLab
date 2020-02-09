@@ -346,7 +346,8 @@ public:
     template < class ... Args >
     void                insert( Args &&...args ) noexcept
     {
-        static_assert ( std::is_constructible_v<T, Args...> , "Cannot construct an object");
+        static_assert ( std::is_constructible_v<T, Args...> ,
+                        "Cannot construct an object");
 
         insert( std::forward<Args>( args )... );
     }

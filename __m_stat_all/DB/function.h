@@ -32,10 +32,10 @@ namespace pg {
 class pg::Function
 {
 
-    typedef std::vector<FuncArgument>   ArgVec;
-    typedef std::vector<FuncInArgument> ArgInVec;
+    using ArgVec = std::vector<FuncArgument>;
+    using ArgInVec = std::vector<FuncInArgument>;
 
-    typedef PgFunctionPrivate           FP;
+    using FP = PgFunctionPrivate;
 
 public:
     Function();

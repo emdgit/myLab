@@ -19,8 +19,8 @@ struct pg::TypedField
 
     Type        type;
 
-    bool        operator== ( const TypedField &other ) noexcept;
-    bool        operator< ( const TypedField &other ) noexcept;
+    bool        operator== ( const TypedField &other ) const noexcept;
+    bool        operator< ( const TypedField &other ) const noexcept;
 };
 
 #endif // TYPEDFIELD_H

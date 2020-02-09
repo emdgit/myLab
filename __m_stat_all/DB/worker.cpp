@@ -1,5 +1,7 @@
 #include "worker.h"
 
+#include <QSqlRecord>
+
 class WorkerPrivate
 {
 public:
@@ -8,6 +10,12 @@ public:
 
     pg::Answer * extractAnswer( const QSqlQuery &query ) const noexcept
     {
+        using namespace pg;
+
+        int len = query.record().count();
+
+        Answer a( len );
+
         qDebug() << "rows = " << query.size();
         return nullptr;
     }

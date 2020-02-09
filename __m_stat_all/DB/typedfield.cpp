@@ -14,13 +14,13 @@ pg::TypedField::TypedField(const TypedField &tf)
     type = tf.type;
 }
 
-bool pg::TypedField::operator==(const TypedField &other) noexcept
+bool pg::TypedField::operator==(const TypedField &other) const noexcept
 {
     return ( field.lock().get() == other.field.lock().get() &&
              type == other.type );
 }
 
-bool pg::TypedField::operator<(const TypedField &other) noexcept
+bool pg::TypedField::operator<(const TypedField &other) const noexcept
 {
     if ( type < other.type )
         return true;

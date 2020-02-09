@@ -3,6 +3,8 @@
 #include <QQmlContext>
 #include <QtDebug>
 
+#include <set>
+
 #include "chart.h"
 #include "testmodel.h"
 #include "config.h"
@@ -16,6 +18,7 @@
 int main(int argc, char *argv[])
 {
     using namespace std;
+
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     QGuiApplication app(argc, argv);

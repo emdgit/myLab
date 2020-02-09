@@ -2,16 +2,28 @@
 #define PTRSET_H
 
 #include <memory>
+#include <algorithm>
 #include <optional>
+#include <set>
 
-#include "Set.h"
 #include "templates.h"
+
+template<class T>
+struct ptr_compare {
+    using sp = std::shared_ptr<T>;
+    bool operator()( const sp &p1, const sp &p2 ) const {
+        if ( !p1.get() || !p2.get() )
+            return false;
+        return *p1 < *p2;
+    }
+};
 
 template < typename T >
 class PtrSet
 {
 
-    typedef std::shared_ptr<T>  Ptr;
+    using Ptr = std::shared_ptr<T>;
+    using ptr_set = std::set< Ptr, ptr_compare<T> >;
 
 public:
 
@@ -28,9 +40,11 @@ public:
         return _set.size();
     }
 
-    std::optional<Ptr>          find( const T &&val ) const noexcept
+    std::optional<Ptr>          find( const T &val ) const noexcept
     {
-        auto it = _set.find( std::forward<T>( std::decay_t<T>( val ) ) );
+        auto it = std::find_if( _set.begin(), _set.end(), [&val]( const auto &_ptr ){
+            return *_ptr == val;
+        } );
 
         auto opt = it == _set.end() ? std::nullopt
                                     : std::make_optional<Ptr>( *it );
@@ -65,7 +79,7 @@ public:
 
 private:
 
-    Owl::MPSet<T>               _set;
+    ptr_set                     _set;
 
 };
 
