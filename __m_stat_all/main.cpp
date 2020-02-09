@@ -58,15 +58,18 @@ int main(int argc, char *argv[])
     if (engine.rootObjects().isEmpty())
         return -1;
 
-    auto funcOpt = TypeStorage::func( "get_root_groups", "common" );
+    auto funcOpt = TypeStorage::func( "get_records", "common" );
+
+    pg::Answer * ans = nullptr;
 
     if ( funcOpt )
     {
         auto func = (*funcOpt).get();
+        func->bindValue( "group_id", 5 );
         qDebug() << "Func found:" << func->schema() << "." << func->name();
 
         auto w = pg::Connecter::createWorker();
-        w->execute( *func );
+        ans = w->execute( *func );
     }
     else
     {

@@ -52,8 +52,8 @@ public:
 
     bool                    isComplete() const noexcept;
     bool                    prepare( QSqlQuery &query ) const noexcept;
-    bool                    bindValue( const QString &name,
-                                       const QVariant && val) noexcept;
+    bool                    bindValue(const QString &name,
+                                       QVariant && val) noexcept;
 
     bool                    operator<( const pg::Function &other ) noexcept;
     bool                    operator==( const pg::Function &other ) noexcept;

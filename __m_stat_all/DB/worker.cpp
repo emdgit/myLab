@@ -1,6 +1,7 @@
 #include "worker.h"
 
 #include <QSqlRecord>
+#include <QSqlField>
 
 class WorkerPrivate
 {
@@ -8,15 +9,29 @@ public:
 
     WorkerPrivate(){}
 
-    pg::Answer * extractAnswer( const QSqlQuery &query ) const noexcept
+    pg::Answer * extractAnswer( QSqlQuery &query ) const noexcept
     {
         using namespace pg;
 
         int len = query.record().count();
 
-        Answer a( len );
+        auto ans = new Answer( len );
 
-        qDebug() << "rows = " << query.size();
+        while ( query.next() )
+        {
+            auto rec = query.record();
+
+            for ( int i(0); i < len; ++i )
+            {
+                auto f = rec.field( i );
+                ans->insertValue( f.name(), f.value() );
+            }
+        }
+
+        if ( ans->isValid() )
+            return ans;
+
+        delete ans;
         return nullptr;
     }
 

@@ -184,7 +184,7 @@ bool pg::Function::prepare(QSqlQuery &query) const noexcept
     return true;
 }
 
-bool pg::Function::bindValue(const QString &name, const QVariant &&val) noexcept
+bool pg::Function::bindValue(const QString &name, QVariant &&val) noexcept
 {
     auto it = std::find_if( _inArgs.begin(), _inArgs.end(), [&] ( const auto &arg ) {
         return arg.field.get()->name == name;
