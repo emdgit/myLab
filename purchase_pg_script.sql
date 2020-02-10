@@ -110,6 +110,29 @@ BEGIN
 END;
 $$
 LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION service.user_exists(user_id integer)
+  RETURNS boolean AS
+$BODY$
+BEGIN
+	IF user_id IS NULL
+	THEN
+		RETURN FALSE;
+	END IF;
+
+	IF EXISTS ( 
+		SELECT * 
+		FROM common.users
+		WHERE id = $1
+	)
+	THEN
+		RETURN TRUE;
+	END IF;
+
+	RETURN FALSE;
+END;
+$BODY$
+  LANGUAGE plpgsql;
   
   ---------------------------------------------------------------------------------------
 ------------------------------------------------<< SCHEMA SERVICE ---------------------
@@ -211,18 +234,22 @@ ALTER TABLE common.user_members
   
   ---------------------------------------------------PURCHASES
   
-  CREATE TABLE common.purchases
+CREATE TABLE common.purchases
 (
   id serial NOT NULL,
   user_group_id integer,
+  user_id integer,
   record_id integer,
   summ real,
-  date date,
-  CONSTRAINT purchases_primary_key PRIMARY KEY (id),
-  CONSTRAINT purchases_record_id_foreign_key FOREIGN KEY (record_id)
+  date date NOT NULL,
+  CONSTRAINT "purchase_PK" PRIMARY KEY (id),
+  CONSTRAINT "purchase_record_FK" FOREIGN KEY (record_id)
       REFERENCES common.records (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,
-  CONSTRAINT purchases_user_group_foreign_key FOREIGN KEY (user_group_id)
+  CONSTRAINT "purchase_user_FK" FOREIGN KEY (user_id)
+      REFERENCES common.users (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT "purchase_user_group_FK" FOREIGN KEY (user_group_id)
       REFERENCES common.user_groups (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION
 )
@@ -251,6 +278,27 @@ WITH (
 );
 ALTER TABLE common.purchase_info
   OWNER TO postgres;
+  
+  
+  ---------------------------------------------------PURCHASE_VIEW
+  
+  
+  CREATE MATERIALIZED VIEW common.purchase_view AS 
+ SELECT ug.group_name,
+    u.user_name,
+    r.name,
+    p.summ,
+    p.date
+   FROM common.purchases p
+     JOIN common.user_groups ug ON p.user_group_id = ug.id
+     JOIN common.users u ON p.user_id = u.id
+     JOIN common.records r ON p.record_id = r.id
+WITH DATA;
+
+ALTER TABLE common.purchase_view
+  OWNER TO postgres;
+  
+  
   
   ---------------------------------------------------FUNC_ADD_GROUP
   
@@ -410,6 +458,7 @@ $BODY$
   
   CREATE OR REPLACE FUNCTION common.add_purchase(
     u_group_id integer,
+    user_id integer,
     record_id integer,
     p_summ real,
     p_date date)
@@ -422,10 +471,14 @@ BEGIN
 	THEN
 		RETURN -1;	-- Required user_group doesn't exists
 	END IF;
-
-	IF NOT service.record_exists( $2 )
+	IF NOT service.user_exists( $2 )
 	THEN
 		RETURN -2;	-- Required record doesn't exists
+	END IF;
+
+	IF NOT service.record_exists( $3 )
+	THEN
+		RETURN -3;	-- Required record doesn't exists
 	END IF;
 
 	INSERT
@@ -436,7 +489,7 @@ BEGIN
 	RETURN _purchase_id;
 END;
 $BODY$
-  LANGUAGE plpgsql
+  LANGUAGE plpgsql;
   
 ---------------------------------------------------FUNC_GET_ROOT_GROUPS
   
@@ -486,11 +539,12 @@ Return    - [-1] If group with given parent_id doesn''t exists
 
 ---------------------------------------------------FUNC_ADD_PURCHASE_COMMENT
 
-COMMENT ON FUNCTION common.add_purchase(integer, integer, real, date) IS 'Action    - Adds purchase.
+COMMENT ON FUNCTION common.add_purchase(integer, integer, integer, real, date) IS 'Action    - Adds purchase.
 
 
 Return    - [-1] If user_group with given u_group_id doesn''t exists.
-               - [-2] If record with given record_id doesn''t exists.';
+	  - [-2] If user with given user_id doesn''t exists.
+               - [-3] If record with given record_id doesn''t exists.';
 
   
 -----------------------------------------------------------------------------------------
