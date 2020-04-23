@@ -3,6 +3,8 @@ import QtQuick.Controls 2.2
 
 Button {
 
+    property int number: -1
+
     id:     menuButton
     width:  80
     height: 80

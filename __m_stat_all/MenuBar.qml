@@ -16,7 +16,7 @@ Rectangle {
     anchors.top:    parent.top
     anchors.bottom: parent.bottom
 
-    signal buttonClicked ( string name )
+    signal buttonClicked ( string name, int number )
 
     Column {
 
@@ -24,6 +24,7 @@ Rectangle {
 
         MenuButton {
             id: groups
+            number: 0
 
             Text {
                 id: groupsText
@@ -41,15 +42,16 @@ Rectangle {
             }
 
             onReleased: {
-                buttonClicked( "groups" )
+                buttonClicked( "groups", number )
             }
         }
 
         MenuButton {
             id: plots
+            number: 1
 
             onReleased: {
-                buttonClicked( "graphs" )
+                buttonClicked( "graphs", number )
             }
 
             Chart {
@@ -71,11 +73,13 @@ Rectangle {
 
             onHoveredChanged: {
                 column.onGraphHovered( plots.hovered )
+
             }
         }
 
         MenuButton {
             id: users
+            number: 2
 
             Text {
                 id: usersText
@@ -93,7 +97,7 @@ Rectangle {
             }
 
             onReleased: {
-                buttonClicked( "users" )
+                buttonClicked( "users", number )
             }
         }
 
