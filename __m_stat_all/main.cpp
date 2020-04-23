@@ -13,8 +13,6 @@
 #include "function.h"
 #include "typestorage.h"
 
-#define HOME
-
 int main(int argc, char *argv[])
 {
     using namespace std;
@@ -29,52 +27,44 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
-#ifndef HOME
-    pg::Config::dbName = "purchase_db";
-    pg::Config::dbHost = "127.0.0.1";
-    pg::Config::dbPort = 5432;
-    pg::Config::dbPswd = "123456qQ";
-    pg::Config::dbUser = "postgres";
-#else
     pg::Config::dbName = "SuperMegaDatabase6000";     //  Some hardcode here,
     pg::Config::dbHost = "127.0.0.1";                 //  I'll place it to GUI...
     pg::Config::dbPort = 5433;                        //  ... later... =)
     pg::Config::dbPswd = "123456qQ";
     pg::Config::dbUser = "postgres";
-#endif
 
-    auto b = pg::Connecter::connect();
+//    auto b = pg::Connecter::connect();
 
-    if ( b )
-    {
-        qDebug() << "Connected to DataBase" << pg::Config::dbName;
-        pg::Connecter::readFunctions();
-    }
-    else
-    {
-        qDebug( "Cannot open DataBase" );
-    }
+//    if ( b )
+//    {
+//        qDebug() << "Connected to DataBase" << pg::Config::dbName;
+//        pg::Connecter::readFunctions();
+//    }
+//    else
+//    {
+//        qDebug( "Cannot open DataBase" );
+//    }
 
-    if (engine.rootObjects().isEmpty())
-        return -1;
+//    if (engine.rootObjects().isEmpty())
+//        return -1;
 
-    auto funcOpt = TypeStorage::func( "get_records", "common" );
+//    auto funcOpt = TypeStorage::func( "get_records", "common" );
 
-    pg::Answer * ans = nullptr;
+//    pg::Answer * ans = nullptr;
 
-    if ( funcOpt )
-    {
-        auto func = (*funcOpt).get();
-        func->bindValue( "group_id", 5 );
-        qDebug() << "Func found:" << func->schema() << "." << func->name();
+//    if ( funcOpt )
+//    {
+//        auto func = (*funcOpt).get();
+//        func->bindValue( "group_id", 5 );
+//        qDebug() << "Func found:" << func->schema() << "." << func->name();
 
-        auto w = pg::Connecter::createWorker();
-        ans = w->execute( *func );
-    }
-    else
-    {
-        qDebug() << "Func hasn't found";
-    }
+//        auto w = pg::Connecter::createWorker();
+//        ans = w->execute( *func );
+//    }
+//    else
+//    {
+//        qDebug() << "Func hasn't found";
+//    }
 
 
 
