@@ -27,10 +27,10 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
-    pg::Config::dbName = "SuperMegaDatabase6000";     //  Some hardcode here,
+    pg::Config::dbName = "SuperMegaDatabase-6000";     //  Some hardcode here,
     pg::Config::dbHost = "127.0.0.1";                 //  I'll place it to GUI...
     pg::Config::dbPort = 5433;                        //  ... later... =)
-    pg::Config::dbPswd = "123456qQ";
+    pg::Config::dbPswd = "12345";
     pg::Config::dbUser = "postgres";
 
     auto b = pg::Connecter::connect();

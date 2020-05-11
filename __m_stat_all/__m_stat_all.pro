@@ -30,7 +30,9 @@ SOURCES     +=          \
             paint/gline.cpp    \
             paint/gpoliline.cpp \
             paint/graphbase.cpp \
-    coreapi.cpp
+    coreapi.cpp \
+    core/purchasegroup.cpp \
+    core/iobject.cpp
 
 RESOURCES   +=  qml.qrc \
                 sql.qrc
@@ -55,5 +57,7 @@ HEADERS     +=        \
             paint/gline.h    \
             paint/gpoliline.h \
             paint/graphbase.h \
-    coreapi.h
+    coreapi.h \
+    core/purchasegroup.h \
+    core/iobject.h
 
