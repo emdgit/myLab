@@ -1,4 +1,4 @@
-
+﻿
 ---------------------------------------------------------------------------------------
 ---------------------------------------------------SCHEMA SERVICE ->>------------------
 ---------------------------------------------------------------------------------------
@@ -338,7 +338,7 @@ BEGIN
 	RETURN _result;
 END;
 $BODY$
-  LANGUAGE plpgsql
+  LANGUAGE plpgsql;
   
   ---------------------------------------------------FUNC_ADD_RECORD
   
@@ -374,7 +374,7 @@ BEGIN
 	RETURN _resultId;
 END;
 $BODY$
-  LANGUAGE plpgsql
+  LANGUAGE plpgsql;
   
   ---------------------------------------------------FUNC_GET_RECORDS
   
@@ -389,7 +389,7 @@ BEGIN
 	WHERE r.group_id = $1;
 END;
 $BODY$
-  LANGUAGE plpgsql
+  LANGUAGE plpgsql;
   
   ---------------------------------------------------FUNC_ADD_USER
   
@@ -423,7 +423,7 @@ BEGIN
 	RETURN _user_id;
 END;
 $$
-LANGUAGE plpgsql
+LANGUAGE plpgsql;
   
   ---------------------------------------------------FUNC_ADD_USER_GROUP
   
@@ -452,7 +452,7 @@ BEGIN
 	RETURN _group_id;
 END;
 $BODY$
-  LANGUAGE plpgsql
+  LANGUAGE plpgsql;
   
 ---------------------------------------------------FUNC_ADD_PURCHASE
   

@@ -3,6 +3,8 @@ QT          +=  sql
 
 CONFIG      +=  c++17
 
+QMAKE_CXXFLAGS += -std=c++17
+
 DEFINES     +=  QT_DEPRECATED_WARNINGS
 
 INCLUDEPATH +=  $$PWD/DB/
