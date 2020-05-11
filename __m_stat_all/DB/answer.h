@@ -32,6 +32,9 @@ public:
     bool        insertValue( const QString &field,
                              const QVariant &val ) noexcept;
 
+    inline size_t size() const noexcept { return _answerMap.size(); }
+
+
 
 
     Answer &    operator=( const Answer & ) = delete;

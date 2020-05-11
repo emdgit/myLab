@@ -33,38 +33,38 @@ int main(int argc, char *argv[])
     pg::Config::dbPswd = "123456qQ";
     pg::Config::dbUser = "postgres";
 
-//    auto b = pg::Connecter::connect();
+    auto b = pg::Connecter::connect();
 
-//    if ( b )
-//    {
-//        qDebug() << "Connected to DataBase" << pg::Config::dbName;
-//        pg::Connecter::readFunctions();
-//    }
-//    else
-//    {
-//        qDebug( "Cannot open DataBase" );
-//    }
+    if ( b )
+    {
+        qDebug() << "Connected to DataBase" << pg::Config::dbName;
+        pg::Connecter::readFunctions();
+    }
+    else
+    {
+        qDebug( "Cannot open DataBase" );
+    }
 
-//    if (engine.rootObjects().isEmpty())
-//        return -1;
+    if (engine.rootObjects().isEmpty())
+        return -1;
 
-//    auto funcOpt = TypeStorage::func( "get_records", "common" );
+    auto funcOpt = TypeStorage::func( "get_records", "common" );
 
-//    pg::Answer * ans = nullptr;
+    pg::Answer * ans = nullptr;
 
-//    if ( funcOpt )
-//    {
-//        auto func = (*funcOpt).get();
-//        func->bindValue( "group_id", 5 );
-//        qDebug() << "Func found:" << func->schema() << "." << func->name();
+    if ( funcOpt )
+    {
+        auto func = (*funcOpt).get();
+        func->bindValue( "group_id", 5 );
+        qDebug() << "Func found:" << func->schema() << "." << func->name();
 
-//        auto w = pg::Connecter::createWorker();
-//        ans = w->execute( *func );
-//    }
-//    else
-//    {
-//        qDebug() << "Func hasn't found";
-//    }
+        auto w = pg::Connecter::createWorker();
+        ans = w->execute( *func );
+    }
+    else
+    {
+        qDebug() << "Func hasn't found";
+    }
 
 
 

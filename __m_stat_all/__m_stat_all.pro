@@ -8,6 +8,9 @@ DEFINES     +=  QT_DEPRECATED_WARNINGS
 INCLUDEPATH +=  $$PWD/DB/
 DEPENDPATH  +=  $$PWD/DB/
 
+INCLUDEPATH +=  $$PWD/paint/
+DEPENDPATH  +=  $$PWD/paint/
+
 SOURCES     +=          \
             main.cpp     \
             templates.cpp \
@@ -24,7 +27,8 @@ SOURCES     +=          \
             paint/chart.cpp   \
             paint/gline.cpp    \
             paint/gpoliline.cpp \
-            paint/graphbase.cpp
+            paint/graphbase.cpp \
+    coreapi.cpp
 
 RESOURCES   +=  qml.qrc \
                 sql.qrc
@@ -48,5 +52,6 @@ HEADERS     +=        \
             paint/chart.h   \
             paint/gline.h    \
             paint/gpoliline.h \
-            paint/graphbase.h
+            paint/graphbase.h \
+    coreapi.h
 
