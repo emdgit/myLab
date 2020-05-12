@@ -37,7 +37,12 @@ public:
     bool        insertValue( const QString &field,
                              const QVariant &val ) noexcept;
 
-    inline size_t size() const noexcept { return _answerMap.size(); }
+    inline size_t columns() const noexcept { return _answerMap.size(); }
+    /*!
+     * \brief   Количество записей в ответе
+     * \throw   Исключение, если объект не валиден
+     */
+    size_t      rows() const;
 
     AnswerValue field( const size_t &row, const size_t &column ) const;
 

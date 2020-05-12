@@ -1,6 +1,8 @@
 #include "answer.h"
 #include "typestorage.h"
 
+using namespace std;
+
 pg::Answer::~Answer() {}
 
 bool pg::Answer::isValid() const noexcept
@@ -46,6 +48,17 @@ bool pg::Answer::insertValue(const QString & field, const QVariant & val) noexce
         (*it).values.push_back( val );
 
     return true;
+}
+
+size_t pg::Answer::rows() const
+{
+    if (!isValid())
+        throw runtime_error( "Attempt to get pg::Answer::rows() from invalid object" );
+
+    if ( !columns() )
+        return 0;
+
+    return _answerMap.front().values.size();
 }
 
 pg::Answer::AnswerValue pg::Answer::field(const size_t & row, const size_t & column) const

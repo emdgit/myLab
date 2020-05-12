@@ -55,7 +55,7 @@ void PurchaseGroup::setName(const std::string &name) noexcept
 
 void PurchaseGroup::fromPgAnswer(pg::Answer *answer, unsigned long i)
 {
-    const auto size = answer->size();
+    const auto size = answer->columns();
 
     if ( size != _fieldCount ) {
         throw runtime_error( "PurchaseGroup::fromPgAnswer: expected 3 fields" );
