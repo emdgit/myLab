@@ -13,6 +13,9 @@ DEPENDPATH  +=  $$PWD/DB/
 INCLUDEPATH +=  $$PWD/paint/
 DEPENDPATH  +=  $$PWD/paint/
 
+INCLUDEPATH +=  $$PWD/core/
+DEPENDPATH  +=  $$PWD/core/
+
 SOURCES     +=          \
             main.cpp     \
             templates.cpp \

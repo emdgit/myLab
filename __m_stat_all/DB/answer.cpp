@@ -48,6 +48,17 @@ bool pg::Answer::insertValue(const QString & field, const QVariant & val) noexce
     return true;
 }
 
+pg::Answer::AnswerValue pg::Answer::field(const size_t & row, const size_t & column) const
+{
+    try {
+        auto &item = _answerMap[column];
+        return {item.tField, item.values[row]};
+    }
+    catch(...) {
+        throw;
+    }
+}
+
 pg::Answer::Answer(const int & len) noexcept
 {
     _answerMap.reserve( static_cast<size_t>( len ) );

@@ -1,4 +1,16 @@
 #include "purchasegroup.h"
+#include "templates.h"
+#include "answer.h"
+
+using namespace std;
+
+static constexpr size_t _fieldCount = 3;
+
+static constexpr const char* _fieldNames[3] = {
+    "id",
+    "group_name",
+    "group_parent_id"
+};
 
 PurchaseGroup::PurchaseGroup()
 {
@@ -41,7 +53,19 @@ void PurchaseGroup::setName(const std::string &name) noexcept
     _name = name;
 }
 
-IObject *PurchaseGroup::fromPgAnswer(pg::Answer *answer, unsigned long i)
+void PurchaseGroup::fromPgAnswer(pg::Answer *answer, unsigned long i)
 {
+    const auto size = answer->size();
 
+    if ( size != _fieldCount ) {
+        throw runtime_error( "PurchaseGroup::fromPgAnswer: expected 3 fields" );
+    }
+
+    QString name;
+
+    fromVariant( _id, answer->field(i,0).value );
+    fromVariant( name, answer->field(i,1).value );
+    fromVariant( _parentId, answer->field(i,2).value );
+
+    _name = name.toStdString();
 }

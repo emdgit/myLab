@@ -30,7 +30,7 @@ public:
     void                setName(const std::string &name) noexcept;
 
     // IObject interface
-    IObject *           fromPgAnswer( pg::Answer * answer, unsigned long i ) override;
+    void                fromPgAnswer( pg::Answer * answer, unsigned long i ) override;
 
 
 private:

@@ -17,6 +17,11 @@ class pg::Answer
         std::vector<QVariant> values;
     };
 
+    struct AnswerValue {
+        pg::TypedField tfield;
+        QVariant value;
+    };
+
 public:
 
     Answer() = delete;
@@ -34,8 +39,7 @@ public:
 
     inline size_t size() const noexcept { return _answerMap.size(); }
 
-
-
+    AnswerValue field( const size_t &row, const size_t &column ) const;
 
     Answer &    operator=( const Answer & ) = delete;
     Answer &    operator=( Answer && ) = default;

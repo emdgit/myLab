@@ -15,7 +15,8 @@ public:
     virtual ~IObject() noexcept;
 
     /// Функция преобразования ответа базы данных в пользовательский объект
-    virtual IObject * fromPgAnswer( pg::Answer * answer, unsigned long i ) = 0;
+    virtual void fromPgAnswer( pg::Answer * answer, unsigned long i ) = 0;
+
 };
 
 #endif // IOBJECT_H

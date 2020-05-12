@@ -494,20 +494,17 @@ $BODY$
 ---------------------------------------------------FUNC_GET_ROOT_GROUPS
   
   CREATE OR REPLACE FUNCTION common.get_root_groups()
-RETURNS TABLE (
-	id		integer,
-	name		text
-) AS
-$$
+  RETURNS TABLE(id integer, name text, parent_id integer) AS
+$BODY$
 BEGIN
 	RETURN QUERY
 
-	SELECT g.id, g.group_name
+	SELECT g.id, g.group_name, g.group_parent_id
 	FROM common.groups AS g
-	WHERE g.group_parent_id IS NULL;								
+	WHERE g.group_parent_id IS NULL;
 END;
-$$
-LANGUAGE plpgsql;
+$BODY$
+  LANGUAGE plpgsql;
   
   ---------------------------------------------------FUNC_ADD_USER_COMMENT
   
