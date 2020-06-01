@@ -35,7 +35,9 @@ SOURCES     +=          \
             paint/graphbase.cpp \
     coreapi.cpp \
     core/purchasegroup.cpp \
-    core/iobject.cpp
+    core/iobject.cpp \
+    core/hierarchicalstorage.cpp \
+    core/pnode.cpp
 
 RESOURCES   +=  qml.qrc \
                 sql.qrc
@@ -62,5 +64,7 @@ HEADERS     +=        \
             paint/graphbase.h \
     coreapi.h \
     core/purchasegroup.h \
-    core/iobject.h
+    core/iobject.h \
+    core/hierarchicalstorage.h \
+    core/pnode.h
 

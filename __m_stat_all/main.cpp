@@ -12,6 +12,12 @@
 
 #include "function.h"
 #include "typestorage.h"
+#include "pnode.h"
+
+#include "purchasegroup.h"
+
+//#include "core/hierarchicalstorage.h"
+//#include "core/purchasegroup.h"
 
 int main(int argc, char *argv[])
 {
@@ -21,16 +27,18 @@ int main(int argc, char *argv[])
 
     QGuiApplication app(argc, argv);
 
+    qRegisterMetaType<PNodeIndex>( "PNodeIndex" );
+
     qmlRegisterType<Chart>( "OwlComponents", 1, 0, "Chart" );
     qmlRegisterType<TestModel>( "TestModel", 1, 0, "TestModel" );
 
     QQmlApplicationEngine engine;
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
-    pg::Config::dbName = "SuperMegaDatabase-6000";     //  Some hardcode here,
+    pg::Config::dbName = "SuperMegaDatabase6000";     //  Some hardcode here,
     pg::Config::dbHost = "127.0.0.1";                 //  I'll place it to GUI...
     pg::Config::dbPort = 5433;                        //  ... later... =)
-    pg::Config::dbPswd = "12345";
+    pg::Config::dbPswd = "123456qQ";
     pg::Config::dbUser = "postgres";
 
     auto b = pg::Connecter::connect();
@@ -48,18 +56,20 @@ int main(int argc, char *argv[])
     if (engine.rootObjects().isEmpty())
         return -1;
 
-    auto funcOpt = TypeStorage::func( "get_records", "common" );
+    auto funcOpt = TypeStorage::func( "get_root_groups", "common" );
 
     pg::Answer * ans = nullptr;
 
     if ( funcOpt )
     {
         auto func = (*funcOpt).get();
-        func->bindValue( "group_id", 5 );
         qDebug() << "Func found:" << func->schema() << "." << func->name();
 
         auto w = pg::Connecter::createWorker();
         ans = w->execute( *func );
+
+        PurchaseGroup group;
+        group.fromPgAnswer(ans,0);
     }
     else
     {

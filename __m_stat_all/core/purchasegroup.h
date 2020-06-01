@@ -2,6 +2,8 @@
 #define PURCHASEGROUP_H
 
 #include <string>
+#include <vector>
+#include <memory>
 
 #include "iobject.h"
 
@@ -19,8 +21,9 @@ public:
     PurchaseGroup();
     PurchaseGroup( const int &id, const int &pId,
                    const std::string &name, GroupType type = GroupType::Spend ) noexcept;
+    PurchaseGroup(const PurchaseGroup&) = default;
 
-    const int &         id() const noexcept;
+    int                 id() const noexcept;
     const int &         parentId() const noexcept;
 
     const std::string   name() const noexcept;
@@ -43,5 +46,8 @@ private:
     GroupType           _type = GroupType::Spend;
 
 };
+
+using PurchaseGroupPtr = std::shared_ptr<PurchaseGroup>;
+using GroupVecS = std::vector<PurchaseGroupPtr>;
 
 #endif // PURCHASEGROUP_H

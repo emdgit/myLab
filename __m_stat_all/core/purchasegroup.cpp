@@ -23,7 +23,7 @@ PurchaseGroup::PurchaseGroup(const int &id, const int &pId, const std::string &n
 
 }
 
-const int &PurchaseGroup::id() const noexcept
+int PurchaseGroup::id() const noexcept
 {
     return _id;
 }
