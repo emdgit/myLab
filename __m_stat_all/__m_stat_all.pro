@@ -17,7 +17,6 @@ DEPENDPATH  +=  $$PWD/core/
 SOURCES     +=          \
             main.cpp     \
             templates.cpp \
-            testmodel.cpp  \
             DB/Set.cpp \
             DB/head.cpp \
             DB/field.cpp \
@@ -44,7 +43,6 @@ RESOURCES   +=  qml.qrc \
 HEADERS     +=        \
             private.h  \
             templates.h \
-            testmodel.h  \
             exception.h   \
             DB/Set.h \
             DB/head.h \
