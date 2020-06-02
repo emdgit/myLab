@@ -3,6 +3,8 @@
 
 #include <type_traits>
 
+#include <QVariant>
+
 namespace Owl
 {
     namespace Templates {
@@ -19,5 +21,11 @@ struct Owl::Templates::is_same_m
     using type = decltype ( inPack ? std::declval<T>
                                    : std::declval< std::false_type > );
 };
+
+template < class T >
+static void fromVariant( T &var, const QVariant &from )
+{
+    var = qvariant_cast<T>( from );
+}
 
 #endif // TEMPLATES_H

@@ -1,4 +1,4 @@
-
+﻿
 ---------------------------------------------------------------------------------------
 ---------------------------------------------------SCHEMA SERVICE ->>------------------
 ---------------------------------------------------------------------------------------
@@ -152,6 +152,7 @@ CREATE SCHEMA common
   id serial NOT NULL,
   group_name text NOT NULL,
   group_parent_id integer,
+  is_profit boolean NOT NULL DEFAULT false,
   CONSTRAINT group_primary_key PRIMARY KEY (id),
   CONSTRAINT group_name_parent_unique UNIQUE (group_name, group_parent_id)
 )
@@ -338,7 +339,7 @@ BEGIN
 	RETURN _result;
 END;
 $BODY$
-  LANGUAGE plpgsql
+  LANGUAGE plpgsql;
   
   ---------------------------------------------------FUNC_ADD_RECORD
   
@@ -374,7 +375,7 @@ BEGIN
 	RETURN _resultId;
 END;
 $BODY$
-  LANGUAGE plpgsql
+  LANGUAGE plpgsql;
   
   ---------------------------------------------------FUNC_GET_RECORDS
   
@@ -389,7 +390,7 @@ BEGIN
 	WHERE r.group_id = $1;
 END;
 $BODY$
-  LANGUAGE plpgsql
+  LANGUAGE plpgsql;
   
   ---------------------------------------------------FUNC_ADD_USER
   
@@ -423,7 +424,7 @@ BEGIN
 	RETURN _user_id;
 END;
 $$
-LANGUAGE plpgsql
+LANGUAGE plpgsql;
   
   ---------------------------------------------------FUNC_ADD_USER_GROUP
   
@@ -452,7 +453,7 @@ BEGIN
 	RETURN _group_id;
 END;
 $BODY$
-  LANGUAGE plpgsql
+  LANGUAGE plpgsql;
   
 ---------------------------------------------------FUNC_ADD_PURCHASE
   
@@ -491,23 +492,35 @@ END;
 $BODY$
   LANGUAGE plpgsql;
   
----------------------------------------------------FUNC_GET_ROOT_GROUPS
+---------------------------------------------------FUNC_GET_ROOT_GROUPS_PROFIT
   
-  CREATE OR REPLACE FUNCTION common.get_root_groups()
-RETURNS TABLE (
-	id		integer,
-	name		text
-) AS
-$$
+  CREATE OR REPLACE FUNCTION common.get_root_groups_profit()
+  RETURNS TABLE(id integer, name text, parent_id integer) AS
+$BODY$
 BEGIN
 	RETURN QUERY
 
-	SELECT g.id, g.group_name
+	SELECT g.id, g.group_name, g.group_parent_id
 	FROM common.groups AS g
-	WHERE g.group_parent_id IS NULL;								
+	WHERE g.group_parent_id IS NULL AND g.is_profit = true;
 END;
-$$
-LANGUAGE plpgsql;
+$BODY$
+  LANGUAGE plpgsql;
+  
+  ---------------------------------------------------FUNC_GET_ROOT_GROUPS_SPEND
+  
+  CREATE OR REPLACE FUNCTION common.get_root_groups_profit()
+  RETURNS TABLE(id integer, name text, parent_id integer) AS
+$BODY$
+BEGIN
+	RETURN QUERY
+
+	SELECT g.id, g.group_name, g.group_parent_id
+	FROM common.groups AS g
+	WHERE g.group_parent_id IS NULL AND g.is_profit = false;
+END;
+$BODY$
+  LANGUAGE plpgsql;
   
   ---------------------------------------------------FUNC_ADD_USER_COMMENT
   

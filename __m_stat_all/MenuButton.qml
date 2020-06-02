@@ -9,6 +9,8 @@ Button {
     width:  80
     height: 80
 
+    hoverEnabled: true
+
     background:
         Rectangle {
             color: menuButton.hovered ? "#3A2E5C"
@@ -16,7 +18,6 @@ Button {
     }
 
     Rectangle {
-
         color:          "transparent"
         anchors.fill:   parent
     }

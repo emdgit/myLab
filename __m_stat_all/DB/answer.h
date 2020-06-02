@@ -17,6 +17,11 @@ class pg::Answer
         std::vector<QVariant> values;
     };
 
+    struct AnswerValue {
+        pg::TypedField tfield;
+        QVariant value;
+    };
+
 public:
 
     Answer() = delete;
@@ -32,7 +37,14 @@ public:
     bool        insertValue( const QString &field,
                              const QVariant &val ) noexcept;
 
+    inline size_t columns() const noexcept { return _answerMap.size(); }
+    /*!
+     * \brief   Количество записей в ответе
+     * \throw   Исключение, если объект не валиден
+     */
+    size_t      rows() const;
 
+    AnswerValue field( const size_t &row, const size_t &column ) const;
 
     Answer &    operator=( const Answer & ) = delete;
     Answer &    operator=( Answer && ) = default;
