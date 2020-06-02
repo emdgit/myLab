@@ -5,10 +5,12 @@
 
 #include <QVariant>
 
-namespace Owl::Templates
+namespace Owl
 {
-    template < class T, class ... Args >
-    struct is_same_m;
+    namespace Templates {
+        template < class T, class ... Args >
+        struct is_same_m;
+    }
 }
 
 template < class T, class ... Args >

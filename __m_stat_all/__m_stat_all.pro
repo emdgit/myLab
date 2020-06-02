@@ -9,10 +9,8 @@ DEFINES     +=  QT_DEPRECATED_WARNINGS
 
 INCLUDEPATH +=  $$PWD/DB/
 DEPENDPATH  +=  $$PWD/DB/
-
 INCLUDEPATH +=  $$PWD/paint/
 DEPENDPATH  +=  $$PWD/paint/
-
 INCLUDEPATH +=  $$PWD/core/
 DEPENDPATH  +=  $$PWD/core/
 
