@@ -13,6 +13,9 @@ using RE = std::runtime_error;
 
 pg::Worker * CoreAPI::_pg_worker = Connecter::createWorker();
 
+PGStorage * CoreAPI::_p_g_storage_spend = nullptr;
+PGStorage * CoreAPI::_p_g_storage_profit = nullptr;
+
 bool CoreAPI::addPurchase(const int & groupId, const int & userId,
                           const int & recordId, const double & summ,
                           const QDate & date) noexcept
@@ -39,12 +42,10 @@ bool CoreAPI::addPurchase(const int & groupId, const int & userId,
 
 }
 
-std::vector<IObject *> CoreAPI::loadRootGroups(bool profit)
+void CoreAPI::loadRootGroups(bool profit)
 {
-    // todo use profit in db
-    Q_UNUSED(profit)
-
-    auto func = TypeStorage::func( "get_root_groups", "common" );
+    auto func = profit ? TypeStorage::func( "get_root_groups_profit", "common" )
+                       : TypeStorage::func( "get_root_groups_spend", "common" );
 
     if ( !func ) {
         throw RE( "function common.get_root_groups hasn't been found" );
@@ -56,7 +57,12 @@ std::vector<IObject *> CoreAPI::loadRootGroups(bool profit)
         throw RE( "Error in executing common.get_root_groups" );
     }
 
-    vector<IObject*> out( answer->rows() );
+    auto st = profit ? &_p_g_storage_profit
+                     : &_p_g_storage_spend;
+
+    if ( !st ) {
+        throw RE("Target storage wasn't set");
+    }
 
     for ( size_t i(0); i < answer->rows(); ++i ) {
         auto gr = new PurchaseGroup();
@@ -66,16 +72,22 @@ std::vector<IObject *> CoreAPI::loadRootGroups(bool profit)
         }
         catch( const exception &ex ) {
 
-            for ( size_t j(0); j < i - 1; ++j ) {
-                delete out[j];
-            }
+            // todo clear st
 
             cout << ex.what() << endl;
             throw ex;
         }
 
-        out[i] = gr;
+        (*st)->insert( {}, gr );
     }
+}
 
-    return out;
+void CoreAPI::setProfitGroupSt(PGStorage * st) noexcept
+{
+    _p_g_storage_profit = st;
+}
+
+void CoreAPI::setSpendGroupSt(PGStorage * st) noexcept
+{
+    _p_g_storage_spend = st;
 }

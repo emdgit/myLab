@@ -55,6 +55,7 @@ struct HNode
     }
 };
 
+// todo clear() remove(PNI)
 template < class Object, class Key, Key(Object::*get_key_f)()const >
 class HierarchicalStorage
 {

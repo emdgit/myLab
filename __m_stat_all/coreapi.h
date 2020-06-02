@@ -5,6 +5,7 @@
 #include <QDate>
 
 #include "iobject.h"
+#include "storagedefinition.h"
 
 namespace pg {
     class Worker;
@@ -23,12 +24,24 @@ public:
                              const QDate &date ) noexcept;
 
     Q_INVOKABLE
-    static std::vector<IObject*> loadRootGroups( bool profit = false );
+    static void loadRootGroups( bool profit = false );
+
+    /// Задать хранилище групп дохода
+    static void setProfitGroupSt( PGStorage *st ) noexcept;
+
+    /// Задать хранилище групп расхода
+    static void setSpendGroupSt( PGStorage *st ) noexcept;
+
 
 private:
 
     static pg::Worker * _pg_worker;
 
+    /// Хранилка групп доходов.
+    static PGStorage *  _p_g_storage_profit;
+
+    /// Хранилка групп попупок.
+    static PGStorage *  _p_g_storage_spend;
 
 };
 

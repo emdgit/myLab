@@ -37,7 +37,8 @@ SOURCES     +=          \
     core/purchasegroup.cpp \
     core/iobject.cpp \
     core/hierarchicalstorage.cpp \
-    core/pnode.cpp
+    core/pnode.cpp \
+    core/purchasegroupmodel.cpp
 
 RESOURCES   +=  qml.qrc \
                 sql.qrc
@@ -66,5 +67,7 @@ HEADERS     +=        \
     core/purchasegroup.h \
     core/iobject.h \
     core/hierarchicalstorage.h \
-    core/pnode.h
+    core/pnode.h \
+    core/storagedefinition.h \
+    core/purchasegroupmodel.h
 
