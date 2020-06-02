@@ -16,24 +16,21 @@
 
 #include "purchasegroup.h"
 
-//#include "core/hierarchicalstorage.h"
-//#include "core/purchasegroup.h"
-
 int main(int argc, char *argv[])
 {
     using namespace std;
 
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
-    QGuiApplication app(argc, argv);
+//    QGuiApplication app(argc, argv);
 
     qRegisterMetaType<PNodeIndex>( "PNodeIndex" );
 
     qmlRegisterType<Chart>( "OwlComponents", 1, 0, "Chart" );
     qmlRegisterType<TestModel>( "TestModel", 1, 0, "TestModel" );
 
-    QQmlApplicationEngine engine;
-    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+//    QQmlApplicationEngine engine;
+//    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
     pg::Config::dbName = "SuperMegaDatabase6000";     //  Some hardcode here,
     pg::Config::dbHost = "127.0.0.1";                 //  I'll place it to GUI...
@@ -53,30 +50,9 @@ int main(int argc, char *argv[])
         qDebug( "Cannot open DataBase" );
     }
 
-    if (engine.rootObjects().isEmpty())
-        return -1;
+//    if (engine.rootObjects().isEmpty())
+//        return -1;
 
-    auto funcOpt = TypeStorage::func( "get_root_groups", "common" );
-
-    pg::Answer * ans = nullptr;
-
-    if ( funcOpt )
-    {
-        auto func = (*funcOpt).get();
-        qDebug() << "Func found:" << func->schema() << "." << func->name();
-
-        auto w = pg::Connecter::createWorker();
-        ans = w->execute( *func );
-
-        PurchaseGroup group;
-        group.fromPgAnswer(ans,0);
-    }
-    else
-    {
-        qDebug() << "Func hasn't found";
-    }
-
-
-
-    return app.exec();
+//    return app.exec();
+    return 0;
 }

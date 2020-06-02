@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QDate>
 
+#include "iobject.h"
+
 namespace pg {
     class Worker;
 }
@@ -19,6 +21,9 @@ public:
     static bool addPurchase( const int &groupId, const int &userId,
                              const int &recordId, const double &summ,
                              const QDate &date ) noexcept;
+
+    Q_INVOKABLE
+    static std::vector<IObject*> loadRootGroups( bool profit = false );
 
 private:
 
