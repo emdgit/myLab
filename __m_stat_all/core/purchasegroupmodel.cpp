@@ -1,7 +1,7 @@
 #include "purchasegroupmodel.h"
 
-PurchaseGroupModel::PurchaseGroupModel(QObject * parent) :
-    QAbstractItemModel (parent)
+PurchaseGroupModel::PurchaseGroupModel(PGStorage * st, QObject * parent) :
+    QAbstractItemModel (parent), _st(st)
 {
 
 }

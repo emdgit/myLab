@@ -8,6 +8,8 @@
 #include "connecter.h"
 #include "pnode.h"
 #include "coreapi.h"
+#include "purchasegroupmodel.h"
+#include "modelmanager.h"
 
 using namespace std;
 
@@ -29,12 +31,18 @@ int main(int argc, char *argv[])
     CoreAPI::setSpendGroupSt( &stSpend );
     CoreAPI::setProfitGroupSt( &stProfit );
 
+    ModelManager mmanager;
+    mmanager.setSpendModel( new PurchaseGroupModel(&stSpend) );
+    mmanager.setProfitModel( new PurchaseGroupModel(&stProfit) );
+
     qRegisterMetaType<PNodeIndex>( "PNodeIndex" );
+    qRegisterMetaType<PurchaseGroupModel*>( "PurchaseGroupModel*" );
 
     qmlRegisterType<Chart>( "OwlComponents", 1, 0, "Chart" );
 
     QQmlApplicationEngine engine;
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+    engine.rootContext()->setContextProperty( "ModelManager", &mmanager );
 
     if ( connectToDB() ) {
         qDebug() << "Connected to DataBase" << pg::Config::dbName;

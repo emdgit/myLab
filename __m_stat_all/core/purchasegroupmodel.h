@@ -8,7 +8,7 @@
 class PurchaseGroupModel : public QAbstractItemModel
 {
 public:
-    PurchaseGroupModel( QObject * parent = nullptr );
+    PurchaseGroupModel( PGStorage *st, QObject * parent = nullptr );
 
     // QAbstractItemModel interface
     QModelIndex index(int row, int column, const QModelIndex & parent) const override;
@@ -25,5 +25,7 @@ private:
     PGStorage * _st;
 
 };
+
+Q_DECLARE_METATYPE(PurchaseGroupModel*)
 
 #endif // PURCHASEGROUPMODEL_H
