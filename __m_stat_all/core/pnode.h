@@ -27,6 +27,7 @@ struct PNodeIndex
     std::deque<int> indexQueue;
 
     int             front() const;
+    int             back() const;
 
     size_t          size() const noexcept;
 
@@ -54,6 +55,7 @@ struct PNodeIndex
     }
 
     bool            operator==( const PNodeIndex &other ) const;
+    bool            operator<( const PNodeIndex &other ) const;
 
     /*!
      * \brief Добавляет число в конец (справа).

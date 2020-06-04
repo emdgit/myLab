@@ -1,4 +1,5 @@
 import QtQuick 2.0
+import QtQuick.Controls 1.4
 
 // Form which opens when statistic button pressed
 Item {
@@ -12,6 +13,12 @@ Item {
 
         anchors.bottom: parent.bottom
         anchors.left: parent.left
+    }
+
+    TreeView {
+
+        model: ModelManager.spendModel
+
     }
 
 }

@@ -138,6 +138,16 @@ int PNodeIndex::front() const
     }
 }
 
+int PNodeIndex::back() const
+{
+    try {
+        return indexQueue.back();
+    }
+    catch (...) {
+        throw;
+    }
+}
+
 size_t PNodeIndex::size() const noexcept
 {
     return indexQueue.size();
@@ -166,6 +176,27 @@ bool PNodeIndex::operator==(const PNodeIndex & other) const
             return false;
 
     return true;
+}
+
+bool PNodeIndex::operator<(const PNodeIndex & other) const
+{
+    if ( indexQueue.size() < other.indexQueue.size() ) {
+        return true;
+    }
+
+    auto it_this = indexQueue.cbegin();
+    auto it_other = other.indexQueue.cbegin();
+
+    while ( it_this != indexQueue.cend() ) {
+        if ( *it_this < *it_other ) {
+            return true;
+        }
+
+        ++it_this;
+        ++it_other;
+    }
+
+    return false;
 }
 
 PNodeIndex PNodeIndex::operator+(const int & i) const

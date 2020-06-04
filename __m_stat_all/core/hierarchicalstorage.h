@@ -123,6 +123,21 @@ public:
         return out;
     }
 
+    int childCount( PNodeIndex index ) const noexcept
+    {
+        // if is empty
+        if ( !index ) {
+            return _roots.size();
+        }
+
+        auto _node = node( index );
+
+        if ( !_node ) {
+            return 0;
+        }
+
+        return _node->_children.size();
+    }
 
 
 private:

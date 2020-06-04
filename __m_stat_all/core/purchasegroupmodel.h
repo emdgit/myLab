@@ -3,10 +3,15 @@
 
 #include <QAbstractItemModel>
 
+#include <set>
+
 #include "storagedefinition.h"
 
 class PurchaseGroupModel : public QAbstractItemModel
 {
+
+    using IndexSet = std::set<PNodeIndex>;
+
 public:
     PurchaseGroupModel( PGStorage *st, QObject * parent = nullptr );
 
@@ -20,9 +25,18 @@ public:
     QVariant    data(const QModelIndex & index, int role) const override;
 
 
+protected:
+
+    PNodeIndex *toPNodeIndex( const QModelIndex &index ) const noexcept;
+
+
 private:
 
     PGStorage * _st;
+
+    /// Задействованые объекты PNodeIndex.
+    /// Используются как internalPointer внутри QModelIndex
+    mutable IndexSet _index_set;
 
 };
 
