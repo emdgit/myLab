@@ -509,7 +509,7 @@ $BODY$
   
   ---------------------------------------------------FUNC_GET_ROOT_GROUPS_SPEND
   
-  CREATE OR REPLACE FUNCTION common.get_root_groups_profit()
+  CREATE OR REPLACE FUNCTION common.get_root_groups_spend()
   RETURNS TABLE(id integer, name text, parent_id integer) AS
 $BODY$
 BEGIN

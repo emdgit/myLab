@@ -1,7 +1,12 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QJsonDocument>
 #include <QtDebug>
+#include <QFile>
+#include <QTextStream>
+
+#include <filesystem>
 
 #include "chart.h"
 #include "config.h"
@@ -15,7 +20,8 @@
 
 using namespace std;
 
-bool connectToDB() noexcept;
+void readConfigFile();
+void readDBConfig(QJsonObject &dbObject);
 
 int main(int argc, char *argv[])
 {
@@ -42,11 +48,11 @@ int main(int argc, char *argv[])
     mmanager.setSpendModel( new PurchaseGroupModel(&stSpend) );
     mmanager.setProfitModel( new PurchaseGroupModel(&stProfit) );
 
-    if ( connectToDB() ) {
-        qDebug() << "Connected to DataBase" << pg::Config::dbName;
+    try {
+        readConfigFile();
     }
-    else {
-        qDebug( "Cannot open DataBase" );
+    catch ( const exception &ex ) {
+        cout << ex.what() << endl;
         return -1;
     }
 
@@ -74,13 +80,69 @@ int main(int argc, char *argv[])
     return app.exec();
 }
 
-bool connectToDB() noexcept
+void readConfigFile()
 {
-    pg::Config::dbName = "SuperMegaDatabase6000";     //  Some hardcode here,
-    pg::Config::dbHost = "127.0.0.1";                 //  I'll place it to GUI...
-    pg::Config::dbPort = 5433;                        //  ... later... =)
-    pg::Config::dbPswd = "123456qQ";
-    pg::Config::dbUser = "postgres";
+    constexpr const char * config_file = "config.json";
 
-    return pg::Connecter::connect();
+    if ( !std::filesystem::exists( config_file ) ) {
+        throw runtime_error("Cannot find 'config.json'");
+    }
+
+    QFile f( config_file );
+
+    if ( !f.open( QIODevice::ReadOnly ) ) {
+        throw runtime_error("Cannot open 'config.json' for read");
+    }
+
+    QTextStream stream( &f );
+
+    auto conf_data = stream.readAll();
+
+    f.close();
+
+    QJsonParseError err;
+    auto doc = QJsonDocument::fromJson( conf_data.toLatin1(), &err );
+
+    if ( err.error != QJsonParseError::NoError ) {
+        throw runtime_error("Invalid configuration!");
+    }
+
+    if ( !doc.isObject() ) {
+        throw runtime_error("Invalid configuration structure!");
+    }
+
+    auto obj = doc.object();
+    auto dbObject = obj.value( "DB" ).toObject();
+
+    readDBConfig( dbObject );
+}
+
+void readDBConfig(QJsonObject &dbObject)
+{
+    bool valid_port_value;
+    auto name = dbObject.value( "Name" ).toString();
+    auto host = dbObject.value( "Host" ).toString();
+    auto pswd = dbObject.value( "Password" ).toString();
+    auto user = dbObject.value( "User" ).toString();
+    auto port = dbObject.value( "Port" ).toString().toInt(&valid_port_value);
+
+    // При корректном конфиге каждая проверка должна вернуть false
+    auto valid_config = !(name.isEmpty() ||
+                          host.isEmpty() ||
+                          pswd.isEmpty() ||
+                          user.isEmpty() );
+
+    if ( !valid_config || !valid_port_value ) {
+        throw runtime_error("Invalid 'DB' section in configuration file!");
+    }
+
+    pg::Config::dbName = name;
+    pg::Config::dbHost = host;
+    pg::Config::dbPort = port;
+    pg::Config::dbPswd = pswd;
+    pg::Config::dbUser = user;
+
+    if ( !pg::Connecter::connect() ) {
+        throw runtime_error("Cannot connect to DB!");
+    }
 }

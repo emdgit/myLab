@@ -1,6 +1,6 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.0
-import QtQuick.Layouts 1.12
+import QtQuick.Layouts 1.0 // 1.12 Win
 
 /// Страница добавления данных на форме статистик
 Item {
