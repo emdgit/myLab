@@ -10,6 +10,7 @@
         <file>StackElement.qml</file>
         <file>StatisticForm.qml</file>
         <file>TopStatisticMenu.qml</file>
+        <file>SFAddPage.qml</file>
     </qresource>
     <qresource prefix="/img">
         <file>graphs.jpg</file>

@@ -38,7 +38,7 @@ Item {
         }
 
         onButtonClicked: {
-
+            swipeTo(number)
         }
     }
 
@@ -68,13 +68,8 @@ Item {
             }
         }
         Item {
-            id: page2
-            Rectangle {
+            SFAddPage {
                 anchors.fill: parent
-                Text {
-                    text: "Page 2. Green Button\n Это форма добавления новых записей"
-                    anchors.centerIn: parent
-                }
             }
         }
     }
@@ -87,7 +82,7 @@ Item {
     /// Обработчик нажатия кнопок верхнего меню статистик.
     /// Вертит SwipeView
     function swipeTo(index) {
-
+        swipeView.currentIndex = index
     }
 
     /*

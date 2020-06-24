@@ -19,6 +19,12 @@ Item {
             width: d._wid
             height: d._wid
             color: "red"
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    buttonClicked(0)
+                }
+            }
         }
         Rectangle {
             width: d._wid
