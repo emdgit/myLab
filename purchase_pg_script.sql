@@ -6,14 +6,8 @@
 CREATE SCHEMA service
   AUTHORIZATION postgres;
 
-CREATE OR REPLACE FUNCTION service.get_groups_by_parent(
-	IN _parent_id integer DEFAULT NULL::integer
-)
-RETURNS TABLE (
-	id 		integer, 
-	name 		text, 
-	parent_id	integer
-) AS
+CREATE OR REPLACE FUNCTION service.get_groups_by_parent(_parent_id integer DEFAULT NULL::integer)
+  RETURNS TABLE(id integer, name text, parent_id integer, is_profit boolean) AS
 $BODY$
 BEGIN
 	RETURN QUERY 
@@ -388,6 +382,50 @@ BEGIN
 	SELECT r.id, r.name
 	FROM common.records AS r
 	WHERE r.group_id = $1;
+END;
+$BODY$
+  LANGUAGE plpgsql;
+  
+  ---------------------------------------------------FUNC_GET_ALL_RECORDS_PROFIT
+  
+  CREATE OR REPLACE FUNCTION common.get_all_records_profit()
+  RETURNS TABLE(id integer, group_id integer, name text) AS
+$BODY$
+BEGIN
+	RETURN QUERY
+
+	with group_ids AS (
+		select cg.id from common.groups AS cg
+		where is_profit = false
+	)
+	select (r).*
+	from 
+		common.records 	AS r,
+		group_ids	AS ids
+	where
+		r.group_id = ids.id;
+END;
+$BODY$
+  LANGUAGE plpgsql;
+  
+  ---------------------------------------------------FUNC_GET_ALL_RECORDS_SPEND
+  
+  CREATE OR REPLACE FUNCTION common.get_all_records_spend()
+  RETURNS TABLE(id integer, group_id integer, name text) AS
+$BODY$
+BEGIN
+	RETURN QUERY
+
+	with group_ids AS (
+		select cg.id from common.groups AS cg
+		where is_profit = true
+	)
+	select (r).*
+	from 
+		common.records 	AS r,
+		group_ids	AS ids
+	where
+		r.group_id = ids.id;
 END;
 $BODY$
   LANGUAGE plpgsql;
