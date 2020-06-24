@@ -42,7 +42,6 @@ Window {
         StatisticMenu{
             id:second
         }
-
         StackElement{
             id: third
             color: 'blue'

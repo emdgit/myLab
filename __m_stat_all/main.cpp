@@ -8,8 +8,10 @@
 #include "connecter.h"
 #include "pnode.h"
 #include "coreapi.h"
-#include "purchasegroupmodel.h"
 #include "modelmanager.h"
+
+//
+#include <iostream>
 
 using namespace std;
 
@@ -20,6 +22,11 @@ int main(int argc, char *argv[])
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     QGuiApplication app(argc, argv);
+
+    qRegisterMetaType<PNodeIndex>( "PNodeIndex" );
+
+    qmlRegisterType<Chart>( "OwlComponents", 1, 0, "Chart" );
+    qmlRegisterType<PurchaseGroupModel>( "OwlComponents", 1, 0, "PGroupModel" );
 
     // Хранилище доходных групп
     PGStorage stProfit;
@@ -35,15 +42,6 @@ int main(int argc, char *argv[])
     mmanager.setSpendModel( new PurchaseGroupModel(&stSpend) );
     mmanager.setProfitModel( new PurchaseGroupModel(&stProfit) );
 
-    qRegisterMetaType<PNodeIndex>( "PNodeIndex" );
-    qRegisterMetaType<PurchaseGroupModel*>( "PurchaseGroupModel*" );
-
-    qmlRegisterType<Chart>( "OwlComponents", 1, 0, "Chart" );
-
-    QQmlApplicationEngine engine;
-    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
-    engine.rootContext()->setContextProperty( "ModelManager", &mmanager );
-
     if ( connectToDB() ) {
         qDebug() << "Connected to DataBase" << pg::Config::dbName;
     }
@@ -56,6 +54,19 @@ int main(int argc, char *argv[])
         qDebug() << "Error occured while reading functions";
         return -2;
     }
+    else {
+        // Загрузить группы расходов
+        CoreAPI::loadRootGroups( false );
+        cout << stSpend.childCount({}) << endl;
+
+        // Загрузить группы доходов
+        CoreAPI::loadRootGroups( true );
+    };
+
+    QQmlApplicationEngine engine;
+    engine.rootContext()->setContextProperty( "ModelManager", &mmanager );
+    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+
 
     if (engine.rootObjects().isEmpty())
         return -3;

@@ -54,7 +54,8 @@ void CoreAPI::loadRootGroups(bool profit)
     auto answer = _pg_worker->execute( *func.value() );
 
     if ( !answer ) {
-        throw RE( "Error in executing common.get_root_groups" );
+        // todo Пересмотреть логику ответа execute. Что если ответ пустой?
+        return;
     }
 
     auto st = profit ? &_p_g_storage_profit

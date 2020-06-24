@@ -14,9 +14,11 @@ DEPENDPATH  +=  $$PWD/paint/
 INCLUDEPATH +=  $$PWD/core/
 DEPENDPATH  +=  $$PWD/core/
 
-SOURCES     +=          \
-            main.cpp     \
-            templates.cpp \
+SOURCES     +=           \
+            main.cpp      \
+            coreapi.cpp    \
+            templates.cpp   \
+            modelmanager.cpp \
             DB/Set.cpp \
             DB/head.cpp \
             DB/field.cpp \
@@ -29,14 +31,12 @@ SOURCES     +=          \
             paint/chart.cpp   \
             paint/gline.cpp    \
             paint/gpoliline.cpp \
-            paint/graphbase.cpp \
-    coreapi.cpp \
-    core/purchasegroup.cpp \
-    core/iobject.cpp \
-    core/hierarchicalstorage.cpp \
-    core/pnode.cpp \
-    core/purchasegroupmodel.cpp \
-    modelmanager.cpp
+            paint/graphbase.cpp  \
+            core/pnode.cpp           \
+            core/iobject.cpp          \
+            core/purchasegroup.cpp     \
+            core/purchasegroupmodel.cpp \
+            core/hierarchicalstorage.cpp
 
 RESOURCES   +=  qml.qrc \
                 sql.qrc
@@ -67,5 +67,6 @@ HEADERS     +=        \
     core/pnode.h \
     core/storagedefinition.h \
     core/purchasegroupmodel.h \
-    modelmanager.h
+    modelmanager.h \
+    core/log.h
 

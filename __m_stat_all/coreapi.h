@@ -23,6 +23,12 @@ public:
                              const int &recordId, const double &summ,
                              const QDate &date ) noexcept;
 
+    /*!
+     * Загрузить корневые группы.
+     * В зависимости от переданного параметра profit,
+     * загрузка будет либо в хранилище доходов, либо расходов.
+     * \param[in] profit  true - доходы; false - расходы
+     */
     Q_INVOKABLE
     static void loadRootGroups( bool profit = false );
 

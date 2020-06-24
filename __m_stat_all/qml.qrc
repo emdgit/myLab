@@ -10,6 +10,7 @@
         <file>StackElement.qml</file>
         <file>PlusButton.qml</file>
         <file>StatisticMenu.qml</file>
+        <file>Delegate.qml</file>
     </qresource>
     <qresource prefix="/img">
         <file>graphs.jpg</file>

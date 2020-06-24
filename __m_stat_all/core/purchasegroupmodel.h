@@ -7,12 +7,20 @@
 
 #include "storagedefinition.h"
 
+/// Иерархичная модель отображения групп
 class PurchaseGroupModel : public QAbstractItemModel
 {
 
     using IndexSet = std::set<PNodeIndex>;
 
+    enum GroupRole {
+        Name = Qt::UserRole    /// Имя группы. Роль
+    };
+
+    Q_OBJECT
+
 public:
+    PurchaseGroupModel( QObject * parent = nullptr );
     PurchaseGroupModel( PGStorage *st, QObject * parent = nullptr );
 
     // QAbstractItemModel interface
@@ -22,7 +30,11 @@ public:
     int         rowCount(const QModelIndex & parent) const override;
     int         columnCount(const QModelIndex & parent) const override;
 
-    QVariant    data(const QModelIndex & index, int role) const override;
+    QVariant    data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
+
+    QVariant    headerData(int section, Qt::Orientation orientation, int role) const override;
+
+    QHash<int, QByteArray> roleNames() const override;
 
 
 protected:
@@ -39,7 +51,5 @@ private:
     mutable IndexSet _index_set;
 
 };
-
-Q_DECLARE_METATYPE(PurchaseGroupModel*)
 
 #endif // PURCHASEGROUPMODEL_H

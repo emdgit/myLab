@@ -1,5 +1,12 @@
 #include "purchasegroupmodel.h"
 
+using namespace std;
+
+PurchaseGroupModel::PurchaseGroupModel(QObject * parent) :
+    QAbstractItemModel (parent)
+{
+}
+
 PurchaseGroupModel::PurchaseGroupModel(PGStorage * st, QObject * parent) :
     QAbstractItemModel (parent), _st(st) {}
 
@@ -7,13 +14,20 @@ QModelIndex PurchaseGroupModel::index(int row, int column, const QModelIndex & p
 {
     Q_UNUSED(column);
 
+    if ( !parent.isValid() ) {
+        auto pair = _index_set.insert( {row} );
+        auto raw_ptr = const_cast<PNodeIndex*>( &(*pair.first) );
+
+        return createIndex( row, column, raw_ptr );
+    }
+
     auto p_index = toPNodeIndex(parent);
     auto p_index_child = (*p_index) + row;
     auto pair = _index_set.insert( p_index_child );
 
     auto raw_ptr = const_cast<PNodeIndex*>( &(*pair.first) );
 
-    return createIndex( row, 1, raw_ptr );
+    return createIndex( row, column, raw_ptr );
 }
 
 QModelIndex PurchaseGroupModel::parent(const QModelIndex & child) const
@@ -25,6 +39,11 @@ QModelIndex PurchaseGroupModel::parent(const QModelIndex & child) const
     auto p_index = toPNodeIndex(child);
 
     if ( !*p_index ) {
+        return QModelIndex();
+    }
+
+    if ( p_index->size() == 1 ) {
+        // Его предок - корень
         return QModelIndex();
     }
 
@@ -61,10 +80,6 @@ int PurchaseGroupModel::columnCount(const QModelIndex & parent) const
 
 QVariant PurchaseGroupModel::data(const QModelIndex & index, int role) const
 {
-    if ( role != Qt::DisplayRole ) {
-        return QVariant();
-    }
-
     if ( !index.isValid() ) {
         return QVariant();
     }
@@ -74,13 +89,40 @@ QVariant PurchaseGroupModel::data(const QModelIndex & index, int role) const
 
     if ( !node ) {
         return QVariant();
-        // todo warning or exeption
     }
 
-    return node->_data->name().data();
+    switch (role) {
+        case Name: {
+            return QString(node->_data->name().data());
+        }
+    }
+
+    return QVariant();
 }
 
 PNodeIndex *PurchaseGroupModel::toPNodeIndex(const QModelIndex & index) const noexcept
 {
     return static_cast<PNodeIndex*>( index.internalPointer() );
+}
+
+QVariant PurchaseGroupModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+    if ( role != Qt::DisplayRole ) {
+        return QVariant();
+    }
+
+    if ( orientation == Qt::Horizontal ) {
+        return "OWL goes faster";
+    }
+
+    return section + 1;
+}
+
+QHash<int, QByteArray> PurchaseGroupModel::roleNames() const
+{
+    QHash<int, QByteArray> hash;
+
+    hash.insert( Name, "r_pgroup_name" );
+
+    return hash;
 }
