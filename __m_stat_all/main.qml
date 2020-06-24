@@ -39,7 +39,7 @@ Window {
         StackElement{
             id: first
         }
-        StatisticMenu{
+        StatisticForm{
             id:second
         }
         StackElement{

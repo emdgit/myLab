@@ -8,16 +8,13 @@
         <file>Common.js</file>
         <file>UserForm.qml</file>
         <file>StackElement.qml</file>
-        <file>PlusButton.qml</file>
-        <file>StatisticMenu.qml</file>
-        <file>Delegate.qml</file>
+        <file>StatisticForm.qml</file>
+        <file>TopStatisticMenu.qml</file>
     </qresource>
     <qresource prefix="/img">
         <file>graphs.jpg</file>
         <file>qqq.jpg</file>
         <file>users.png</file>
-        <file>images/plus.png</file>
-        <file>images/plus_shadow.png</file>
-        <file>images/plus_shadow_pushed.png</file>
+        <file>images/lined_menu.svg</file>
     </qresource>
 </RCC>

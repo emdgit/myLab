@@ -1,0 +1,105 @@
+import QtQuick 2.0
+import QtQuick.Controls 1.4
+import QtQuick.Controls 2.0
+import QtQuick.Layouts 1.1
+
+// Form which opens when statistic button pressed
+Item {
+
+    Button {
+        id: titleMenuBtn
+        height: 30
+        width: 30
+
+        anchors {
+            top: parent.top
+            left: parent.left
+        }
+
+        palette {
+            button: "transparent"
+        }
+
+        Image {
+            anchors.fill: parent
+            source: "qrc:/img/images/lined_menu.svg"
+        }
+
+        onClicked: {
+            parent.showTopMenu()
+        }
+    }
+
+    TopStatisticMenu {
+        anchors {
+            top: parent.top
+            left: titleMenuBtn.right
+            rightMargin: 9
+        }
+
+        onButtonClicked: {
+
+        }
+    }
+
+    SwipeView {
+        id: swipeView
+        orientation: Qt.Horizontal
+        currentIndex: 1
+
+        anchors {
+            top: titleMenuBtn.bottom
+            left: parent.left
+            right: parent.right
+            bottom: parent.bottom
+            topMargin: 9
+        }
+
+        Item {
+            id: page1
+            Rectangle {
+                anchors.fill: parent
+                Text {
+                    text: "Page 1. Red Button\n Здесь должна быть главная статистика"
+                    anchors.fill: parent
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+        }
+        Item {
+            id: page2
+            Rectangle {
+                anchors.fill: parent
+                Text {
+                    text: "Page 2. Green Button\n Это форма добавления новых записей"
+                    anchors.centerIn: parent
+                }
+            }
+        }
+    }
+
+    /// Показать меню статистик
+    function showTopMenu() {
+
+    }
+
+    /// Обработчик нажатия кнопок верхнего меню статистик.
+    /// Вертит SwipeView
+    function swipeTo(index) {
+
+    }
+
+    /*
+    TreeView {
+        id: view
+
+        model: ModelManager.spendModel
+
+        TableViewColumn {
+               role: "r_pgroup_name"
+               title: "Name"
+        }
+    }
+    */
+}

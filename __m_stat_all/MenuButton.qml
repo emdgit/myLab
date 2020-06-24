@@ -11,10 +11,9 @@ Button {
 
     hoverEnabled: true
 
-    background:
-        Rectangle {
-            color: menuButton.hovered ? "#3A2E5C"
-                                      : "transparent"
+    background: Rectangle {
+        color: menuButton.hovered ? "#3A2E5C"
+                                  : "transparent"
     }
 
     Rectangle {
