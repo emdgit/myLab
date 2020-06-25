@@ -1,0 +1,2 @@
+# myLab
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/ec220874113747a191fc3b90117b34cb)](https://app.codacy.com/manual/emilyenn/myLab?utm_source=github.com&utm_medium=referral&utm_content=emdgit/myLab&utm_campaign=Badge_Grade_Dashboard)
