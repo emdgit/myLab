@@ -38,7 +38,8 @@ SOURCES     +=           \
             core/iobject.cpp          \
             core/purchasegroup.cpp     \
             core/purchasegroupmodel.cpp \
-            core/hierarchicalstorage.cpp
+            core/hierarchicalstorage.cpp \
+    core/purchaserecord.cpp
 
 RESOURCES   +=  qml.qrc \
                 sql.qrc
@@ -70,5 +71,6 @@ HEADERS     +=        \
     core/storagedefinition.h \
     core/purchasegroupmodel.h \
     modelmanager.h \
-    core/log.h
+    core/log.h \
+    core/purchaserecord.h
 
