@@ -560,6 +560,21 @@ END;
 $BODY$
   LANGUAGE plpgsql;
   
+  ---------------------------------------------------FUNC_GET_GROUPS
+  
+  CREATE OR REPLACE FUNCTION common.get_groups( group_parent_id integer )
+  RETURNS TABLE(id integer, name text, parent_id integer) AS
+$BODY$
+BEGIN
+	RETURN QUERY
+
+	SELECT g.id, g.group_name, g.group_parent_id
+	FROM common.groups AS g
+	WHERE g.group_parent_id = $1;
+END;
+$BODY$
+  LANGUAGE plpgsql;
+  
   ---------------------------------------------------FUNC_ADD_USER_COMMENT
   
   COMMENT ON FUNCTION common.add_user(text, text, text) IS '
