@@ -43,7 +43,7 @@ bool CoreAPI::addPurchase(const int & groupId, const int & userId,
 
 }
 
-void CoreAPI::loadRootGroups(bool profit)
+void CoreAPI::loadGroups(bool profit)
 {
     auto func = profit ? TypeStorage::func( "get_root_groups_profit", "common" )
                        : TypeStorage::func( "get_root_groups_spend", "common" );
@@ -66,22 +66,7 @@ void CoreAPI::loadRootGroups(bool profit)
         throw RE("Target storage wasn't set");
     }
 
-    for ( size_t i(0); i < answer->rows(); ++i ) {
-        auto gr = new PurchaseGroup();
-
-        try {
-            gr->fromPgAnswer( answer, static_cast<ulong>(i) );
-        }
-        catch( const exception &ex ) {
-
-            // todo clear st
-
-            cout << ex.what() << endl;
-            throw ex;
-        }
-
-        (*st)->insert( {}, gr );
-    }
+    packGroups( answer, *st, {} );
 }
 
 void CoreAPI::loadRecords(bool profit)
@@ -142,9 +127,59 @@ void CoreAPI::loadRecords(bool profit)
 void CoreAPI::setProfitGroupSt(PGStorage * st) noexcept
 {
     _p_g_storage_profit = st;
+
+    st->setInsertHandler( [&](PNodeIndex index) -> void {
+        loadGroupsByParent( index, _p_g_storage_profit );
+    } );
 }
 
 void CoreAPI::setSpendGroupSt(PGStorage * st) noexcept
 {
     _p_g_storage_spend = st;
+
+    st->setInsertHandler( [&](PNodeIndex index) -> void {
+        loadGroupsByParent( index, _p_g_storage_spend );
+    } );
 }
+
+void CoreAPI::loadGroupsByParent(PNodeIndex parent, PGStorage *st)
+{
+    auto func = TypeStorage::func( "get_groups", "common" );
+
+    if ( !func ) {
+        throw RE( "function common.get_groups hasn't been found" );
+    }
+
+    auto id = st->node(parent)->_data->id();
+    func.value()->bindValue( "group_parent_id", id );
+
+    auto answer = _pg_worker->execute( *func.value() );
+
+    if ( !answer ) {
+        // todo Пересмотреть логику ответа execute. Что если ответ пустой?
+        return;
+    }
+
+    packGroups( answer, st, parent );
+}
+
+void CoreAPI::packGroups(Answer *answer, PGStorage *st, PNodeIndex parent)
+{
+    for ( size_t i(0); i < answer->rows(); ++i ) {
+        auto gr = new PurchaseGroup();
+
+        try {
+            gr->fromPgAnswer( answer, static_cast<ulong>(i) );
+        }
+        catch( const exception &ex ) {
+
+            // todo clear st
+
+            cout << ex.what() << endl;
+            throw ex;
+        }
+
+        st->insert( parent, gr );
+    }
+}
+

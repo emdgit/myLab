@@ -62,10 +62,10 @@ int main(int argc, char *argv[])
     }
     else {
         // Загрузить группы расходов
-        CoreAPI::loadRootGroups( false );
+        CoreAPI::loadGroups( false );
 
         // Загрузить группы доходов
-        CoreAPI::loadRootGroups( true );
+        CoreAPI::loadGroups( true );
     };
 
     QQmlApplicationEngine engine;

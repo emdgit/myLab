@@ -11,6 +11,7 @@
 
 namespace pg {
     class Worker;
+    class Answer;
 }
 
 class PurchaseRecord;
@@ -35,8 +36,7 @@ public:
      * либо групп расходов.
      * \param[in] profit  true - доходы; false - расходы
      */
-    Q_INVOKABLE
-    static void loadRootGroups( bool profit = false );
+    static void loadGroups(bool profit = false);
 
 
     /*!
@@ -56,6 +56,15 @@ public:
 
     /// Задать хранилище групп расхода
     static void setSpendGroupSt( PGStorage *st ) noexcept;
+
+
+protected:
+
+    /// Загрузить группы для данного 'parent', упаковать их в 'st'
+    static void loadGroupsByParent( PNodeIndex parent, PGStorage * st );
+
+    /// Разобрать группы из answer и уложить в хранилище под индекс parent
+    static void packGroups( pg::Answer * answer, PGStorage * st, PNodeIndex parent );
 
 
 private:

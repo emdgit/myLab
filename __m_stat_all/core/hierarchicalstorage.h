@@ -69,6 +69,10 @@ public:
     HierarchicalStorage(){}
 
     /// Установить callback, оповещающий о вставке.
+    /*!
+     * Если обработчик установлен, он будет вызван с
+     * входным параметром, равным индексу нового элемента.
+     */
     void    setInsertHandler( callback_func f )
     {
         _on_inserted_f = f;
@@ -78,6 +82,9 @@ public:
     {
         if ( !parent ) {
             _roots.push_back( new node_type( obj, nullptr ) );
+            if ( _on_inserted_f ) {
+                _on_inserted_f( {static_cast<int>( _roots.size() - 1 )} );
+            }
             return;
         }
 
@@ -137,6 +144,11 @@ public:
         }
 
         return _node->_children.size();
+    }
+
+    callback_func insertHandler() const noexcept
+    {
+        return _on_inserted_f;
     }
 
 
