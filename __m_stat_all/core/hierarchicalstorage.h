@@ -101,7 +101,7 @@ public:
             return nullptr;
         }
 
-        if ( index.front() >= _roots.size() ) {
+        if ( index.front() >= static_cast<int>(_roots.size()) ) {
             return nullptr;
         }
 
@@ -111,7 +111,7 @@ public:
         while ( index ) {
             auto n = index.front();
 
-            if ( n >= out->_children.size() ) {
+            if ( n >= static_cast<int>(out->_children.size()) ) {
                 /// Нет такого элемента
                 return nullptr;
             }

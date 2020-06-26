@@ -63,7 +63,6 @@ int main(int argc, char *argv[])
     else {
         // Загрузить группы расходов
         CoreAPI::loadRootGroups( false );
-        cout << stSpend.childCount({}) << endl;
 
         // Загрузить группы доходов
         CoreAPI::loadRootGroups( true );

@@ -6,12 +6,6 @@ using namespace std;
 
 static constexpr size_t _fieldCount = 3;
 
-static constexpr const char* _fieldNames[3] = {
-    "id",
-    "group_name",
-    "group_parent_id"
-};
-
 PurchaseGroup::PurchaseGroup()
 {
 
