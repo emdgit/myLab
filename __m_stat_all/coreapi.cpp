@@ -3,6 +3,7 @@
 #include "connecter.h"
 #include "typestorage.h"
 #include "purchasegroup.h"
+#include "purchaserecord.h"
 
 #include <iostream>
 
@@ -80,6 +81,61 @@ void CoreAPI::loadRootGroups(bool profit)
         }
 
         (*st)->insert( {}, gr );
+    }
+}
+
+void CoreAPI::loadRecords(bool profit)
+{
+    using record_vec = vector<PurchaseRecord*>;
+    pair<QString, record_vec*> work_pair;
+
+    if ( profit ) {
+        work_pair.first = "get_all_records_profit";
+        work_pair.second = &_records_profit;
+    } else {
+        work_pair.first = "get_all_records_spend";
+        work_pair.second = &_records_spend;
+    }
+
+    auto func = TypeStorage::func( work_pair.first, "common" );
+
+    if ( !func ) {
+        throw RE( "function common." +
+                  work_pair.first.toStdString() +
+                  "get_root_groups hasn't been found" );
+    }
+
+    auto answer = _pg_worker->execute( *func.value() );
+
+    if ( !answer ) {
+        // todo Пересмотреть логику ответа execute. Что если ответ пустой?
+        return;
+    }
+
+    auto vec = work_pair.second;
+
+    if ( !vec->empty() ) {
+        for ( auto &p : *vec ) {
+            delete p;
+        }
+
+        vec->clear();
+    }
+
+    vec->reserve( answer->rows() );
+
+    for ( size_t i(0); i < answer->rows(); ++i ) {
+        auto record = new PurchaseRecord;
+
+        try {
+            record->fromPgAnswer( answer, i );
+        } catch ( const exception &ex ) {
+            cout << ex.what() << endl;
+            delete record;
+            continue;
+        }
+
+        (*vec)[i] = record;
     }
 }
 
