@@ -129,7 +129,11 @@ void CoreAPI::setProfitGroupSt(PGStorage * st) noexcept
     _p_g_storage_profit = st;
 
     st->setInsertHandler( [&](PNodeIndex index) -> void {
-        loadGroupsByParent( index, _p_g_storage_profit );
+        try {
+            loadGroupsByParent( index, _p_g_storage_profit );
+        } catch ( const exception &ex ) {
+            cout << ex.what() << endl;
+        }
     } );
 }
 
@@ -138,7 +142,11 @@ void CoreAPI::setSpendGroupSt(PGStorage * st) noexcept
     _p_g_storage_spend = st;
 
     st->setInsertHandler( [&](PNodeIndex index) -> void {
-        loadGroupsByParent( index, _p_g_storage_spend );
+        try {
+            loadGroupsByParent( index, _p_g_storage_spend );
+        } catch ( const exception &ex ) {
+            cout << ex.what() << endl;
+        }
     } );
 }
 
