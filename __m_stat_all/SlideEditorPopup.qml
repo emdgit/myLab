@@ -103,22 +103,46 @@ Rectangle {
                 }
 
                 ModelManager.hintModel.setHintFactor( text )
+
+                if ( !hintRect.count ) {
+                    textRect.triggerHintPanel(false)
+                }
             }
             Keys.onEscapePressed: {
                 textRect.triggerHintPanel( false )
             }
+            Keys.onDownPressed: {
+                textRect.onDownPressed()
+            }
+            Keys.onUpPressed: {
+                textRect.onUpPressed()
+            }
         }
         Rectangle {
             id: hintRect
-            property bool hidden: true
             property alias viewOpacity: hintView.opacity
+            property alias count: hintView.count
+            property alias currentIndex: hintView.currentIndex
+
+            property bool hidden: true
             ListView {
                 id: hintView
                 anchors.fill: parent
                 model: ModelManager.hintModel.model
+                onModelChanged: {
+                    if ( count === 0 ) {
+                        currentIndex = -1
+                        textRect.triggerHintPanel(false)
+                    } else {
+                        if ( count <= hintRect.selection ) {
+                            currentIndex = 0
+                        }
+                    }
+                }
                 delegate: Rectangle {
                     property string d: modelData
                     height: 30
+                    color: index == hintRect.currentIndex ? "#12fa08" : "red"
                     width: parent.width
                     Text {
                         anchors.fill: parent
@@ -173,6 +197,28 @@ Rectangle {
             } else {
                 return textField.height + hintRect.height + radius
             }
+        }
+
+        /// Обработчик нажатия кнопки "вниз", при вводе записи в textField
+        function onDownPressed() {
+            if ( !hintRect.count ) {
+                return
+            }
+
+            if ( hintRect.currentIndex === hintRect.count - 1 ) {
+                return
+            }
+
+            hintRect.currentIndex++
+        }
+
+        /// Обработчик нажатия кнопки "вверх", при вводе записи в textField
+        function onUpPressed() {
+            if ( !hintRect.count || hintRect.currentIndex <= 0 ) {
+                return
+            }
+
+            hintRect.currentIndex--;
         }
 
     }
