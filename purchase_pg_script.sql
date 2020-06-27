@@ -396,7 +396,7 @@ BEGIN
 
 	with group_ids AS (
 		select cg.id from common.groups AS cg
-		where is_profit = false
+		where is_profit = true
 	)
 	select (r).*
 	from 
@@ -418,7 +418,7 @@ BEGIN
 
 	with group_ids AS (
 		select cg.id from common.groups AS cg
-		where is_profit = true
+		where is_profit = false
 	)
 	select (r).*
 	from 
