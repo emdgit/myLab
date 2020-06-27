@@ -22,8 +22,8 @@ void PurchaseRecord::fromPgAnswer(pg::Answer *answer, unsigned long i)
     QString name;
 
     fromVariant( _id, answer->field(i,0).value );
-    fromVariant( _group_id, answer->field(i,2).value );
-    fromVariant( name, answer->field(i,1).value );
+    fromVariant( _group_id, answer->field(i,1).value );
+    fromVariant( name, answer->field(i,2).value );
 
     _name = name.toStdString();
 }

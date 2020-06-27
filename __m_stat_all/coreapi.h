@@ -15,6 +15,7 @@ namespace pg {
 }
 
 class PurchaseRecord;
+class ModelManager;
 
 class CoreAPI : public QObject
 {
@@ -50,6 +51,13 @@ public:
     static void loadRecords( bool profit = false );
 
 
+    Q_INVOKABLE
+    static void switchHintModel( bool profit );
+
+
+    static void setModelManager( ModelManager * mm );
+
+
     /// Задать хранилище групп дохода
     static void setProfitGroupSt( PGStorage *st ) noexcept;
 
@@ -71,11 +79,13 @@ private:
 
     static pg::Worker * _pg_worker;
 
+    static inline ModelManager * _modelManager = nullptr;
+
     /// Хранилка групп доходов.
-    static PGStorage *  _p_g_storage_profit;
+    static inline PGStorage *  _p_g_storage_profit;
 
     /// Хранилка групп попупок.
-    static PGStorage *  _p_g_storage_spend;
+    static inline PGStorage *  _p_g_storage_spend;
 
     /// Хранилка доходных записей.
     static inline std::vector<PurchaseRecord*> _records_profit;

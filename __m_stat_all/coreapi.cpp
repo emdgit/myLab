@@ -2,6 +2,7 @@
 
 #include "connecter.h"
 #include "typestorage.h"
+#include "modelmanager.h"
 #include "purchasegroup.h"
 #include "purchaserecord.h"
 
@@ -13,9 +14,6 @@ using namespace std;
 using RE = std::runtime_error;
 
 pg::Worker * CoreAPI::_pg_worker = Connecter::createWorker();
-
-PGStorage * CoreAPI::_p_g_storage_spend = nullptr;
-PGStorage * CoreAPI::_p_g_storage_profit = nullptr;
 
 bool CoreAPI::addPurchase(const int & groupId, const int & userId,
                           const int & recordId, const double & summ,
@@ -107,7 +105,7 @@ void CoreAPI::loadRecords(bool profit)
         vec->clear();
     }
 
-    vec->reserve( answer->rows() );
+//    vec->reserve( answer->rows() );
 
     for ( size_t i(0); i < answer->rows(); ++i ) {
         auto record = new PurchaseRecord;
@@ -120,8 +118,25 @@ void CoreAPI::loadRecords(bool profit)
             continue;
         }
 
-        (*vec)[i] = record;
+        vec->push_back(record);
     }
+}
+
+void CoreAPI::switchHintModel(bool profit)
+{
+    if ( !_modelManager ) {
+        throw runtime_error("Attempt to switch model in NULL model manager");
+    }
+
+    auto records = profit ? &_records_profit
+                          : &_records_spend;
+
+    _modelManager->hintModel()->setRecords( records );
+}
+
+void CoreAPI::setModelManager(ModelManager *mm)
+{
+    _modelManager = mm;
 }
 
 void CoreAPI::setProfitGroupSt(PGStorage * st) noexcept

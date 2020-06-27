@@ -14,6 +14,7 @@
 #include "pnode.h"
 #include "coreapi.h"
 #include "modelmanager.h"
+#include "hintmodel.h"
 
 //
 #include <iostream>
@@ -22,6 +23,14 @@ using namespace std;
 
 void readConfigFile();
 void readDBConfig(QJsonObject &dbObject);
+
+static QObject * core_api_singleton_f(QQmlEngine *qml, QJSEngine * js)
+{
+    Q_UNUSED(qml)
+    Q_UNUSED(js)
+
+    return new CoreAPI;
+}
 
 int main(int argc, char *argv[])
 {
@@ -33,6 +42,9 @@ int main(int argc, char *argv[])
 
     qmlRegisterType<Chart>( "OwlComponents", 1, 0, "Chart" );
     qmlRegisterType<PurchaseGroupModel>( "OwlComponents", 1, 0, "PGroupModel" );
+    qmlRegisterSingletonType<CoreAPI>( "OwlComponents", 1, 0, "CoreAPI", core_api_singleton_f );
+    qmlRegisterUncreatableType<HintModel>( "OwlComponents", 1, 0, "HintModel",
+                                         "HintModel is an uncreatable type" );
 
     // Хранилище доходных групп
     PGStorage stProfit;
@@ -40,13 +52,18 @@ int main(int argc, char *argv[])
     // Хранилище расходных групп
     PGStorage stSpend;
 
-    // Установить хранилища
-    CoreAPI::setSpendGroupSt( &stSpend );
-    CoreAPI::setProfitGroupSt( &stProfit );
+    auto hints = new HintModel();
 
+    // Менеджер моделей
     ModelManager mmanager;
     mmanager.setSpendModel( new PurchaseGroupModel(&stSpend) );
     mmanager.setProfitModel( new PurchaseGroupModel(&stProfit) );
+    mmanager.setHintModel( hints );
+
+    // Установить хранилища
+    CoreAPI::setSpendGroupSt( &stSpend );
+    CoreAPI::setProfitGroupSt( &stProfit );
+    CoreAPI::setModelManager( &mmanager );
 
     try {
         readConfigFile();
@@ -61,11 +78,15 @@ int main(int argc, char *argv[])
         return -2;
     }
     else {
-        // Загрузить группы расходов
+        // Загрузить все группы расходов/доходов
         CoreAPI::loadGroups( false );
-
-        // Загрузить группы доходов
         CoreAPI::loadGroups( true );
+
+        // Загрузить все записи расходов/доходов
+        CoreAPI::loadRecords( false );
+        CoreAPI::loadRecords( true );
+
+        CoreAPI::switchHintModel(false);
     };
 
     QQmlApplicationEngine engine;

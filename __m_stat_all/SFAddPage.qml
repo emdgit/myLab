@@ -3,76 +3,75 @@ import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.0 // 1.12 Win
 
 /// Страница добавления данных на форме статистик
+/// Statistic Form Add Page
 Item {
-    Frame {
-        anchors.horizontalCenter: parent.horizontalCenter
-        ColumnLayout {
-            RowLayout {
-                id: recordLay
-                spacing: 6
-                Label {
-                    Layout.preferredWidth: 75
-                    text: qsTr("Запись:")
-                }
-                TextField {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 30
-                    placeholderText: qsTr("Название...")
 
+    id: topItem
+
+    MouseArea {
+        anchors.fill: parent
+        onClicked: {
+            recordEditor.forceActiveFocus()
+            summEditor.forceActiveFocus()
+            summEditor.forceActiveFocus()
+        }
+    }
+
+    FocusScope{
+        id: fScope
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        Frame {
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 20
+            ColumnLayout {
+                SlideEditorPopup{
+                    id: recordEditor
+                    internalId: 0
+                    text: qsTr("Запись")
+                    onActivated: { switchSlideEditor(number) }
+                }
+                SlideEditorPopup{
+                    id: summEditor
+                    internalId: 1
+                    text: qsTr("Сумма")
+                    onActivated: { switchSlideEditor(number) }
+                }
+                SlideEditorPopup{
+                    id: dateEditor
+                    internalId: 2
+                    text: qsTr("Дата")
+                    onActivated: { switchSlideEditor(number) }
                 }
             }
-            RowLayout {
-                id: summLay
-                spacing: 6
-                Label {
-                    Layout.preferredWidth: 75
-                    text: qsTr("Сумма:")
-                }
-                TextField {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 30
-                    placeholderText: qsTr("Сумма...")
-                    validator: IntValidator {
-                        bottom: 1
-                        top: 2000000000
-                    }
-                }
-            }
-            RowLayout {
-                id: dateLay
-                spacing: 6
-                Label {
-                    Layout.preferredWidth: 75
-                    text: qsTr("Дата:")
-                }
-                TextField {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 30
-                    placeholderText: qsTr("dd.mm.yyyy")
-                    validator: RegExpValidator {
-                        regExp: /\d{2}\.\d{2}\.\d{4}/
-                    }
-                }
-            }
-            RowLayout {
-                id: emptyLay
-                Layout.preferredHeight: 70
-            }
-            RowLayout {
-                id: switchLay
-                spacing: 6
-                Label {
-                    Layout.preferredWidth: 75
-                    text: qsTr("Доход")
-                }
-                Switch{ Layout.fillWidth: true }
-                Text {
-                    text: qsTr("Расход")
-                    Layout.alignment: Qt.AlignRight
-                    Layout.preferredWidth: 75
-                    horizontalAlignment: Text.AlignRight
-                }
-            }
+        }
+    }
+
+    /// Обработчик сигналов активации виджетов "SlideEditor",
+    /// устанавливает активному эдитору повышенное значение z
+    function switchSlideEditor( activeEditor ) {
+        var topZ = 42   // Потому что.
+        var botZ = 0
+
+        function setZ( recZ, sumZ, dateZ ) {
+            recordEditor.z = recZ
+            summEditor.z = sumZ
+            dateEditor.z = dateZ
+        }
+
+        switch ( activeEditor ) {
+            case 0:
+                setZ( topZ, botZ, botZ )
+                break
+            case 1:
+                setZ( botZ, topZ, botZ )
+                break
+            case 2:
+                setZ( botZ, botZ, topZ )
+                break
         }
     }
 }

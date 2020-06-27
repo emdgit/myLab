@@ -3,6 +3,8 @@ import QtQuick.Controls 1.4
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.1
 
+import OwlComponents 1.0
+
 // Form which opens when statistic button pressed
 Item {
 
@@ -76,13 +78,16 @@ Item {
 
     /// Показать меню статистик
     function showTopMenu() {
-
     }
 
     /// Обработчик нажатия кнопок верхнего меню статистик.
     /// Вертит SwipeView
     function swipeTo(index) {
         swipeView.currentIndex = index
+
+        if ( index === 1 ) {
+            CoreAPI.switchHintModel(false)
+        }
     }
 
     /*
