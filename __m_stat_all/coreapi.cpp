@@ -199,7 +199,7 @@ void CoreAPI::packGroups(Answer *answer, PGStorage *st, PNodeIndex parent)
             // todo clear st
 
             cout << ex.what() << endl;
-            throw ex;
+            throw;
         }
 
         st->insert( parent, gr );
