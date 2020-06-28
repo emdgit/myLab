@@ -1,6 +1,8 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.2
 
+import "Common.js" as Script
+
 Button {
 
     property int number: -1
@@ -12,7 +14,7 @@ Button {
     hoverEnabled: true
 
     background: Rectangle {
-        color: menuButton.hovered ? "#3A2E5C"
+        color: menuButton.hovered ? Script.hoveredColor()
                                   : "transparent"
     }
 

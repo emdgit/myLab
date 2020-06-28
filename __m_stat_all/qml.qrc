@@ -12,6 +12,7 @@
         <file>TopStatisticMenu.qml</file>
         <file>SFAddPage.qml</file>
         <file>SlideEditorPopup.qml</file>
+        <file>SlideEditor.qml</file>
     </qresource>
     <qresource prefix="/img">
         <file>graphs.jpg</file>

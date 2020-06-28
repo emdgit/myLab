@@ -2,6 +2,8 @@ import QtQuick 2.0
 
 import OwlComponents 1.0
 
+import "Common.js" as Script
+
 Rectangle {
 
     id:             menuBar
@@ -10,7 +12,7 @@ Rectangle {
     width:          80
     height:         parent.height
 
-    color:          "#2A2440"
+    color:          Script.defaultUnhoveredColor()
 
     anchors.left:   parent.left
     anchors.top:    parent.top
@@ -31,10 +33,10 @@ Rectangle {
 
                 text: qsTr("Groups")
 
-                font.family:    "Franklin Gothic Medium Cond"
-                font.pixelSize: 22
+                font.family:    Script.menuTextFontFamily()
+                font.pixelSize: Script.menuTextFontSize()
 
-                color: "#F2EEDC"
+                color: Script.menuTextColor()
 
                 anchors.fill: parent
                 horizontalAlignment: Text.AlignHCenter

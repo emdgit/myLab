@@ -1,6 +1,8 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.0
 
+import "Common.js" as Script
+
 /// Двигающийся "виджет" с лейблом слева и полем для ввода данных
 /// справа.
 /// При вводе текста в поле ввода появляется popup с подсказками
@@ -64,12 +66,13 @@ Rectangle {
         }
         TextField {
             id: textField
+            height: 28
+            font.family: Script.menuTextFontFamily()
             anchors {
                 top: parent.top
                 left: parent.left
                 right: parent.right
             }
-            height: 28
             background: Rectangle {
                 color: "transparent"
             }
@@ -89,6 +92,13 @@ Rectangle {
                 }
             }
             onAccepted: {
+                if ( hintRect.hidden ) {
+                    /// Создать новую запись
+                } else {
+                    /// Взять выбранную из подсказок запись
+                    text = hintRect.currentHint
+                }
+
                 textField.focus = false
                 textRect.triggerHintPanel( false )
             }
@@ -110,6 +120,7 @@ Rectangle {
             }
             Keys.onEscapePressed: {
                 textRect.triggerHintPanel( false )
+                textField.focus = false
             }
             Keys.onDownPressed: {
                 textRect.onDownPressed()
@@ -124,17 +135,20 @@ Rectangle {
             property alias count: hintView.count
             property alias currentIndex: hintView.currentIndex
 
+            property string currentHint : ""
             property bool hidden: true
+
             ListView {
                 id: hintView
                 anchors.fill: parent
                 model: ModelManager.hintModel.model
                 onModelChanged: {
                     if ( count === 0 ) {
+                        // Подсказок нет
                         currentIndex = -1
                         textRect.triggerHintPanel(false)
                     } else {
-                        if ( count <= hintRect.selection ) {
+                        if ( count <= currentIndex ) {
                             currentIndex = 0
                         }
                     }
@@ -142,15 +156,27 @@ Rectangle {
                 delegate: Rectangle {
                     property string d: modelData
                     height: 30
-                    color: index == hintRect.currentIndex ? "#12fa08" : "red"
+                    color: {
+                        if ( index === hintRect.currentIndex ) {
+                            hintRect.currentHint = d
+                            return Script.defaultUnhoveredColor()
+                        }
+
+                        return Script.hoveredColor()
+                    }
                     width: parent.width
+
                     Text {
                         anchors.fill: parent
                         text: d
                         horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        color: Script.menuTextColor()
+                        font.family: Script.menuTextFontFamily()
                     }
                 }
             }
+
             anchors {
                 top: textField.bottom
                 left: parent.left
@@ -175,6 +201,7 @@ Rectangle {
                         target: hintRect
                         height: 100
                         viewOpacity: 1
+                        currentIndex: -1
                     }
                 }
             ]
@@ -220,6 +247,6 @@ Rectangle {
 
             hintRect.currentIndex--;
         }
-
     }
 }
+

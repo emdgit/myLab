@@ -2,6 +2,8 @@ import QtQuick 2.0
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.0 // 1.12 Win
 
+import "Common.js" as Script
+
 /// Страница добавления данных на форме статистик
 /// Statistic Form Add Page
 Item {
@@ -34,17 +36,22 @@ Item {
                     text: qsTr("Запись")
                     onActivated: { switchSlideEditor(number) }
                 }
-                SlideEditorPopup{
+                SlideEditor{
                     id: summEditor
                     internalId: 1
                     text: qsTr("Сумма")
-                    onActivated: { switchSlideEditor(number) }
+                    validator: IntValidator {
+                        bottom: 1
+                        top: 2000000000
+                    }
                 }
-                SlideEditorPopup{
+                SlideEditor{
                     id: dateEditor
                     internalId: 2
                     text: qsTr("Дата")
-                    onActivated: { switchSlideEditor(number) }
+                    validator: RegExpValidator {
+                        regExp: /\d{2}\.\d{2}\.\d{4}/
+                    }
                 }
             }
         }
@@ -65,12 +72,6 @@ Item {
         switch ( activeEditor ) {
             case 0:
                 setZ( topZ, botZ, botZ )
-                break
-            case 1:
-                setZ( botZ, topZ, botZ )
-                break
-            case 2:
-                setZ( botZ, botZ, topZ )
                 break
         }
     }
