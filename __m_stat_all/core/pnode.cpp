@@ -116,9 +116,9 @@ PNodeIndex::PNodeIndex()
 {
 }
 
-PNodeIndex::PNodeIndex(const PNodeIndex &other)
+PNodeIndex::PNodeIndex(const PNodeIndex &other) :
+    indexQueue(other.indexQueue)
 {
-    indexQueue = other.indexQueue;
 }
 
 PNodeIndex::PNodeIndex(std::initializer_list<int> && vals)

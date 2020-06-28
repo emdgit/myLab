@@ -1,17 +1,16 @@
 #include "typedfield.h"
 
-pg::TypedField::TypedField()
+pg::TypedField::TypedField() :
+    type(Type::UnknownType)
 {
-    type = Type::UnknownType;
 }
 
 pg::TypedField::TypedField(const FieldPtr &field, const TypedField::Type &t) :
     field( field ), type( t ) {}
 
-pg::TypedField::TypedField(const TypedField &tf)
+pg::TypedField::TypedField(const TypedField &tf) :
+    field(tf.field), type(tf.type)
 {
-    field = tf.field;
-    type = tf.type;
 }
 
 bool pg::TypedField::operator==(const TypedField &other) const noexcept
