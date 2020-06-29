@@ -182,6 +182,8 @@ bool PNodeIndex::operator<(const PNodeIndex & other) const
 {
     if ( indexQueue.size() < other.indexQueue.size() ) {
         return true;
+    } else if ( indexQueue.size() > other.indexQueue.size() ) {
+        return false;
     }
 
     auto it_this = indexQueue.cbegin();
@@ -190,6 +192,8 @@ bool PNodeIndex::operator<(const PNodeIndex & other) const
     while ( it_this != indexQueue.cend() ) {
         if ( *it_this < *it_other ) {
             return true;
+        } else if ( *it_this > *it_other ) {
+            return false;
         }
 
         ++it_this;

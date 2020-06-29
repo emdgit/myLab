@@ -23,6 +23,7 @@ struct PNodeIndex
     PNodeIndex();
     PNodeIndex( const PNodeIndex &other );
     PNodeIndex( std::initializer_list<int> &&vals );
+    PNodeIndex(PNodeIndex&&) = default;
 
     std::deque<int> indexQueue;
 

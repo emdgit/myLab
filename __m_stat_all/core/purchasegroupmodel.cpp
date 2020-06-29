@@ -1,5 +1,7 @@
 #include "purchasegroupmodel.h"
 
+#include <iostream>
+
 using namespace std;
 
 PurchaseGroupModel::PurchaseGroupModel(QObject * parent) :
@@ -47,7 +49,9 @@ QModelIndex PurchaseGroupModel::parent(const QModelIndex & child) const
         return QModelIndex();
     }
 
-    auto p_index_parent = (*p_index)--;
+    auto row = p_index->back();
+    auto p_index_parent = (*p_index);
+    p_index_parent--;
 
     auto it = _index_set.find( p_index_parent );
 
@@ -57,7 +61,7 @@ QModelIndex PurchaseGroupModel::parent(const QModelIndex & child) const
 
     auto raw_ptr = const_cast<PNodeIndex*>( &(*it) );
 
-    return createIndex( (*it).back(), 1, raw_ptr );
+    return createIndex( row, 1, raw_ptr );
 }
 
 int PurchaseGroupModel::rowCount(const QModelIndex & parent) const

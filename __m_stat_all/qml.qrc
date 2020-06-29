@@ -19,5 +19,8 @@
         <file>qqq.jpg</file>
         <file>users.png</file>
         <file>images/lined_menu.svg</file>
+        <file>images/folder_closed.svg</file>
+        <file>images/folder_opened.svg</file>
+        <file>images/search.svg</file>
     </qresource>
 </RCC>

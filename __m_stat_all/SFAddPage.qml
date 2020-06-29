@@ -1,6 +1,9 @@
 import QtQuick 2.0
+import QtQuick.Controls 1.4
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.0 // 1.12 Win
+
+import OwlComponents 1.0
 
 import "Common.js" as Script
 
@@ -20,16 +23,28 @@ Item {
     }
 
     FocusScope{
+
         id: fScope
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
+
+        anchors {
+            horizontalCenter: parent.horizontalCenter
+            top: parent.top
+            bottom: parent.bottom
+        }
+
         Frame {
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 20
+
+            id: dataFrame
+
+            anchors {
+                horizontalCenter: parent.horizontalCenter
+                top: parent.top
+                bottom: parent.bottom
+                bottomMargin: 20
+            }
+
             ColumnLayout {
+                anchors.fill: parent
                 SlideEditorPopup{
                     id: recordEditor
                     internalId: 0
@@ -53,9 +68,43 @@ Item {
                         regExp: /\d{2}\.\d{2}\.\d{4}/
                     }
                 }
+                Rectangle {
+                    Layout.fillHeight: true
+                }
+                RowLayout {
+                    width: parent.width
+                    Label {
+                        text: qsTr("Расход")
+                        Layout.preferredWidth: 100
+                        Layout.alignment: Qt.AlignLeft
+                        font.family: Script.menuTextFontFamily()
+                    }
+                    Switch {
+                        Layout.alignment: Qt.AlignHCenter
+                        Layout.preferredWidth: 100
+                        onCheckedChanged: {
+                            if (checked) {
+                                // Доход
+                                CoreAPI.switchHintModel(true)
+                            } else {
+                                CoreAPI.switchHintModel(false)
+                            }
+                        }
+                    }
+                    Text {
+                        text: qsTr("Доход")
+                        Layout.alignment: Qt.AlignRight
+                        Layout.preferredWidth: 100
+                        horizontalAlignment: Text.AlignRight
+                        font.family: Script.menuTextFontFamily()
+                    }
+                }
             }
         }
+
+
     }
+
 
     /// Обработчик сигналов активации виджетов "SlideEditor",
     /// устанавливает активному эдитору повышенное значение z

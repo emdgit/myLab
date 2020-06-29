@@ -89,17 +89,4 @@ Item {
             CoreAPI.switchHintModel(false)
         }
     }
-
-    /*
-    TreeView {
-        id: view
-
-        model: ModelManager.spendModel
-
-        TableViewColumn {
-               role: "r_pgroup_name"
-               title: "Name"
-        }
-    }
-    */
 }
