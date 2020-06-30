@@ -6,6 +6,7 @@
 
 #include <queue>
 
+/// Структура представляет собой адрес элемента в дереве.
 /*!
  * \brief   struct-address in tree
  *
@@ -27,8 +28,15 @@ struct PNodeIndex
 
     std::deque<int> indexQueue;
 
+    /// Самое левое значение (первое)
     int             front() const;
+    /// Самое правое значение (последнее)
     int             back() const;
+
+    /// Удалить последний индекс
+    void            popBack();
+    /// Удалить первый индекс
+    void            popFront();
 
     size_t          size() const noexcept;
 
@@ -67,11 +75,8 @@ struct PNodeIndex
     /// Добавляет число в конец
     PNodeIndex &    operator+=( const int &i );
 
-    /// Удаляет первое число
-    PNodeIndex &    operator--();
-    /// Удаляет последнее число
-    PNodeIndex &    operator--(int);
     PNodeIndex &    operator=( const PNodeIndex &other );
+
 
     /// Проверка на пустоту
     operator bool() const noexcept;
