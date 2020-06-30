@@ -113,7 +113,7 @@ public:
         }
 
         node_type * out = _roots[index.front()];
-        --index;
+        index.popFront();
 
         while ( index ) {
             auto n = index.front();
@@ -124,7 +124,7 @@ public:
             }
 
             out = out->_children[n];
-            --index;
+            index.popFront();
         }
 
         return out;

@@ -16,13 +16,15 @@ void IndexTree::push(PNodeIndex index)
     {
         if ( children[j].i == v )
         {
-            children[j].push( --index );
+            index.popFront();
+            children[j].push( index );
             return;
         }
     }
 
     children.push_back( IndexTree( v ) );
-    children.back().push( --index );
+    index.popFront();
+    children.back().push( index );
 }
 
 void IndexTree::removeLast(PNodeIndex index)
@@ -45,7 +47,8 @@ void IndexTree::removeLast(PNodeIndex index)
             }
             else
             {
-                (*it).removeLast( --index );
+                index.popFront();
+                (*it).removeLast( index );
             }
         }
     }
@@ -73,10 +76,11 @@ void IndexTree::indexesAtDistance(PNodeIndex from, PNodeIndex copy, PIndexVec &t
     }
     else    //  continue find
     {
-        const int v = from.indexQueue.front();
+        const int v = from.front();
         const size_t s = children.size();
 
-        PNodeIndex next = --from;
+        from.popFront();
+        PNodeIndex next = from;
 
         for ( size_t j(0); j < s; ++j )
             if ( children[j].i == v )
@@ -105,12 +109,18 @@ int IndexTree::distance(PNodeIndex index, int way) const
     {
         if ( children[j].i == v )
         {
-            return children[j].distance( --index, ++way );
+            index.popFront();
+            return children[j].distance( index, ++way );
         }
     }
 
     return -1;
 }
+
+
+
+
+
 
 PNodeIndex::PNodeIndex()
 {
@@ -130,22 +140,22 @@ PNodeIndex::PNodeIndex(std::initializer_list<int> && vals)
 
 int PNodeIndex::front() const
 {
-    try {
-        return indexQueue.front();
-    }
-    catch (...) {
-        throw;
-    }
+    return indexQueue.front();
 }
 
 int PNodeIndex::back() const
 {
-    try {
-        return indexQueue.back();
-    }
-    catch (...) {
-        throw;
-    }
+    return indexQueue.back();
+}
+
+void PNodeIndex::popBack()
+{
+    indexQueue.pop_back();
+}
+
+void PNodeIndex::popFront()
+{
+    indexQueue.pop_front();
 }
 
 size_t PNodeIndex::size() const noexcept
@@ -219,12 +229,6 @@ PNodeIndex &PNodeIndex::operator+=(const int & i)
     return *this;
 }
 
-PNodeIndex &PNodeIndex::operator--(int)
-{
-    indexQueue.pop_back();
-    return *this;
-}
-
 PNodeIndex &PNodeIndex::operator=(const PNodeIndex & other)
 {
     if ( this == &other )
@@ -239,8 +243,3 @@ PNodeIndex::operator bool() const noexcept
     return !indexQueue.empty();
 }
 
-PNodeIndex &PNodeIndex::operator--()
-{
-    indexQueue.pop_front();
-    return *this;
-}

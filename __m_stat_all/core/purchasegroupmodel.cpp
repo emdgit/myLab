@@ -51,7 +51,7 @@ QModelIndex PurchaseGroupModel::parent(const QModelIndex & child) const
 
     auto row = p_index->back();
     auto p_index_parent = (*p_index);
-    p_index_parent--;
+    p_index_parent.popBack();
 
     auto it = _index_set.find( p_index_parent );
 
