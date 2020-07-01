@@ -8,18 +8,21 @@ import OwlComponents 1.0
 Window {
     id: mainWindow
     visible: true
-    width: 640
-    height: 480
+    width: Screen.desktopAvailableWidth
+    height: Screen.desktopAvailableHeight
     title: qsTr("Uot tak uot")
 
-    MenuBar {
+    MMenuBar {
         id: bar
 
         onButtonClicked: {
             topLabel.setText( name )
             mainWindow.onButtonClicked( number )
         }
+
     }
+
+
 
     TopLabel {
         id: topLabel
@@ -46,6 +49,7 @@ Window {
             id: third
             color: 'blue'
         }
+
     }
 
     // Handler of menu buttons click

@@ -2,7 +2,7 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>MenuButton.qml</file>
-        <file>MenuBar.qml</file>
+        <file>MMenuBar.qml</file>
         <file>TopLabel.qml</file>
         <file>TextRect.qml</file>
         <file>Common.js</file>
@@ -13,6 +13,9 @@
         <file>SFAddPage.qml</file>
         <file>SlideEditorPopup.qml</file>
         <file>SlideEditor.qml</file>
+        <file>PGroupsTree.qml</file>
+        <file>notifiers/NoRecordNotifier.qml</file>
+        <file>TextHoverButton.qml</file>
     </qresource>
     <qresource prefix="/img">
         <file>graphs.jpg</file>
@@ -22,5 +25,7 @@
         <file>images/folder_closed.svg</file>
         <file>images/folder_opened.svg</file>
         <file>images/search.svg</file>
+        <file>images/background.jpg</file>
     </qresource>
+    <qresource prefix="/notifiers"/>
 </RCC>

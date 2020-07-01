@@ -6,6 +6,7 @@
 *.stash
 *.exe
 *.o
+*.autosave
 *moc_*
 *Makefile*
 *qrc_*.cpp
