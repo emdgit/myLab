@@ -125,6 +125,10 @@ Item {
                 bottom: parent.bottom
                 bottomMargin: 20
             }
+            onAccept: {
+                // todo ( real profit flag )
+                CoreAPI.addRecord( groupId, recordEditor.record, false );
+            }
         }
 
         NoRecordNotifier{

@@ -109,19 +109,6 @@ PNodeIndex *PurchaseGroupModel::toPNodeIndex(const QModelIndex & index) const no
     return static_cast<PNodeIndex*>( index.internalPointer() );
 }
 
-QVariant PurchaseGroupModel::headerData(int section, Qt::Orientation orientation, int role) const
-{
-    if ( role != Qt::DisplayRole ) {
-        return QVariant();
-    }
-
-    if ( orientation == Qt::Horizontal ) {
-        return "OWL goes faster";
-    }
-
-    return section + 1;
-}
-
 QHash<int, QByteArray> PurchaseGroupModel::roleNames() const
 {
     QHash<int, QByteArray> hash;
@@ -129,4 +116,21 @@ QHash<int, QByteArray> PurchaseGroupModel::roleNames() const
     hash.insert( Name, "r_pgroup_name" );
 
     return hash;
+}
+
+int PurchaseGroupModel::groupId(const QModelIndex &index) const
+{
+    auto pIndex = toPNodeIndex( index );
+
+    if ( !pIndex ) {
+        return -1;
+    }
+
+    auto node = _st->node( *pIndex );
+
+    if ( !node ) {
+        return -2;
+    }
+
+    return node->_data->id();
 }

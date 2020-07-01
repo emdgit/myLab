@@ -105,8 +105,6 @@ void CoreAPI::loadRecords(bool profit)
         vec->clear();
     }
 
-//    vec->reserve( answer->rows() );
-
     for ( size_t i(0); i < answer->rows(); ++i ) {
         auto record = new PurchaseRecord;
 
@@ -132,6 +130,37 @@ void CoreAPI::switchHintModel(bool profit)
                           : &_records_spend;
 
     _modelManager->hintModel()->setRecords( records );
+}
+
+void CoreAPI::addRecord(int groupId, const QString &recordName, bool profit)
+{
+    auto func = TypeStorage::func( "add_record", "common" );
+
+    if ( !func ) {
+        throw RE( "Function 'common.add_record' hasn't been found" );
+    }
+
+    (*func)->bindValue( "group_id", groupId );
+    (*func)->bindValue( "name", recordName );
+
+    auto answer = _pg_worker->execute( **func );
+
+    if (!answer) {
+        throw RE( "Cannot execute function common.add_record" );
+    }
+
+    auto res = answer->tryConvert<int>();
+
+    if ( !res ) {
+        throw RE( "Unexpected function response: CoreAPI::addRecord(): "
+                  "'common.add_record'" );
+    }
+
+    if ( *res < 0 ) {
+        throw RE( "Error in psql function: 'common.add_record'" );
+    }
+
+    loadRecords( profit );
 }
 
 void CoreAPI::setModelManager(ModelManager *mm)

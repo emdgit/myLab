@@ -7,7 +7,6 @@ HintModel::HintModel(QObject *parent) : QObject(parent)
 
 QStringList HintModel::model() const
 {
-//    return QStringList() << "One" << "TWO" << "Three";
     return _model;
 }
 

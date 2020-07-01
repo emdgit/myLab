@@ -55,6 +55,15 @@ public:
     static void switchHintModel( bool profit );
 
 
+    /*!
+     * Добавить запись в БД
+     * \param[in] groupId Идентификатор группы, в которую будет включена запись
+     * \param[in] recordName Имя добавляемой записи
+     */
+    Q_INVOKABLE
+    static void addRecord( int groupId, const QString &recordName, bool profit );
+
+
     static void setModelManager( ModelManager * mm );
 
 

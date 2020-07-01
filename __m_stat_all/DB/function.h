@@ -63,6 +63,7 @@ private:
 
     Q_DECLARE_PRIVATE(PgFunction)
     friend class ::PgFunctionPrivate;
+
     FP *                    d_ptr;
 
     QString                 _name;
@@ -72,5 +73,6 @@ private:
     ArgInVec                _inArgs;
 
 };
+
 
 #endif // PGFUNCTION_H

@@ -13,6 +13,10 @@ Item {
     width: 300
     opacity: 0
 
+    /// Сигнал эмитируется, когда была нажата кнопка "Выбрать"
+    /// Передает id выбранной группы
+    signal accept( int groupId )
+
     QtObject {
         id: _d
         /// Вертикальное расстояноие под нижние кнопки
@@ -86,9 +90,20 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             x: parent.width / 2 + width / 2
             y: parent.height / 2 - height / 2
-            onClicked: {
-                console.log("Фссузе");
-            }
+            onClicked: { topItem.onAcceptClicked() }
         }
     }
+
+    /// Обработчик нажатия кнопки "Выбрать"
+    function onAcceptClicked() {
+        var index = treeView.currentIndex;
+        var group_id = treeView.model.groupId( index );
+
+        if ( group_id < 0 ) {
+            return;
+        }
+
+        accept( group_id )
+    }
+
 }

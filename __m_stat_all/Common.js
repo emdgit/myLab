@@ -11,7 +11,7 @@ function finishTextRect() {
         textRect.show = true;
         textRect.text = nextName;
 
-        textRectArr.push( textRect )
+        textRectArr.push( textRect );
     }
     else {
         console.log( "Component textRect isn't ready.." );
@@ -19,7 +19,7 @@ function finishTextRect() {
 }
 
 function createNewTextRect( name ) {
-    component = Qt.createComponent( "TextRect.qml" )
+    component = Qt.createComponent( "TextRect.qml" );
     nextName = name;
 
     if ( component.status === Component.Ready ) {

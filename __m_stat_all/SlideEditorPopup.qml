@@ -16,6 +16,9 @@ Rectangle {
     /// Установка текста в лейбл (слева)
     property alias text: label.text
 
+    /// Текст из эдитора
+    property alias record: textField.text
+
     /// Ширина виджета
     property int m_width: 300
 

@@ -46,6 +46,24 @@ public:
 
     AnswerValue field( const size_t &row, const size_t &column ) const;
 
+    template < class T >
+    std::optional<T> tryConvert() const
+    {
+        if ( _answerMap.size() != 1 ) {
+            return std::nullopt;
+        }
+
+        if ( _answerMap[0].values.size() != 1 ) {
+            return std::nullopt;
+        }
+
+        try {
+            return std::make_optional( qvariant_cast<T>( _answerMap[0].values[0] ) );
+        } catch (...) {
+            return std::nullopt;
+        }
+    }
+
     Answer &    operator=( const Answer & ) = delete;
     Answer &    operator=( Answer && ) = default;
 
