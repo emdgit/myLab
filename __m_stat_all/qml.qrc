@@ -26,6 +26,8 @@
         <file>images/folder_opened.svg</file>
         <file>images/search.svg</file>
         <file>images/background.jpg</file>
+        <file>images/folder_plus.svg</file>
+        <file>images/clipboadr_plus.svg</file>
     </qresource>
     <qresource prefix="/notifiers"/>
 </RCC>
