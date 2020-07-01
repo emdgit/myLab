@@ -1,7 +1,8 @@
 import QtQuick 2.0
-import QtQuick.Controls 1.4
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.0 // 1.12 Win
+
+import "./notifiers"
 
 import OwlComponents 1.0
 
@@ -13,6 +14,16 @@ Item {
 
     id: topItem
 
+    /// Фон. Подождёт рабочего функционала
+    /*
+    Image {
+        id: name
+        source: "qrc:/img/images/background.jpg"
+        anchors.fill: parent
+        fillMode: Image.Tile
+    }
+    */
+
     MouseArea {
         anchors.fill: parent
         onClicked: {
@@ -23,7 +34,6 @@ Item {
     }
 
     FocusScope{
-
         id: fScope
 
         anchors {
@@ -33,16 +43,13 @@ Item {
         }
 
         Frame {
-
             id: dataFrame
-
             anchors {
                 horizontalCenter: parent.horizontalCenter
                 top: parent.top
                 bottom: parent.bottom
                 bottomMargin: 20
             }
-
             ColumnLayout {
                 anchors.fill: parent
                 SlideEditorPopup{
@@ -50,6 +57,14 @@ Item {
                     internalId: 0
                     text: qsTr("Запись")
                     onActivated: { switchSlideEditor(number) }
+                    onNeedNewRecord: { topItem.onNeedNewRecord() }
+                    onNoRecordsDetected: { recordNotifier.show() }
+                    onEmptyRecord: { recordNotifier.hide() }
+                    onRecordEdited: {
+                        if ( !recordNotifier.isHidden ) {
+                            recordNotifier.hide()
+                        }
+                    }
                 }
                 SlideEditor{
                     id: summEditor
@@ -102,7 +117,21 @@ Item {
             }
         }
 
+        PGroupsTree {
+            id: gTree
+            x: dataFrame.x - width
+            anchors {
+                top: parent.top
+                bottom: parent.bottom
+                bottomMargin: 20
+            }
+        }
 
+        NoRecordNotifier{
+            id: recordNotifier
+            x: dataFrame.x + dataFrame.width + 23
+            onSelectClicked: { topItem.onNeedNewRecord() }
+        }
     }
 
 
@@ -122,6 +151,20 @@ Item {
             case 0:
                 setZ( topZ, botZ, botZ )
                 break
+        }
+    }
+
+    /// Открывает просмотр групп при добавлении новой записи
+    function showGroups() {
+        gTree.opacity = 1
+    }
+
+    /// Обработчик сигнала needNewRecord, поступившего с эдитора
+    function onNeedNewRecord() {
+        showGroups()
+
+        if ( !recordNotifier.isHidden ) {
+            recordNotifier.hide()
         }
     }
 }

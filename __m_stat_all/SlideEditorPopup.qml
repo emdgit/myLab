@@ -25,6 +25,22 @@ Rectangle {
     /// Сигнал вызывается всякий раз, когда TextField получает фокус
     signal activated( int number )
 
+    /// Сигнал вызывается, когда был нажат Enter при отсутствии
+    /// существующих записей
+    signal needNewRecord( string recordName )
+
+    /// Сигнал вызывается всякий раз, когда не были обнаружены
+    /// записи, содержащие в своем названии введенный в эдитор текст
+    signal noRecordsDetected()
+
+    /// Сигнал вызывается всякий раз, когда в процессе редактирования
+    /// записи, весь текст её названия оказался стерт
+    signal emptyRecord()
+
+    /// Сигнал вызывается всякий раз, когда имя записи редактируется
+    /// и не является пустым
+    signal recordEdited( string currentName )
+
     height: 40
     width: m_width
 
@@ -94,6 +110,7 @@ Rectangle {
             onAccepted: {
                 if ( hintRect.hidden ) {
                     /// Создать новую запись
+                    needNewRecord( text )
                 } else {
                     /// Взять выбранную из подсказок запись
                     text = hintRect.currentHint
@@ -109,13 +126,16 @@ Rectangle {
 
                 if ( text === qsTr("") ) {
                     textRect.triggerHintPanel( false )
+                    emptyRecord()
                     return
                 }
 
                 ModelManager.hintModel.setHintFactor( text )
+                recordEdited( text )
 
                 if ( !hintRect.count ) {
                     textRect.triggerHintPanel(false)
+                    noRecordsDetected()
                 }
             }
             Keys.onEscapePressed: {
