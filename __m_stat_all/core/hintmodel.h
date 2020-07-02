@@ -23,6 +23,9 @@ public:
 
     void                setRecords( RecordVec * records );
 
+    Q_INVOKABLE
+    bool                containsRecord( const QString &rec ) const;
+
 
 public slots:
 

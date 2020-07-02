@@ -64,6 +64,17 @@ public:
     static void addRecord( int groupId, const QString &recordName, bool profit );
 
 
+    /*!
+     * Добавить новую группу.
+     * \param[in] name  Имя добавляемой группы.
+     * \param[in] parentGroupId Идетификатор группы родителя, если передать 0,
+     * будет создана новая корневая группа.
+     * \param[in] profit Расход/доход
+     */
+    Q_INVOKABLE
+    static void addPurchaseGroup( const QString &name, int parentGroupId, bool profit );
+
+
     static void setModelManager( ModelManager * mm );
 
 

@@ -50,7 +50,7 @@ void CoreAPI::loadGroups(bool profit)
         throw RE( "function common.get_root_groups hasn't been found" );
     }
 
-    auto answer = _pg_worker->execute( *func.value() );
+    auto answer = unique_ptr<Answer>( _pg_worker->execute( *func.value() ) );
 
     if ( !answer ) {
         // todo Пересмотреть логику ответа execute. Что если ответ пустой?
@@ -64,7 +64,7 @@ void CoreAPI::loadGroups(bool profit)
         throw RE("Target storage wasn't set");
     }
 
-    packGroups( answer, *st, {} );
+    packGroups( answer.get(), *st, {} );
 }
 
 void CoreAPI::loadRecords(bool profit)
@@ -88,7 +88,7 @@ void CoreAPI::loadRecords(bool profit)
                   "get_root_groups hasn't been found" );
     }
 
-    auto answer = _pg_worker->execute( *func.value() );
+    auto answer = unique_ptr<Answer>( _pg_worker->execute( *func.value() ) );
 
     if ( !answer ) {
         // todo Пересмотреть логику ответа execute. Что если ответ пустой?
@@ -109,7 +109,7 @@ void CoreAPI::loadRecords(bool profit)
         auto record = new PurchaseRecord;
 
         try {
-            record->fromPgAnswer( answer, i );
+            record->fromPgAnswer( answer.get(), i );
         } catch ( const exception &ex ) {
             cout << ex.what() << endl;
             delete record;
@@ -143,7 +143,7 @@ void CoreAPI::addRecord(int groupId, const QString &recordName, bool profit)
     (*func)->bindValue( "group_id", groupId );
     (*func)->bindValue( "name", recordName );
 
-    auto answer = _pg_worker->execute( **func );
+    auto answer = unique_ptr<Answer>( _pg_worker->execute( **func ) );
 
     if (!answer) {
         throw RE( "Cannot execute function common.add_record" );
@@ -157,10 +157,56 @@ void CoreAPI::addRecord(int groupId, const QString &recordName, bool profit)
     }
 
     if ( *res < 0 ) {
-        throw RE( "Error in psql function: 'common.add_record'" );
+        return;
     }
 
     loadRecords( profit );
+}
+
+void CoreAPI::addPurchaseGroup(const QString &name, int parentGroupId, bool profit)
+{
+    auto func = TypeStorage::func( "add_group", "common" );
+
+    if ( !func ) {
+        throw RE( "Function 'common.add_group' hasn't been found" );
+    }
+
+    (*func)->bindValue( "name", name );
+    (*func)->bindValue( "profit", profit );
+
+    if ( parentGroupId ) {
+        (*func)->bindValue( "parent_id", parentGroupId );
+    }
+
+    auto answer = unique_ptr<Answer>( _pg_worker->execute( **func ) );
+
+    if (!answer) {
+        throw RE( "Cannot execute function common.add_group" );
+    }
+
+    auto res = answer->tryConvert<int>();
+
+    if ( !res ) {
+        throw RE( "Unexpected function response: CoreAPI::addPurchaseGroup(): "
+                  "'common.add_group'" );
+    }
+
+    if ( *res < 0 ) {
+        throw RE( "Error in psql function: 'common.add_group'" );
+    }
+
+    auto st = profit ? _p_g_storage_profit
+                     : _p_g_storage_spend;
+
+    st->clear();
+
+    loadGroups( profit );
+
+    if ( profit ) {
+        _modelManager->profitModel()->reloadData();
+    } else {
+        _modelManager->spendModel()->reloadData();
+    }
 }
 
 void CoreAPI::setModelManager(ModelManager *mm)
@@ -205,14 +251,14 @@ void CoreAPI::loadGroupsByParent(PNodeIndex parent, PGStorage *st)
     auto id = st->node(parent)->_data->id();
     func.value()->bindValue( "group_parent_id", id );
 
-    auto answer = _pg_worker->execute( *func.value() );
+    auto answer = unique_ptr<Answer>( _pg_worker->execute( *func.value() ) );
 
     if ( !answer ) {
         // todo Пересмотреть логику ответа execute. Что если ответ пустой?
         return;
     }
 
-    packGroups( answer, st, parent );
+    packGroups( answer.get(), st, parent );
 }
 
 void CoreAPI::packGroups(Answer *answer, PGStorage *st, PNodeIndex parent)

@@ -50,6 +50,9 @@ public:
 
     bool        showRoot() const;
 
+    /// Эквивалент 'resetModel()'
+    void        reloadData();
+
     QString     rootName() const;
 
 

@@ -15,6 +15,16 @@ void HintModel::setRecords(HintModel::RecordVec *records)
     _records = records;
 }
 
+bool HintModel::containsRecord(const QString &rec) const
+{
+    auto it = std::find_if(_records->begin(), _records->end(),
+                           [&](PurchaseRecord * const &r){
+              return QString(r->name().data()).compare(rec, Qt::CaseInsensitive);
+    });
+
+    return it != _records->end();
+}
+
 void HintModel::setModel(QStringList lst)
 {
     _model = lst;

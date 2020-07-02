@@ -5,6 +5,8 @@ import QtQuick.Controls.Styles 1.4
 import QtQuick.Layouts 1.1
 import QtQml.Models 2.11
 
+import OwlComponents 1.0
+
 import "Common.js" as Script
 
 /// Элемент для работы с деревом групп покупок
@@ -14,6 +16,8 @@ Item {
 
     width: 300
     opacity: 0
+
+    property bool profit: false
 
     /// Сигнал эмитируется, когда была нажата кнопка "Выбрать"
     /// Передает id выбранной группы
@@ -35,6 +39,11 @@ Item {
 
     TreeView {
         id: treeView
+
+        /// Последний кликнутый индекс.
+        /// (Строка может давать warning, игнорировать, тут НУЖЕН var)
+        default property var lastIndex: 0
+
         model: ModelManager.spendModel
         horizontalScrollBarPolicy: Qt.ScrollBarAlwaysOff
         height: parent.height - _d.buttonsH
@@ -72,6 +81,9 @@ Item {
             id: selector
             model: ModelManager.spendModel
         }
+        onClicked: { lastIndex = index; }
+
+        function resetLastIndex() { lastIndex = 0; }
     }
 
     Behavior on opacity {
@@ -126,10 +138,7 @@ Item {
 
                         Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
 
-                        onClicked: {
-                            controlSwipeView.currentIndex = 1
-                            ModelManager.spendModel.setShowRoot(true)
-                        }
+                        onClicked: { controlSwipeView.swipeTo(1); }
                     }
 
                     PicButton {
@@ -141,7 +150,18 @@ Item {
 
                         Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
 
-                        onClicked: { topItem.onAcceptClicked() }
+                        onClicked: {
+
+                            var index = treeView.lastIndex;
+
+                            if ( index === 0 ) {
+                                return;
+                            }
+
+                            var groupId = treeView.model.groupId(index);
+                            topItem.accept( groupId );
+                            topItem.opacity = 0;
+                        }
                     }
 
                     Rectangle { Layout.fillWidth: true }
@@ -153,15 +173,43 @@ Item {
                 text: qsTr( "Имя:" )
                 alternativePlaceholder: qsTr("Имя новой группы..")
                 onAccepted: {
-                    controlSwipeView.currentIndex = 0;
-                    ModelManager.spendModel.setShowRoot(false)
+                    var index = treeView.lastIndex;
+
+                    if ( index !== 0 ) {
+                        var groupId = ModelManager.spendModel.groupId(index)
+                        CoreAPI.addPurchaseGroup(editorText, groupId, topItem.profit);
+                    }
+
+                    controlSwipeView.swipeTo(0);
                 }
                 onEscaped: {
-                    controlSwipeView.currentIndex = 0;
-                    ModelManager.spendModel.setShowRoot(false)
+                    controlSwipeView.swipeTo(0);
                 }
             }
         }
+
+        /// Вертит SwipeView
+        function swipeTo( index ) {
+
+            console.log( "Swipe to ", index );
+
+            if ( index < 0 || index > 1 ) {
+                return;
+            }
+
+            if ( index === 0 ) {
+                controlSwipeView.currentIndex = 0;
+                ModelManager.spendModel.setShowRoot(false);
+            }
+            else {
+                controlSwipeView.currentIndex = 1
+                ModelManager.spendModel.setShowRoot(true)
+            }
+
+            treeView.resetLastIndex();
+            currentIndex = index;
+        }
+
     }
 
     /// Обработчик нажатия кнопки "Выбрать"

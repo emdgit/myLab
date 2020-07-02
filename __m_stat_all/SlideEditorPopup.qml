@@ -112,15 +112,17 @@ Rectangle {
             }
             onAccepted: {
                 if ( hintRect.hidden ) {
+                    if ( !ModelManager.hintModel.containsRecord( text ) ) {
                     /// Создать новую запись
-                    needNewRecord( text )
+                    needNewRecord( text );
+                    }
                 } else {
                     /// Взять выбранную из подсказок запись
-                    text = hintRect.currentHint
+                    text = hintRect.currentHint;
                 }
 
-                textField.focus = false
-                textRect.triggerHintPanel( false )
+                textField.focus = false;
+                textRect.triggerHintPanel( false );
             }
             onTextEdited: {
                 if ( hintRect.hidden ) {

@@ -32,7 +32,7 @@ Rectangle {
     signal activated( int number )
 
     /// Сигнал вызывается, когда нажат Enter, передает текс из эдитора
-    signal accepted( string text )
+    signal accepted( string editorText )
 
     /// Сигнал вызывается, когда нажат Escape
     signal escaped()

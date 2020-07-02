@@ -147,7 +147,7 @@ int PurchaseGroupModel::groupId(const QModelIndex &index) const
     auto node = _st->node( *pIndex );
 
     if ( !node ) {
-        return -2;
+        return 0;
     }
 
     return node->_data->id();
@@ -156,6 +156,12 @@ int PurchaseGroupModel::groupId(const QModelIndex &index) const
 bool PurchaseGroupModel::showRoot() const
 {
     return _showRoot;
+}
+
+void PurchaseGroupModel::reloadData()
+{
+    beginResetModel();
+    endResetModel();
 }
 
 QString PurchaseGroupModel::rootName() const

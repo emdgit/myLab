@@ -102,6 +102,16 @@ public:
         }
     }
 
+    /// Удалить все записи
+    void    clear()
+    {
+        for ( auto &r : _roots ) {
+            delete r;
+        }
+
+        _roots.clear();
+    }
+
     node_type * node( PNodeIndex index ) const noexcept
     {
         if ( !index ) {
