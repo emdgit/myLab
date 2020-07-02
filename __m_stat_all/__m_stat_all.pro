@@ -43,7 +43,8 @@ SOURCES     +=           \
     core/hintmodel.cpp
 
 RESOURCES   +=  qml.qrc \
-                sql.qrc
+                sql.qrc \
+    conf.qrc
 
 HEADERS     +=        \
             private.h  \

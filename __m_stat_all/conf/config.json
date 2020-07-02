@@ -1,0 +1,9 @@
+{
+    "DB": {
+        "Name": "SuperMegaDataBase-6000",
+        "Host": "127.0.0.1",
+        "Port": "5433",
+        "Password": "123456qQ",
+        "User": "postgres"
+    }
+} 

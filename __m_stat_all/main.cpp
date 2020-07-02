@@ -7,6 +7,7 @@
 #include <QTextStream>
 
 #include <filesystem>
+#include <iostream>
 
 #include "chart.h"
 #include "config.h"
@@ -15,9 +16,6 @@
 #include "coreapi.h"
 #include "modelmanager.h"
 #include "hintmodel.h"
-
-//
-#include <iostream>
 
 using namespace std;
 
@@ -105,7 +103,20 @@ void readConfigFile()
     constexpr const char * config_file = "config.json";
 
     if ( !std::filesystem::exists( config_file ) ) {
-        throw runtime_error("Cannot find 'config.json'");
+        QFile conf_file( ":/conf/config.json" );
+        QFile conf_file_target( "config.json" );
+
+        conf_file.open( QIODevice::ReadOnly );
+        conf_file_target.open( QIODevice::WriteOnly );
+
+        QTextStream rStream( &conf_file );
+        QTextStream wStream( &conf_file_target );
+
+        auto str = rStream.readAll();
+        wStream << str;
+
+        conf_file.close();
+        conf_file_target.close();
     }
 
     QFile f( config_file );
