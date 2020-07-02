@@ -2,6 +2,7 @@ import QtQuick 2.0
 import QtQuick.Controls 1.4
 import QtQuick.Controls 2.2
 import QtQuick.Controls.Styles 1.4
+import QtQuick.Layouts 1.1
 
 import "Common.js" as Script
 
@@ -21,6 +22,7 @@ Item {
         id: _d
         /// Вертикальное расстояноие под нижние кнопки
         readonly property int buttonsH: 40
+        readonly property int controlRectMargin: 6
     }
 
     TreeView {
@@ -65,7 +67,12 @@ Item {
         }
     }
 
-    Rectangle {
+    SwipeView {
+        id: controlSwipeView
+        interactive: false
+        currentIndex: 0
+        clip: true
+
         anchors {
             top: treeView.bottom
             left: parent.left
@@ -73,24 +80,69 @@ Item {
             bottom: parent.bottom
         }
 
-        TextHoverButton {
-            id: hideButton
-            text: qsTr("Скрыть")
-            anchors.verticalCenter: parent.verticalCenter
-            x: parent.width / 4 - width / 2
-            y: parent.height / 2 - height / 2
-            onClicked: {
-                topItem.opacity = 0
+        Item {
+            Rectangle {
+
+                id: controlRect
+                anchors.fill: parent
+
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.rightMargin: _d.controlRectMargin
+
+                    PicButton {
+                        id: hideButton
+
+                        defaultPic: "qrc:/img/images/arrow_right_square.svg"
+                        hoverPic: "qrc:/img/images/arrow_right_square_hover.svg"
+                        unactivePic: "qrc:/img/images/arrow_right_square_unactive.svg"
+
+                        Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
+                        Layout.margins: _d.controlRectMargin
+
+
+                        onClicked: { topItem.opacity = 0 }
+                    }
+
+                    PicButton {
+                        id: newGroupButton
+
+                        defaultPic: "qrc:/img/images/folder_plus.svg"
+                        hoverPic: "qrc:/img/images/folder_plus_hover.svg"
+                        unactivePic: "qrc:/img/images/folder_plus_unactive.svg"
+
+                        Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
+
+                        onClicked: { controlSwipeView.currentIndex = 1 }
+                    }
+
+                    PicButton {
+                        id: acceptButton
+
+                        defaultPic: "qrc:/img/images/check.svg"
+                        hoverPic: "qrc:/img/images/check_hover.svg"
+                        unactivePic: "qrc:/img/images/check_unactive.svg"
+
+                        Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
+
+                        onClicked: { topItem.onAcceptClicked() }
+                    }
+
+                    Rectangle { Layout.fillWidth: true }
+                }
             }
         }
-
-        TextHoverButton {
-            id: acceptButton
-            text: qsTr("Выбрать")
-            anchors.verticalCenter: parent.verticalCenter
-            x: parent.width / 2 + width / 2
-            y: parent.height / 2 - height / 2
-            onClicked: { topItem.onAcceptClicked() }
+        Item {
+            SlideEditor {
+                text: qsTr( "Имя:" )
+                alternativePlaceholder: qsTr("Имя новой группы..")
+                onAccepted: {
+                    controlSwipeView.currentIndex = 0;
+                }
+                onEscaped: {
+                    controlSwipeView.currentIndex = 0;
+                }
+            }
         }
     }
 

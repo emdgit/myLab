@@ -15,7 +15,12 @@ Rectangle {
     /// Установка текста в лейбл (слева)
     property alias text: label.text
 
+    /// Валидатор эдитора
     property alias validator: textField.validator
+
+    /// Альтернативный "placeholder" эдитора.
+    /// Если задан, будет использоваться.
+    property string alternativePlaceholder: ""
 
     /// Ширина виджета
     property int m_width: 300
@@ -25,6 +30,12 @@ Rectangle {
 
     /// Сигнал вызывается всякий раз, когда TextField получает фокус
     signal activated( int number )
+
+    /// Сигнал вызывается, когда нажат Enter, передает текс из эдитора
+    signal accepted( string text )
+
+    /// Сигнал вызывается, когда нажат Escape
+    signal escaped()
 
     height: 40
     width: m_width
@@ -76,10 +87,9 @@ Rectangle {
             id: textField
 
             height: 28
-
             font.family: Script.menuTextFontFamily()
 
-            validator: topRect.m_validator
+            placeholderText: placeholder()
 
             anchors {
                 top: parent.top
@@ -96,23 +106,37 @@ Rectangle {
                     label.width = 0
                     label.opacity = 0
                     textRect.width = topRect.width - 2*hMargin
-                    textField.placeholderText = label.text + "..."
                     topRect.activated(topRect.internalId)
                 } else {
                     label.width = topRect.width * 0.25 - hMargin
                     label.opacity = 1
                     textRect.width = topRect.width * 0.75 - hMargin
-                    textField.placeholderText = ""
                 }
             }
 
             onAccepted: {
                 textField.focus = false
+                topRect.accepted( text )
+                textField.clear()
             }
 
             Keys.onEscapePressed: {
                 textField.focus = false
+                escaped()
             }
+
+            function placeholder() {
+                if ( focus ) {
+                    if ( alternativePlaceholder === "" ) {
+                        return label.text + "...";
+                    } else {
+                        return alternativePlaceholder;
+                    }
+                } else {
+                    return "";
+                }
+            }
+
         }
     }
 }

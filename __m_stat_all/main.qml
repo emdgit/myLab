@@ -22,8 +22,6 @@ Window {
 
     }
 
-
-
     TopLabel {
         id: topLabel
         anchors.left: bar.right

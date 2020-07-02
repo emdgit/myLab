@@ -66,3 +66,8 @@ function menuTextFontFamily() {
 function menuTextFontSize() {
     return 22;
 }
+
+/// Дикий оранжевый цвет
+function orangeColor() {
+    return "#FB8202";
+}
