@@ -17,9 +17,10 @@ QModelIndex PurchaseGroupModel::index(int row, int column, const QModelIndex & p
     Q_UNUSED(column);
 
     if ( !parent.isValid() ) {
-        auto pair = _index_set.insert( {row} );
-        auto raw_ptr = const_cast<PNodeIndex*>( &(*pair.first) );
+        PNodeIndex index = _showRoot ? PNodeIndex()
+                                     : PNodeIndex({row});
 
+        auto raw_ptr = insertAndGetRawPtr( index );
         return createIndex( row, column, raw_ptr );
     }
 
@@ -46,6 +47,9 @@ QModelIndex PurchaseGroupModel::parent(const QModelIndex & child) const
 
     if ( p_index->size() == 1 ) {
         // Его предок - корень
+        if ( _showRoot ) {
+            return createIndex(0, 1, insertAndGetRawPtr({}));
+        }
         return QModelIndex();
     }
 
@@ -67,6 +71,9 @@ QModelIndex PurchaseGroupModel::parent(const QModelIndex & child) const
 int PurchaseGroupModel::rowCount(const QModelIndex & parent) const
 {
     if ( !parent.isValid() ) {
+        if ( _showRoot ) {
+            return 1;
+        }
         return _st->childCount({});
     }
 
@@ -89,6 +96,11 @@ QVariant PurchaseGroupModel::data(const QModelIndex & index, int role) const
     }
 
     auto p_index = toPNodeIndex(index);
+
+    if ( !*p_index && _showRoot && role == Name ) {
+        return _rootName;
+    }
+
     auto node = _st->node( *p_index );
 
     if ( !node ) {
@@ -107,6 +119,12 @@ QVariant PurchaseGroupModel::data(const QModelIndex & index, int role) const
 PNodeIndex *PurchaseGroupModel::toPNodeIndex(const QModelIndex & index) const noexcept
 {
     return static_cast<PNodeIndex*>( index.internalPointer() );
+}
+
+PNodeIndex *PurchaseGroupModel::insertAndGetRawPtr(PNodeIndex index) const {
+    auto pair = _index_set.insert( index );
+    auto raw_ptr = const_cast<PNodeIndex*>( &(*pair.first) );
+    return raw_ptr;
 }
 
 QHash<int, QByteArray> PurchaseGroupModel::roleNames() const
@@ -133,4 +151,35 @@ int PurchaseGroupModel::groupId(const QModelIndex &index) const
     }
 
     return node->_data->id();
+}
+
+bool PurchaseGroupModel::showRoot() const
+{
+    return _showRoot;
+}
+
+QString PurchaseGroupModel::rootName() const
+{
+    return _rootName;
+}
+
+void PurchaseGroupModel::setShowRoot(bool showRoot)
+{
+    if (_showRoot == showRoot)
+        return;
+
+    beginResetModel();
+    _showRoot = showRoot;
+    endResetModel();
+
+    emit showRootChanged(_showRoot);
+}
+
+void PurchaseGroupModel::setRootName(QString rootName)
+{
+    if (_rootName == rootName)
+        return;
+
+    _rootName = rootName;
+    emit rootNameChanged(_rootName);
 }

@@ -57,6 +57,7 @@ Window {
             layout.currentIndex = number
         }
     }
+
 }
 
 

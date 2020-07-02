@@ -19,7 +19,18 @@ class PurchaseGroupModel : public QAbstractItemModel
 
     Q_OBJECT
 
+    Q_PROPERTY(bool showRoot
+               READ showRoot
+               WRITE setShowRoot
+               NOTIFY showRootChanged)
+
+    Q_PROPERTY(QString rootName
+               READ rootName
+               WRITE setRootName
+               NOTIFY rootNameChanged)
+
 public:
+
     PurchaseGroupModel( QObject * parent = nullptr );
     PurchaseGroupModel( PGStorage *st, QObject * parent = nullptr );
 
@@ -37,10 +48,27 @@ public:
     Q_INVOKABLE
     int         groupId( const QModelIndex &index ) const;
 
+    bool        showRoot() const;
+
+    QString     rootName() const;
+
+
+public slots:
+
+    void        setShowRoot(bool showRoot);
+    void        setRootName(QString rootName);
+
+
+signals:
+
+    void        showRootChanged(bool showRoot);
+    void        rootNameChanged(QString rootName);
+
 
 protected:
 
     PNodeIndex *toPNodeIndex( const QModelIndex &index ) const noexcept;
+    PNodeIndex *insertAndGetRawPtr(PNodeIndex index) const;
 
 
 private:
@@ -50,6 +78,14 @@ private:
     /// Задействованые объекты PNodeIndex.
     /// Используются как internalPointer внутри QModelIndex
     mutable IndexSet _index_set;
+
+    /// Значение, которое будет отображаться для "мнииого корнегого" элемента,
+    /// если флаг '_showRoot' установлен.
+    QString     _rootName = "root";
+
+    /// Флаг, обозначающий, следует ли отображать 'мнимый корневой' элемент.
+    /// Используется в GUI для добавления новых корневых групп.
+    bool        _showRoot = false;
 
 };
 

@@ -3,6 +3,7 @@ import QtQuick.Controls 1.4
 import QtQuick.Controls 2.2
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Layouts 1.1
+import QtQml.Models 2.11
 
 import "Common.js" as Script
 
@@ -23,6 +24,13 @@ Item {
         /// Вертикальное расстояноие под нижние кнопки
         readonly property int buttonsH: 40
         readonly property int controlRectMargin: 6
+
+        property bool _setup : setup()
+
+        function setup() {
+            ModelManager.spendModel.setRootName(qsTr("Корневая группа"));
+            return true;
+        }
     }
 
     TreeView {
@@ -42,6 +50,7 @@ Item {
                 border.color: "transparent"
             }
             branchDelegate: Item {
+                id: branchIcon
                 width: indentation
                 height: 16
                 Image {
@@ -58,6 +67,10 @@ Item {
         TableViewColumn {
             width: treeView.width
             role: "r_pgroup_name"
+        }
+        selection: ItemSelectionModel {
+            id: selector
+            model: ModelManager.spendModel
         }
     }
 
@@ -113,7 +126,10 @@ Item {
 
                         Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
 
-                        onClicked: { controlSwipeView.currentIndex = 1 }
+                        onClicked: {
+                            controlSwipeView.currentIndex = 1
+                            ModelManager.spendModel.setShowRoot(true)
+                        }
                     }
 
                     PicButton {
@@ -138,9 +154,11 @@ Item {
                 alternativePlaceholder: qsTr("Имя новой группы..")
                 onAccepted: {
                     controlSwipeView.currentIndex = 0;
+                    ModelManager.spendModel.setShowRoot(false)
                 }
                 onEscaped: {
                     controlSwipeView.currentIndex = 0;
+                    ModelManager.spendModel.setShowRoot(false)
                 }
             }
         }
