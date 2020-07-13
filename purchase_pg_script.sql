@@ -612,6 +612,65 @@ END;
 $BODY$
   LANGUAGE plpgsql;
   
+  ---------------------------------------------------TRIGGER_FUNC_ON_PURCHASE_ADD
+  
+  CREATE OR REPLACE FUNCTION on_purchase_add()
+RETURNS TRIGGER AS 
+$$
+BEGIN
+	-- add record to record_stat
+	if not exists (
+		select * 
+		from 
+			common.record_stat	as rs
+		where 
+			rs.user_id = NEW.user_id AND
+			rs.user_group_id = NEW.user_group_id AND
+			rs.record_id = NEW.record_id
+	)
+	then
+		insert into common.record_stat
+		values (NEW.record_id, NEW.user_id, NEW.user_group_id, 1);
+	else
+		update common.record_stat as rs
+		set count = count + 1
+		where 
+			rs.user_id = NEW.user_id AND
+			rs.user_group_id = NEW.user_group_id AND
+			rs.record_id = NEW.record_id;
+	end if;
+
+	-- add record to record_purchase_stat
+	if not exists (
+		select *
+		from common.record_prices_stat as rps
+		where
+			rps.record_id = NEW.record_id AND
+			rps.summ = NEW.summ
+	)
+	then
+		insert into common.record_prices_stat
+		values(NEW.record_id, NEW.summ, 1);
+	else
+		update common.record_prices_stat as rps
+		set count = count + 1
+		where
+			rps.record_id = NEW.record_id AND
+			rps.summ = NEW.summ;
+	end if;
+
+	RETURN NEW;
+END;
+$$
+language plpgsql;
+  
+  ---------------------------------------------------TRIGGER_PURCHASE_ADD
+  
+CREATE TRIGGER t_purchase_add
+AFTER INSERT ON common.purchases FOR EACH ROW
+EXECUTE PROCEDURE on_purchase_add();
+  
+  
   ---------------------------------------------------FUNC_ADD_USER_COMMENT
   
   COMMENT ON FUNCTION common.add_user(text, text, text) IS '
