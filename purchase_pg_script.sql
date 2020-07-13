@@ -254,27 +254,38 @@ WITH (
 ALTER TABLE common.purchases
   OWNER TO postgres;
   
-  ---------------------------------------------------PURCHASE_INFO
   
-  CREATE TABLE common.purchase_info
+    ---------------------------------------------------RECORD_STAT
+  
+  
+  CREATE TABLE common.record_stat
 (
-  purchase_id integer,
-  user_id integer,
-  percent real NOT NULL,
-  CONSTRAINT purchase_info_purchase_foreign_key FOREIGN KEY (purchase_id)
-      REFERENCES common.purchases (id) MATCH SIMPLE
+  record_id integer NOT NULL,
+  user_id integer NOT NULL, -- Пользователь, добавляющий эапись
+  user_group_id integer NOT NULL, -- Группа пользователя, находясь в которой была добавлена запись
+  count integer NOT NULL, -- Сколько раз была сделана запись (по факту - количество покупок/получения дохода)
+  CONSTRAINT record_stat_guid_fk FOREIGN KEY (user_group_id)
+      REFERENCES common.user_groups (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,
-  CONSTRAINT purchase_info_users_foreign_key FOREIGN KEY (user_id)
+  CONSTRAINT record_stat_record_fk FOREIGN KEY (record_id)
+      REFERENCES common.records (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT record_stat_uid_fk FOREIGN KEY (user_id)
       REFERENCES common.users (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION
 )
 WITH (
   OIDS=FALSE
 );
-ALTER TABLE common.purchase_info
+ALTER TABLE common.record_stat
   OWNER TO postgres;
   
-  
+COMMENT ON TABLE common.record_stat	IS 'Статистика по добавлению записей. Частота использования записей.';
+COMMENT ON COLUMN common.record_stat.user_id IS 'Пользователь, добавляющий эапись';
+COMMENT ON COLUMN common.record_stat.user_group_id IS 'Группа пользователя, находясь в которой была добавлена запись';
+COMMENT ON COLUMN common.record_stat.count IS 'Сколько раз была сделана запись (по факту - количество покупок/получения дохода)';
+
+
   ---------------------------------------------------PURCHASE_VIEW
   
   
