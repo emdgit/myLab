@@ -46,6 +46,12 @@ public:
 
     AnswerValue field( const size_t &row, const size_t &column ) const;
 
+    /*!
+     * Если ответ это 1 кортеж с одним значением, то попытаться привести его
+     * к переданному типу.
+     * \tparam T Тип, к которому требуется привести полученый ответ.
+     * \return std::optional<T> - получилось или нет.
+     */
     template < class T >
     std::optional<T> tryConvert() const
     {

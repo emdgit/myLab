@@ -8,6 +8,8 @@
 
 #include <iostream>
 
+#define DB_COMMON(func_name) #func_name, "common"
+
 using namespace pg;
 using namespace std;
 
@@ -28,17 +30,13 @@ bool CoreAPI::addPurchase(const int & groupId, const int & userId,
 
     auto func = TypeStorage::func( "add_purchase", "common" );
 
-    if ( !func ) {
-        return false;
-    }
-
     auto answer = _pg_worker->execute( *func.value() );
 
     if ( !answer ) {
         return false;
     }
 
-
+    return false;
 }
 
 void CoreAPI::loadGroups(bool profit)
@@ -136,7 +134,7 @@ void CoreAPI::switchHintModel(bool profit)
 
 void CoreAPI::addRecord(int groupId, const QString &recordName, bool profit)
 {
-    auto func = TypeStorage::func( "add_record", "common" );
+    auto func = TypeStorage::func( DB_COMMON(add_record) );
 
     if ( !func ) {
         throw RE( "Function 'common.add_record' hasn't been found" );
@@ -167,7 +165,7 @@ void CoreAPI::addRecord(int groupId, const QString &recordName, bool profit)
 
 void CoreAPI::addPurchaseGroup(const QString &name, int parentGroupId, bool profit)
 {
-    auto func = TypeStorage::func( "add_group", "common" );
+    auto func = TypeStorage::func( DB_COMMON(add_group) );
 
     if ( !func ) {
         throw RE( "Function 'common.add_group' hasn't been found" );
@@ -211,6 +209,37 @@ void CoreAPI::addPurchaseGroup(const QString &name, int parentGroupId, bool prof
     }
 }
 
+void CoreAPI::setCurrentUser(int uid, int guid)
+{
+    _current_user = uid;
+
+    if ( _current_group == guid || guid <= 0 ) {
+        return;
+    }
+
+    _current_group = guid;
+    reloadStartPoint();
+}
+
+bool CoreAPI::hasStartPoint()
+{
+    return _start_point.isValid();
+}
+
+void CoreAPI::setStartPoint( const QDate &date )
+{
+    if ( !_current_group || !date.isValid() ) {
+        return;
+    }
+
+    auto func = TypeStorage::func(DB_COMMON(set_start_point));
+    (*func)->bindValue("group_id", _current_group);
+    (*func)->bindValue("start_point", date);
+
+    _pg_worker->execute(**func);
+    reloadStartPoint();
+}
+
 void CoreAPI::setModelManager(ModelManager *mm)
 {
     _modelManager = mm;
@@ -244,7 +273,7 @@ void CoreAPI::setSpendGroupSt(PGStorage * st) noexcept
 
 void CoreAPI::loadGroupsByParent(PNodeIndex parent, PGStorage *st)
 {
-    auto func = TypeStorage::func( "get_groups", "common" );
+    auto func = TypeStorage::func( DB_COMMON(get_groups) );
 
     if ( !func ) {
         throw RE( "function common.get_groups hasn't been found" );
@@ -281,5 +310,25 @@ void CoreAPI::packGroups(Answer *answer, PGStorage *st, PNodeIndex parent)
 
         st->insert( parent, gr );
     }
+}
+
+void CoreAPI::reloadStartPoint()
+{
+    auto func = TypeStorage::func(DB_COMMON(get_start_point));
+    (*func)->bindValue("group_id", _current_group);
+
+    auto answer = _pg_worker->execute( **func );
+
+    if ( !answer ) {
+        return;
+    }
+
+    auto date = answer->tryConvert<QDate>();
+
+    if ( !date ) {
+        return;
+    }
+
+    _start_point = *date;
 }
 

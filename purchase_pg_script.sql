@@ -668,6 +668,29 @@ END;
 $BODY$
   LANGUAGE plpgsql;
   
+  ---------------------------------------------------FUNC_GET_START_POINT
+  
+  CREATE OR REPLACE FUNCTION common.get_start_point( group_id integer )
+RETURNS date AS
+$BODY$
+DECLARE
+	_date date;
+BEGIN
+	if common.has_start_point($1)
+	then
+		select	pi.start_point
+		from 	common.period_info	as pi
+		into 	_date
+		where 	pi.user_group_id = $1;
+	else
+		_date = NULL::date;
+	end if;
+
+	RETURN _date;
+END;
+$BODY$
+  LANGUAGE plpgsql;
+  
   ---------------------------------------------------FUNC_GET_GROUPS
   
   CREATE OR REPLACE FUNCTION common.get_groups( group_parent_id integer )

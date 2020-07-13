@@ -75,6 +75,30 @@ public:
     static void addPurchaseGroup( const QString &name, int parentGroupId, bool profit );
 
 
+    /*!
+     * Задать текущего пользователя и его группу.
+     * \param uid[in] Идентификатор пользователя.
+     * \param guid[in] Идентификатор группы пользователей.
+     */
+    Q_INVOKABLE
+    static void setCurrentUser( int uid, int guid );
+
+
+    /*!
+     * Задано ли начало рассчетного периода.
+     */
+    Q_INVOKABLE
+    static bool hasStartPoint();
+
+
+    /*!
+     * Изменить/задать дату начала рассчетного периода.
+     * \warning Не будет работать, если не задан пользователь.
+     */
+    Q_INVOKABLE
+    static void setStartPoint( const QDate &date );
+
+
     static void setModelManager( ModelManager * mm );
 
 
@@ -94,6 +118,9 @@ protected:
     /// Разобрать группы из answer и уложить в хранилище под индекс parent
     static void packGroups( pg::Answer * answer, PGStorage * st, PNodeIndex parent );
 
+    /// Загрузить начало рассчетного периода. При смене и установке группы польователей.
+    static void reloadStartPoint();
+
 
 private:
 
@@ -112,6 +139,15 @@ private:
 
     /// Хранилка расходных записей.
     static inline std::vector<PurchaseRecord*> _records_spend;
+
+    /// Идентификатор залогиненого пользователя
+    static inline int _current_user = 0;
+
+    /// Идентификатор залогиненой группы пользователей
+    static inline int _current_group = 0;
+
+    /// Даты начала рассчетного периода
+    static inline QDate _start_point;
 
 };
 
