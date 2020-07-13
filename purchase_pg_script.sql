@@ -149,8 +149,26 @@ $BODY$
 ---------------------------------------------------SCHEMA COMMON ->>-------------------
 ---------------------------------------------------------------------------------------
 
-CREATE SCHEMA common
-  AUTHORIZATION postgres;
+  ---------------------------------------------------PERIOD_INFO
+
+CREATE TABLE common.period_info
+(
+  start_point date NOT NULL, -- Дата начала периода.
+  user_group_id integer, -- В рамках какой пользовательской группы установлено начало периода
+  CONSTRAINT period_info_guid_fk FOREIGN KEY (user_group_id)
+      REFERENCES common.user_groups (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+
+ALTER TABLE common.period_info
+  OWNER TO postgres;
+  
+COMMENT ON TABLE common.period_info IS 'Информация о начале периода.';
+COMMENT ON COLUMN common.period_info.start_point IS 'Дата начала периода.';
+COMMENT ON COLUMN common.period_info.user_group_id IS 'В рамках какой пользовательской группы установлено начало периода';
   
   ---------------------------------------------------GROUPS
   
@@ -606,6 +624,46 @@ BEGIN
 	SELECT g.id, g.group_name, g.group_parent_id
 	FROM common.groups AS g
 	WHERE g.group_parent_id IS NULL AND g.is_profit = false;
+END;
+$BODY$
+  LANGUAGE plpgsql;
+  
+  ---------------------------------------------------FUNC_HAS_START_POINT
+  
+  CREATE OR REPLACE FUNCTION common.has_start_point(group_id integer)
+RETURNS boolean AS
+$BODY$
+BEGIN
+	if exists (
+		select * from common.period_info
+		where user_group_id = $1
+	)
+	then
+		RETURN TRUE;
+	else
+		RETURN FALSE;
+	end if;
+END;
+$BODY$
+  LANGUAGE plpgsql;
+  
+  ---------------------------------------------------FUNC_SET_START_POINT
+
+CREATE OR REPLACE FUNCTION common.set_start_point(group_id integer, start_point date)
+RETURNS boolean AS
+$BODY$
+BEGIN
+	if common.has_start_point($1)
+	then
+		update common.period_info as pi
+		set pi.start_point = $2
+		where pi.user_group_id = $1;
+	else
+		insert into common.period_info
+		values($2, $1);
+	end if;
+
+	RETURN TRUE;
 END;
 $BODY$
   LANGUAGE plpgsql;
