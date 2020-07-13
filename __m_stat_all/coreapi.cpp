@@ -43,11 +43,13 @@ bool CoreAPI::addPurchase(const int & groupId, const int & userId,
 
 void CoreAPI::loadGroups(bool profit)
 {
-    auto func = profit ? TypeStorage::func( "get_root_groups_profit", "common" )
-                       : TypeStorage::func( "get_root_groups_spend", "common" );
+    const char * func_name = profit ? "get_root_groups_profit"
+                                    : "get_root_groups_spend";
+
+    auto func = TypeStorage::func( func_name, "common" );
 
     if ( !func ) {
-        throw RE( "function common.get_root_groups hasn't been found" );
+        throw RE( "function common." + string(func_name) + " hasn't been found" );
     }
 
     auto answer = unique_ptr<Answer>( _pg_worker->execute( *func.value() ) );
@@ -85,7 +87,7 @@ void CoreAPI::loadRecords(bool profit)
     if ( !func ) {
         throw RE( "function common." +
                   work_pair.first.toStdString() +
-                  "get_root_groups hasn't been found" );
+                  " hasn't been found" );
     }
 
     auto answer = unique_ptr<Answer>( _pg_worker->execute( *func.value() ) );
