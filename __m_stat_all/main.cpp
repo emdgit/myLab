@@ -7,6 +7,8 @@
 #include <QTextStream>
 #include <QFileInfo>
 
+#include <iostream>
+
 #include "chart.h"
 #include "config.h"
 #include "connecter.h"
@@ -101,7 +103,20 @@ void readConfigFile()
     constexpr const char * config_file = "config.json";
 
     if ( !QFileInfo(config_file).exists() ) {
-        throw runtime_error("Cannot find 'config.json'");
+        QFile def_conf(":/conf/config.json");
+        QFile tar_conf("config.json");
+
+        def_conf.open(QIODevice::ReadOnly);
+        tar_conf.open(QIODevice::WriteOnly);
+
+        QTextStream in(&def_conf);
+        QTextStream out(&tar_conf);
+
+        auto conf = in.readAll();
+        out << conf;
+
+        def_conf.close();
+        tar_conf.close();
     }
 
     QFile f( config_file );
