@@ -128,6 +128,19 @@ END;
 $BODY$
   LANGUAGE plpgsql;
   
+CREATE OR REPLACE FUNCTION service.clear_purchases()
+RETURNS boolean AS
+$BODY$
+BEGIN
+	delete from common.purchases;
+	delete from common.record_prices_stat;
+	delete from common.record_stat;
+
+	RETURN TRUE;
+END;
+$BODY$
+  LANGUAGE plpgsql;
+  
   ---------------------------------------------------------------------------------------
 ------------------------------------------------<< SCHEMA SERVICE ---------------------
 ---------------------------------------------------------------------------------------
