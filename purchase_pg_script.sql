@@ -286,6 +286,32 @@ COMMENT ON COLUMN common.record_stat.user_group_id IS 'Группа пользо
 COMMENT ON COLUMN common.record_stat.count IS 'Сколько раз была сделана запись (по факту - количество покупок/получения дохода)';
 
 
+---------------------------------------------------RECORD_PRICES_STAT
+
+
+CREATE TABLE common.record_prices_stat
+(
+  record_id integer NOT NULL, -- По какой записи производилась транзакция
+  summ real NOT NULL, -- Сумма, которая имела место быть в рамках данной записи
+  count integer NOT NULL DEFAULT 1, -- Сколько раз встречалась затраченная сумма в рамках этой группы
+  CONSTRAINT record_price_record_fk FOREIGN KEY (record_id)
+      REFERENCES common.records (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT "record_price_record-summ-unique" UNIQUE (record_id, summ)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE common.record_prices_stat
+  OWNER TO postgres;
+  
+COMMENT ON TABLE common.record_prices_stat
+  IS 'Таблица для ведения статистики по суммам, затраченным на каждую отдельную покупку в рамках группы. Иначе, какие стоимости присущи каждой конкретной группе и сколько раз каждая была использована. Позволит отследить средний чек по каждой конкретной записи и реализовать механизм релевантных подсказок.';
+COMMENT ON COLUMN common.record_prices_stat.record_id IS 'По какой записи производилась транзакция';
+COMMENT ON COLUMN common.record_prices_stat.summ IS 'Сумма, которая имела место быть в рамках данной записи';
+COMMENT ON COLUMN common.record_prices_stat.count IS 'Сколько раз встречалась затраченная сумма в рамках этой группы';
+
+
   ---------------------------------------------------PURCHASE_VIEW
   
   
