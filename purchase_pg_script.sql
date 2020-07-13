@@ -254,27 +254,64 @@ WITH (
 ALTER TABLE common.purchases
   OWNER TO postgres;
   
-  ---------------------------------------------------PURCHASE_INFO
   
-  CREATE TABLE common.purchase_info
+    ---------------------------------------------------RECORD_STAT
+  
+  
+  CREATE TABLE common.record_stat
 (
-  purchase_id integer,
-  user_id integer,
-  percent real NOT NULL,
-  CONSTRAINT purchase_info_purchase_foreign_key FOREIGN KEY (purchase_id)
-      REFERENCES common.purchases (id) MATCH SIMPLE
+  record_id integer NOT NULL,
+  user_id integer NOT NULL, -- Пользователь, добавляющий эапись
+  user_group_id integer NOT NULL, -- Группа пользователя, находясь в которой была добавлена запись
+  count integer NOT NULL, -- Сколько раз была сделана запись (по факту - количество покупок/получения дохода)
+  CONSTRAINT record_stat_guid_fk FOREIGN KEY (user_group_id)
+      REFERENCES common.user_groups (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,
-  CONSTRAINT purchase_info_users_foreign_key FOREIGN KEY (user_id)
+  CONSTRAINT record_stat_record_fk FOREIGN KEY (record_id)
+      REFERENCES common.records (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT record_stat_uid_fk FOREIGN KEY (user_id)
       REFERENCES common.users (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION
 )
 WITH (
   OIDS=FALSE
 );
-ALTER TABLE common.purchase_info
+ALTER TABLE common.record_stat
   OWNER TO postgres;
   
+COMMENT ON TABLE common.record_stat	IS 'Статистика по добавлению записей. Частота использования записей.';
+COMMENT ON COLUMN common.record_stat.user_id IS 'Пользователь, добавляющий эапись';
+COMMENT ON COLUMN common.record_stat.user_group_id IS 'Группа пользователя, находясь в которой была добавлена запись';
+COMMENT ON COLUMN common.record_stat.count IS 'Сколько раз была сделана запись (по факту - количество покупок/получения дохода)';
+
+
+---------------------------------------------------RECORD_PRICES_STAT
+
+
+CREATE TABLE common.record_prices_stat
+(
+  record_id integer NOT NULL, -- По какой записи производилась транзакция
+  summ real NOT NULL, -- Сумма, которая имела место быть в рамках данной записи
+  count integer NOT NULL DEFAULT 1, -- Сколько раз встречалась затраченная сумма в рамках этой группы
+  CONSTRAINT record_price_record_fk FOREIGN KEY (record_id)
+      REFERENCES common.records (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT "record_price_record-summ-unique" UNIQUE (record_id, summ)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE common.record_prices_stat
+  OWNER TO postgres;
   
+COMMENT ON TABLE common.record_prices_stat
+  IS 'Таблица для ведения статистики по суммам, затраченным на каждую отдельную покупку в рамках группы. Иначе, какие стоимости присущи каждой конкретной группе и сколько раз каждая была использована. Позволит отследить средний чек по каждой конкретной записи и реализовать механизм релевантных подсказок.';
+COMMENT ON COLUMN common.record_prices_stat.record_id IS 'По какой записи производилась транзакция';
+COMMENT ON COLUMN common.record_prices_stat.summ IS 'Сумма, которая имела место быть в рамках данной записи';
+COMMENT ON COLUMN common.record_prices_stat.count IS 'Сколько раз встречалась затраченная сумма в рамках этой группы';
+
+
   ---------------------------------------------------PURCHASE_VIEW
   
   
