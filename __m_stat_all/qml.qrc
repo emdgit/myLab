@@ -17,6 +17,8 @@
         <file>notifiers/NoRecordNotifier.qml</file>
         <file>PicButton.qml</file>
         <file>MSpinBox.qml</file>
+        <file>notifiers/Bulb.qml</file>
+        <file>CartButton.qml</file>
     </qresource>
     <qresource prefix="/img">
         <file>graphs.jpg</file>
@@ -43,6 +45,10 @@
         <file>images/arrow_up_hovered.svg</file>
         <file>images/arrow_up_unactive.svg</file>
         <file>images/arrow_up.svg</file>
+        <file>images/green_circle.svg</file>
+        <file>images/red_circle.svg</file>
+        <file>images/cart_hovered.svg</file>
+        <file>images/cart.svg</file>
     </qresource>
     <qresource prefix="/notifiers"/>
 </RCC>
