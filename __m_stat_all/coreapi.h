@@ -99,6 +99,14 @@ public:
     static void setStartPoint( const QDate &date );
 
 
+    /*!
+     * Проверить переданную строку на валидность даты.
+     * \param[in] date_str Дата в виде строки.
+     */
+    Q_INVOKABLE
+    static bool checkDateFormat( const QString &date_str );
+
+
     static void setModelManager( ModelManager * mm );
 
 

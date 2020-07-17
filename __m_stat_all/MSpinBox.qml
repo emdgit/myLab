@@ -92,4 +92,9 @@ Rectangle {
             downButton.enabled = true;
         }
     }
+
+    function reset() {
+        _d.value = 1;
+        downButton.enabled = false;
+    }
 }

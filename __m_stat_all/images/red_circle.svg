@@ -11,7 +11,7 @@
  <g>
   <title>background</title>
   <g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">
-   <rect fill="url(#gridpattern)" stroke-width="0" y="0" x="0" height="100%" width="100%"/>
+   <rect stroke-width="0" y="0" x="0" height="100%" width="100%"/>
   </g>
   <ellipse filter="url(#svg_2_blur)" stroke="#2a2440" ry="18.638874" rx="18.638874" id="svg_2" cy="19.440972" cx="19.5" stroke-width="1.5" fill="#ff0000"/>
  </g>

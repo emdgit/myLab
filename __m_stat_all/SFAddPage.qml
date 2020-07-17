@@ -52,47 +52,85 @@ Item {
             }
             ColumnLayout {
                 anchors.fill: parent
-                SlideEditorPopup{
-                    id: recordEditor
-                    internalId: 0
-                    text: qsTr("Запись")
-                    /// Сигнал вызывается всякий раз, когда TextField получает фокус
-                    onActivated: { switchSlideEditor(number) }
-                    /// Сигнал вызывается, когда был нажат Enter при отсутствии
-                    /// существующих записей
-                    onNeedNewRecord: { topItem.onNeedNewRecord() }
-                    onNoRecordsDetected: { recordNotifier.show() }
-                    onEmptyRecord: { recordNotifier.hide() }
-                    onRecordEdited: {
-                        if ( !recordNotifier.isHidden ) {
-                            recordNotifier.hide()
+                RowLayout {
+                    id: recordLayout
+                    SlideEditorPopup{
+                        id: recordEditor
+                        internalId: 0
+                        text: qsTr("Запись")
+                        /// Сигнал вызывается всякий раз, когда TextField получает фокус
+                        onActivated: { switchSlideEditor(number) }
+                        /// Сигнал вызывается, когда был нажат Enter при отсутствии
+                        /// существующих записей
+                        onNeedNewRecord: { topItem.onNeedNewRecord() }
+                        onNoRecordsDetected: {
+                            recordNotifier.show();
+                            recordBlub.ok = false;
+                        }
+                        onEmptyRecord: { recordNotifier.hide(); }
+                        onRecordEdited: {
+                            if ( !recordNotifier.isHidden ) {
+                                recordNotifier.hide()
+                            }
+                            recordBlub.ok = ModelManager.hintModel.containsRecord(record);
+//                            console.log(text, recordBlub.ok);
+                        }
+                        onRecordAccepted: {
+                            recordBlub.ok = true;
+                            gTree.opacity = 0;
                         }
                     }
+                    Bulb { id: recordBlub }
                 }
-                SlideEditor{
-                    id: summEditor
-                    internalId: 1
-                    text: qsTr("Сумма")
-                    validator: DoubleValidator {
-                        bottom: 1
-                        top: 2000000000
+                RowLayout {
+                    id: summLayout
+                    SlideEditor{
+                        id: summEditor
+                        internalId: 1
+                        text: qsTr("Сумма")
+                        validator: DoubleValidator {
+                            bottom: 1
+                            top: 2000000000
+                        }
+                        onEditorTextChanged: {
+                            summBlub.ok = editorText !== "";
+                        }
                     }
+                    Bulb { id: summBlub }
                 }
-                SlideEditor{
-                    id: dateEditor
-                    internalId: 2
-                    text: qsTr("Дата")
-                    validator: RegExpValidator {
-                        regExp: /\d{2}\.\d{2}\.\d{4}/
+                RowLayout {
+                    id: dateLayout
+                    SlideEditor{
+                        id: dateEditor
+                        internalId: 2
+                        text: qsTr("Дата")
+                        onEditorTextChanged: {
+                            dateBlub.ok = CoreAPI.checkDateFormat(editorText);
+                        }
                     }
+                    Bulb { id: dateBlub }
                 }
                 MSpinBox {
                     id: countEditor
                 }
                 Rectangle {
+                    id: spacer1
+                    height: 80
+                }
+                CartButton {
+                    id: cartButton
+                    hidden: !allBulbsAreGreen()
+                    Layout.alignment: Qt.AlignHCenter
+                    onClicked: {
+                        topItem.addPurchase();
+                    }
+                }
+                Rectangle {
+                    id: spacer2
                     Layout.fillHeight: true
                 }
                 RowLayout {
+                    id: switchLine
                     width: parent.width
                     Label {
                         text: qsTr("Расход")
@@ -152,9 +190,9 @@ Item {
         var botZ = 0
 
         function setZ( recZ, sumZ, dateZ ) {
-            recordEditor.z = recZ
-            summEditor.z = sumZ
-            dateEditor.z = dateZ
+            recordLayout.z = recZ
+            summLayout.z = sumZ
+            dateLayout.z = dateZ
         }
 
         switch ( activeEditor ) {
@@ -176,5 +214,21 @@ Item {
         if ( !recordNotifier.isHidden ) {
             recordNotifier.hide()
         }
+    }
+
+    function allBulbsAreGreen() {
+        return recordBlub.ok && summBlub.ok && dateBlub.ok;
+    }
+
+    function addPurchase() {
+//        console.log("Prepare to add purchase: ", recordEditor.record,
+//                    ", summ = ", summEditor.editorData,
+//                    ", date = ", dateEditor.editorData,
+//                    ", amount = ", countEditor.value());
+
+        recordEditor.clear();
+        recordBlub.ok = false;
+        summEditor.clear();
+        countEditor.reset();
     }
 }

@@ -240,6 +240,13 @@ void CoreAPI::setStartPoint( const QDate &date )
     reloadStartPoint();
 }
 
+bool CoreAPI::checkDateFormat(const QString &date_str)
+{
+    return ( QDate::fromString(date_str, "dd.MM.yyyy").isValid() ||
+             QDate::fromString(date_str, "dd-MM-yyyy").isValid() ||
+             QDate::fromString(date_str, "dd:MM:yyyy").isValid() );
+}
+
 void CoreAPI::setModelManager(ModelManager *mm)
 {
     _modelManager = mm;

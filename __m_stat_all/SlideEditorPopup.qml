@@ -1,6 +1,8 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.0
 
+import "./notifiers"
+
 import "Common.js" as Script
 
 /// Двигающийся "виджет" с лейблом слева и полем для ввода данных
@@ -19,11 +21,16 @@ Rectangle {
     /// Текст из эдитора
     property alias record: textField.text
 
+
     /// Ширина виджета
     property int m_width: 300
 
     /// Внутренний идентификатор
     property int internalId: 0
+
+    /// Корректность введенных значений. Зеленый или красный кружок.
+    property bool isComplete: false
+
 
     /// Сигнал вызывается всякий раз, когда TextField получает фокус
     signal activated( int number )
@@ -43,6 +50,9 @@ Rectangle {
     /// Сигнал вызывается всякий раз, когда имя записи редактируется
     /// и не является пустым
     signal recordEdited( string currentName )
+
+    /// Сигнал вызывается, когда имеется введенная запись
+    signal recordAccepted()
 
     height: 40
     width: m_width
@@ -74,7 +84,7 @@ Rectangle {
         id: textRect
         x: hMargin + label.width
         y: hMargin
-        width: topRect.width - label.width - 2 * hMargin
+        width: textRectDefaultWidth()
         height: heightFunc()
         border.color: "lightgray"
         radius: 15
@@ -99,32 +109,47 @@ Rectangle {
                 if (focus) {
                     label.width = 0
                     label.opacity = 0
-                    textRect.width = topRect.width - 2*hMargin
+                    textRect.width = topRect.width - 2*hMargin;
                     textField.placeholderText = label.text + "..."
                     topRect.activated(topRect.internalId)
                 } else {
                     label.width = topRect.width * 0.25 - hMargin
                     label.opacity = 1
-                    textRect.width = topRect.width * 0.75 - hMargin
+                    textRect.width = textRect.textRectDefaultWidth()
                     textField.placeholderText = ""
                     textRect.triggerHintPanel( false )
                 }
             }
             onAccepted: {
-                if ( hintRect.hidden ) {
-                    var x = ModelManager.hintModel.containsRecord( text );
-                    if ( x === false ) {
-                        /// Создать новую запись
+
+                function checkIfNeedNewRecord() {
+                    if ( !ModelManager.hintModel.containsRecord( text ) ) {
+                        /// Нужно создать новую запись
                         topRect.needNewRecord( text );
-                        console.log("Need new. Show groups!");
+                    } else {
+                        topRect.recordAccepted();
                     }
-                } else {
-                    /// Взять выбранную из подсказок запись
-                    text = hintRect.currentHint;
+                    textField.focus = false;
+                    textRect.triggerHintPanel( false );
                 }
+
+                if ( hintRect.hidden ) {
+                    checkIfNeedNewRecord();
+                    return;
+                }
+
+                if ( hintRect.currentIndex < 0 ) {
+                    checkIfNeedNewRecord();
+                    return;
+                }
+
+                /// Взять выбранную из подсказок запись
+                text = hintRect.currentHint;
 
                 textField.focus = false;
                 textRect.triggerHintPanel( false );
+
+                topRect.recordAccepted();
             }
             onTextEdited: {
                 if ( hintRect.hidden ) {
@@ -160,10 +185,10 @@ Rectangle {
             id: hintRect
             property alias viewOpacity: hintView.opacity
             property alias count: hintView.count
-            property alias currentIndex: hintView.currentIndex
 
             property string currentHint : ""
             property bool hidden: true
+            property int currentIndex: -1
 
             ListView {
                 id: hintView
@@ -268,12 +293,20 @@ Rectangle {
 
         /// Обработчик нажатия кнопки "вверх", при вводе записи в textField
         function onUpPressed() {
-            if ( !hintRect.count || hintRect.currentIndex <= 0 ) {
+            if ( !hintRect.count || hintRect.currentIndex < 0 ) {
                 return
             }
 
             hintRect.currentIndex--;
         }
+
+        function textRectDefaultWidth() {
+            return topRect.width * 0.75 - topRect.hMargin;
+        }
+    }
+
+    function clear() {
+        textField.text = "";
     }
 }
 

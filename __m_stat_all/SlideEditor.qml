@@ -18,6 +18,9 @@ Rectangle {
     /// Валидатор эдитора
     property alias validator: textField.validator
 
+    /// Текст эдитора
+    property alias editorData: textField.text
+
     /// Альтернативный "placeholder" эдитора.
     /// Если задан, будет использоваться.
     property string alternativePlaceholder: ""
@@ -33,6 +36,12 @@ Rectangle {
 
     /// Сигнал вызывается, когда нажат Enter, передает текс из эдитора
     signal accepted( string editorText )
+
+    /// Сигнал вызывается, когда был изменен текст эдитора
+    signal editorTextChanged( string editorText )
+
+    /// Сигнал вызывается, когда текст опустел
+    signal empty()
 
     /// Сигнал вызывается, когда нажат Escape
     signal escaped()
@@ -115,8 +124,15 @@ Rectangle {
             }
 
             onAccepted: {
-                textField.focus = false
-                topRect.accepted( text )
+                textField.focus = false;
+                topRect.accepted( text );
+            }
+
+            onTextChanged: {
+                if ( text === "" ) {
+                    topRect.empty();
+                }
+                topRect.editorTextChanged(text);
             }
 
             Keys.onEscapePressed: {
@@ -137,6 +153,10 @@ Rectangle {
             }
 
         }
+    }
+
+    function clear() {
+        textField.text = "";
     }
 }
 
