@@ -16,6 +16,7 @@
         <file>PGroupsTree.qml</file>
         <file>notifiers/NoRecordNotifier.qml</file>
         <file>PicButton.qml</file>
+        <file>MSpinBox.qml</file>
     </qresource>
     <qresource prefix="/img">
         <file>graphs.jpg</file>
@@ -36,6 +37,12 @@
         <file>images/check.svg</file>
         <file>images/folder_plus_hover.svg</file>
         <file>images/folder_plus_unactive.svg</file>
+        <file>images/arrow_down_hovered.svg</file>
+        <file>images/arrow_down_unactive.svg</file>
+        <file>images/arrow_down.svg</file>
+        <file>images/arrow_up_hovered.svg</file>
+        <file>images/arrow_up_unactive.svg</file>
+        <file>images/arrow_up.svg</file>
     </qresource>
     <qresource prefix="/notifiers"/>
 </RCC>
