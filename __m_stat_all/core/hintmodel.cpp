@@ -19,7 +19,7 @@ bool HintModel::containsRecord(const QString &rec) const
 {
     auto it = std::find_if(_records->begin(), _records->end(),
                            [&](PurchaseRecord * const &r){
-              return QString(r->name().data()).compare(rec, Qt::CaseInsensitive);
+              return QString(r->name().data()).compare(rec, Qt::CaseInsensitive) == 0;
     });
 
     return it != _records->end();
