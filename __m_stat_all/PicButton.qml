@@ -7,15 +7,19 @@ Rectangle {
 
     id: topRect
 
-    width: 35
-    height: 35
+    property string hoverPic: ""
+    property string defaultPic: ""
+    property string unactivePic: ""
+
+    property int m_width: 35
+    property int m_height: 35
+
+    width: m_width
+    height: m_height
 
     radius: 6
     color: Script.hoveredColor()
 
-    property string hoverPic: ""
-    property string defaultPic: ""
-    property string unactivePic: ""
 
     signal clicked()
 

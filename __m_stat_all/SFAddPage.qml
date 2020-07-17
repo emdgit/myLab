@@ -56,7 +56,10 @@ Item {
                     id: recordEditor
                     internalId: 0
                     text: qsTr("Запись")
+                    /// Сигнал вызывается всякий раз, когда TextField получает фокус
                     onActivated: { switchSlideEditor(number) }
+                    /// Сигнал вызывается, когда был нажат Enter при отсутствии
+                    /// существующих записей
                     onNeedNewRecord: { topItem.onNeedNewRecord() }
                     onNoRecordsDetected: { recordNotifier.show() }
                     onEmptyRecord: { recordNotifier.hide() }
@@ -70,7 +73,7 @@ Item {
                     id: summEditor
                     internalId: 1
                     text: qsTr("Сумма")
-                    validator: IntValidator {
+                    validator: DoubleValidator {
                         bottom: 1
                         top: 2000000000
                     }
@@ -82,6 +85,9 @@ Item {
                     validator: RegExpValidator {
                         regExp: /\d{2}\.\d{2}\.\d{4}/
                     }
+                }
+                MSpinBox {
+                    id: countEditor
                 }
                 Rectangle {
                     Layout.fillHeight: true

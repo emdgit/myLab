@@ -117,7 +117,6 @@ Rectangle {
             onAccepted: {
                 textField.focus = false
                 topRect.accepted( text )
-                textField.clear()
             }
 
             Keys.onEscapePressed: {

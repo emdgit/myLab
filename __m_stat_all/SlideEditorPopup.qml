@@ -112,9 +112,11 @@ Rectangle {
             }
             onAccepted: {
                 if ( hintRect.hidden ) {
-                    if ( !ModelManager.hintModel.containsRecord( text ) ) {
-                    /// Создать новую запись
-                    needNewRecord( text );
+                    var x = ModelManager.hintModel.containsRecord( text );
+                    if ( x === false ) {
+                        /// Создать новую запись
+                        topRect.needNewRecord( text );
+                        console.log("Need new. Show groups!");
                     }
                 } else {
                     /// Взять выбранную из подсказок запись
