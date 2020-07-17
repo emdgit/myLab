@@ -268,6 +268,7 @@ CREATE TABLE common.purchases
   record_id integer,
   summ real,
   date date NOT NULL,
+  creation_date date NOT NULL, -- Дата добавления записи о покупке
   CONSTRAINT "purchase_PK" PRIMARY KEY (id),
   CONSTRAINT "purchase_record_FK" FOREIGN KEY (record_id)
       REFERENCES common.records (id) MATCH SIMPLE
@@ -282,8 +283,10 @@ CREATE TABLE common.purchases
 WITH (
   OIDS=FALSE
 );
+
 ALTER TABLE common.purchases
   OWNER TO postgres;
+COMMENT ON COLUMN common.purchases.creation_date IS 'Дата добавления записи о покупке';
   
   
     ---------------------------------------------------RECORD_STAT
@@ -563,12 +566,13 @@ $BODY$
   
 ---------------------------------------------------FUNC_ADD_PURCHASE
   
-  CREATE OR REPLACE FUNCTION common.add_purchase(
+CREATE OR REPLACE FUNCTION common.add_purchase(
     u_group_id integer,
     user_id integer,
     record_id integer,
     p_summ real,
-    p_date date)
+    p_date date,
+    creation_date date)
   RETURNS integer AS
 $BODY$
 DECLARE
@@ -580,7 +584,7 @@ BEGIN
 	END IF;
 	IF NOT service.user_exists( $2 )
 	THEN
-		RETURN -2;	-- Required record doesn't exists
+		RETURN -2;	-- Required user doesn't exists
 	END IF;
 
 	IF NOT service.record_exists( $3 )
@@ -589,8 +593,8 @@ BEGIN
 	END IF;
 
 	INSERT
-	INTO common.purchases ( user_group_id, record_id, summ, date )
-	VALUES ( $1, $2, $3, $4 )
+	INTO common.purchases ( user_group_id, user_id, record_id, summ, date, creation_date )
+	VALUES ( $1, $2, $3, $4, $5, $6 )
 	RETURNING id INTO _purchase_id;
 
 	RETURN _purchase_id;
