@@ -2,6 +2,9 @@
 
 #include <QSqlRecord>
 #include <QSqlField>
+#include <QSqlError>
+
+#include <QDebug>
 
 class WorkerPrivate
 {
@@ -52,6 +55,9 @@ pg::Answer *pg::Worker::execute(const pg::Function &func) const noexcept
 
     if ( !success )
     {
+        if (query.lastError().isValid()) {
+            qDebug() << query.lastError().text();
+        }
         return nullptr;
     }
 
