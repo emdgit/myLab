@@ -412,6 +412,9 @@ END;
 $BODY$
   LANGUAGE plpgsql;
   
+  COMMENT ON FUNCTION common.add_group(text, integer) IS 'Action    -    Adds good''s group with given name and set it''s parent to group with given parent_id.
+Return    - [-1] If group with given parent_id doesn''t exists';
+  
   ---------------------------------------------------FUNC_ADD_RECORD
   
 CREATE OR REPLACE FUNCTION common.add_record(
@@ -793,15 +796,6 @@ Action    - Adds empty group for users.
 
 Return    - [-1] If group with given name is already exists.
                   - Otherwise returns added group id.';
-				  
----------------------------------------------------FUNC_GROUP_COMMENT
-				  
-COMMENT ON FUNCTION common.add_group(text, integer) IS '
-Action    -    Adds good''s group with given name and set it''s parent to group with given parent_id.
-
-
-Return    - [-1] If group with given parent_id doesn''t exists
-               - [-2] If given name is already exists.';
 
 ---------------------------------------------------FUNC_ADD_PURCHASE_COMMENT
 
