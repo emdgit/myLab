@@ -393,7 +393,13 @@ BEGIN
 		) AS q
 		WHERE q.name = $1
 	)
-	THEN RETURN -2;
+	THEN
+		SELECT	q.id 
+		FROM 	(SELECT * FROM service.get_groups_by_parent( $2 )) AS q
+		INTO	_result
+		WHERE 	q.name = $1;
+
+		RETURN _result;
 	END IF;
 	
 	INSERT 
