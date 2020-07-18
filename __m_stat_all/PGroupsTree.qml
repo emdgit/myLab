@@ -19,6 +19,8 @@ Item {
 
     property bool profit: false
 
+    property alias model: treeView.model
+
     /// Сигнал эмитируется, когда была нажата кнопка "Выбрать"
     /// Передает id выбранной группы
     signal accept( int groupId )
@@ -28,11 +30,12 @@ Item {
         /// Вертикальное расстояноие под нижние кнопки
         readonly property int buttonsH: 40
         readonly property int controlRectMargin: 6
+        readonly property string rootName: qsTr("Корневая группа")
 
         property bool _setup : setup()
 
         function setup() {
-            ModelManager.spendModel.setRootName(qsTr("Корневая группа"));
+            ModelManager.spendModel.setRootName(rootName);
             return true;
         }
     }
@@ -79,9 +82,16 @@ Item {
         }
         selection: ItemSelectionModel {
             id: selector
-            model: ModelManager.spendModel
+            model: treeView.model
         }
         onClicked: { lastIndex = index; }
+        onModelChanged: {
+            var showRoot = controlSwipeView.currentIndex === 1;
+            treeView.model.setShowRoot(showRoot);
+            if ( treeView.model.rootName !== _d.rootName ) {
+                treeView.model.setRootName( _d.rootName );
+            }
+        }
 
         function resetLastIndex() { lastIndex = 0; }
     }
@@ -106,6 +116,7 @@ Item {
         }
 
         Item {
+            id: controlItem
             Rectangle {
 
                 id: controlRect
@@ -169,6 +180,7 @@ Item {
             }
         }
         Item {
+            id: addGroupItem
             SlideEditor {
                 text: qsTr( "Имя:" )
                 alternativePlaceholder: qsTr("Имя новой группы..")
@@ -176,7 +188,7 @@ Item {
                     var index = treeView.lastIndex;
 
                     if ( index !== 0 ) {
-                        var groupId = ModelManager.spendModel.groupId(index)
+                        var groupId = treeView.model.groupId(index)
                         CoreAPI.addPurchaseGroup(editorText, groupId, topItem.profit);
                     }
 

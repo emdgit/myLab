@@ -24,6 +24,9 @@ Item {
     }
     */
 
+    // Активный режим. Прибыль / расход.
+    property bool profit: false
+
     MouseArea {
         anchors.fill: parent
         onClicked: {
@@ -144,9 +147,15 @@ Item {
                         onCheckedChanged: {
                             if (checked) {
                                 // Доход
-                                CoreAPI.switchHintModel(true)
+                                CoreAPI.switchHintModel(true);
+                                gTree.model = ModelManager.profitModel;
+                                gTree.profit = true;
+                                topItem.profit = true;
                             } else {
-                                CoreAPI.switchHintModel(false)
+                                CoreAPI.switchHintModel(false);
+                                gTree.model = ModelManager.spendModel;
+                                gTree.profit = false;
+                                topItem.profit = false;
                             }
                         }
                     }
@@ -170,8 +179,7 @@ Item {
                 bottomMargin: 20
             }
             onAccept: {
-                // todo ( real profit flag )
-                CoreAPI.addRecord( groupId, recordEditor.record, false );
+                CoreAPI.addRecord( groupId, recordEditor.record, topItem.profit );
             }
         }
 
