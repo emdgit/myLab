@@ -53,20 +53,21 @@ public:
      * \return std::optional<T> - получилось или нет.
      */
     template < class T >
-    std::optional<T> tryConvert() const
+    bool tryConvert(T &target) const noexcept
     {
         if ( _answerMap.size() != 1 ) {
-            return std::nullopt;
+            return false;
         }
 
         if ( _answerMap[0].values.size() != 1 ) {
-            return std::nullopt;
+            return false;
         }
 
         try {
-            return std::make_optional( qvariant_cast<T>( _answerMap[0].values[0] ) );
+            target = qvariant_cast<T>( _answerMap[0].values[0] );
+            return true;
         } catch (...) {
-            return std::nullopt;
+            return false;
         }
     }
 

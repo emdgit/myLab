@@ -221,14 +221,16 @@ Item {
     }
 
     function addPurchase() {
-//        console.log("Prepare to add purchase: ", recordEditor.record,
-//                    ", summ = ", summEditor.editorData,
-//                    ", date = ", dateEditor.editorData,
-//                    ", amount = ", countEditor.value());
+        var record = recordEditor.record;
+        var summ = summEditor.editorData;
+        var date = dateEditor.editorData;
+        var amount = countEditor.value();
 
         recordEditor.clear();
         recordBlub.ok = false;
         summEditor.clear();
         countEditor.reset();
+
+        CoreAPI.addPurchase(record, summ, date, amount);
     }
 }

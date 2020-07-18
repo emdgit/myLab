@@ -24,10 +24,16 @@ class CoreAPI : public QObject
 
 public:
 
+    /*!
+     * Добавить запись о покупке.
+     * \param[in] rec       Наименование записи
+     * \param[in] summ      Потраченная сумма
+     * \param[in] date      Дата совершения покупки
+     * \param[in] amount    Количество единиц
+     */
     Q_INVOKABLE
-    static bool addPurchase( const int &groupId, const int &userId,
-                             const int &recordId, const double &summ,
-                             const QDate &date ) noexcept;
+    static void addPurchase( const QString &rec, double summ,
+                             const QString &date_str, int amount );
 
 
     /*!
@@ -128,6 +134,8 @@ protected:
 
     /// Загрузить начало рассчетного периода. При смене и установке группы польователей.
     static void reloadStartPoint();
+
+    static bool dateFromStr( const QString &date_str, QDate &date );
 
 
 private:

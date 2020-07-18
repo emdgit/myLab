@@ -191,8 +191,6 @@ Item {
         /// Вертит SwipeView
         function swipeTo( index ) {
 
-            console.log( "Swipe to ", index );
-
             if ( index < 0 || index > 1 ) {
                 return;
             }

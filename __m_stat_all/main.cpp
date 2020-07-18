@@ -84,7 +84,11 @@ int main(int argc, char *argv[])
         CoreAPI::loadRecords( false );
         CoreAPI::loadRecords( true );
 
+        // Модель подсказок по умолчанию показывает расходы
         CoreAPI::switchHintModel(false);
+
+        // Задать пользователя и его группу. (DEV version) // todo
+        CoreAPI::setCurrentUser(1,1);
     };
 
     QQmlApplicationEngine engine;

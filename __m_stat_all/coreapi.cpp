@@ -9,6 +9,7 @@
 #include <iostream>
 
 #define DB_COMMON(func_name) #func_name, "common"
+#define DB_SERVICE(func_name) #func_name, "service"
 
 using namespace pg;
 using namespace std;
@@ -17,26 +18,40 @@ using RE = std::runtime_error;
 
 pg::Worker * CoreAPI::_pg_worker = Connecter::createWorker();
 
-bool CoreAPI::addPurchase(const int & groupId, const int & userId,
-                          const int & recordId, const double & summ,
-                          const QDate & date) noexcept
+void CoreAPI::addPurchase(const QString &rec, double summ,
+                          const QString &date_str, int amount)
 {
-    // todo
-    Q_UNUSED(groupId)
-    Q_UNUSED(userId)
-    Q_UNUSED(recordId)
-    Q_UNUSED(summ)
-    Q_UNUSED(date)
+    QDate date;
 
-    auto func = TypeStorage::func( "add_purchase", "common" );
-
-    auto answer = _pg_worker->execute( *func.value() );
-
-    if ( !answer ) {
-        return false;
+    if ( !dateFromStr(date_str,date) ) {
+        throw runtime_error("CoreAPI::addPurchase() Invalid date string!");
     }
 
-    return false;
+    auto rec_it = std::find_if(_records_spend.begin(), _records_spend.end(),
+                               [&rec]( const auto &record ){
+        auto name_qstr = QString::fromStdString( record->name() );
+        return rec.compare(name_qstr, Qt::CaseInsensitive) == 0;
+    });
+
+    if ( rec_it == _records_spend.end() ) {
+        throw runtime_error("CoreAPI::addPurchase() Cannot find given record");
+    }
+
+    for ( int i(0); i < amount; ++i ) {
+        auto func = TypeStorage::func(DB_COMMON(add_purchase));
+        (*func)->bindValue("u_group_id", _current_group);
+        (*func)->bindValue("user_id", _current_user);
+        (*func)->bindValue("record_id", (*rec_it)->id());
+        (*func)->bindValue("p_summ", summ);
+        (*func)->bindValue("p_date", date);
+        (*func)->bindValue("creation_date", QDate::currentDate());
+
+        auto answer = _pg_worker->execute(**func);
+
+        if (!answer) {
+            throw runtime_error("CoreAPI::addPurchase() Cannot add purchase");
+        }
+    }
 }
 
 void CoreAPI::loadGroups(bool profit)
@@ -149,14 +164,14 @@ void CoreAPI::addRecord(int groupId, const QString &recordName, bool profit)
         throw RE( "Cannot execute function common.add_record" );
     }
 
-    auto res = answer->tryConvert<int>();
+    int res;
 
-    if ( !res ) {
+    if ( !answer->tryConvert(res) ) {
         throw RE( "Unexpected function response: CoreAPI::addRecord(): "
                   "'common.add_record'" );
     }
 
-    if ( *res < 0 ) {
+    if ( res < 0 ) {
         return;
     }
 
@@ -184,14 +199,14 @@ void CoreAPI::addPurchaseGroup(const QString &name, int parentGroupId, bool prof
         throw RE( "Cannot execute function common.add_group" );
     }
 
-    auto res = answer->tryConvert<int>();
+    int res;
 
-    if ( !res ) {
+    if ( !answer->tryConvert(res) ) {
         throw RE( "Unexpected function response: CoreAPI::addPurchaseGroup(): "
                   "'common.add_group'" );
     }
 
-    if ( *res < 0 ) {
+    if ( res < 0 ) {
         throw RE( "Error in psql function: 'common.add_group'" );
     }
 
@@ -242,9 +257,9 @@ void CoreAPI::setStartPoint( const QDate &date )
 
 bool CoreAPI::checkDateFormat(const QString &date_str)
 {
-    return ( QDate::fromString(date_str, "dd.MM.yyyy").isValid() ||
-             QDate::fromString(date_str, "dd-MM-yyyy").isValid() ||
-             QDate::fromString(date_str, "dd:MM:yyyy").isValid() );
+    QDate d;
+
+    return dateFromStr( date_str, d );
 }
 
 void CoreAPI::setModelManager(ModelManager *mm)
@@ -330,12 +345,30 @@ void CoreAPI::reloadStartPoint()
         return;
     }
 
-    auto date = answer->tryConvert<QDate>();
+    QDate date;
 
-    if ( !date ) {
+    if ( !answer->tryConvert(date) ) {
         return;
     }
 
-    _start_point = *date;
+    _start_point = date;
+}
+
+bool CoreAPI::dateFromStr(const QString &date_str, QDate &date)
+{
+    if ( QDate::fromString(date_str, "dd.MM.yyyy").isValid() ) {
+        date = QDate::fromString(date_str, "dd.MM.yyyy");
+        return true;
+    }
+    if (QDate::fromString(date_str, "dd-MM-yyyy").isValid()) {
+        date = QDate::fromString(date_str, "dd-MM-yyyy");
+        return true;
+    }
+    if ( QDate::fromString(date_str, "dd:MM:yyyy").isValid() ) {
+        date = QDate::fromString(date_str, "dd:MM:yyyy");
+        return true;
+    }
+
+    return false;
 }
 
