@@ -32,7 +32,7 @@ public:
      * \param[in] amount    Количество единиц
      */
     Q_INVOKABLE
-    static void addPurchase( const QString &rec, double summ,
+    static void addPurchase(const QString &rec, QString summ,
                              const QString &date_str, int amount );
 
 

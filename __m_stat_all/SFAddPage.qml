@@ -229,6 +229,10 @@ Item {
     }
 
     function addPurchase() {
+        if (!allBulbsAreGreen()) {
+            return;
+        }
+
         var record = recordEditor.record;
         var summ = summEditor.editorData;
         var date = dateEditor.editorData;

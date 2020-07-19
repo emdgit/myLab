@@ -18,10 +18,22 @@ using RE = std::runtime_error;
 
 pg::Worker * CoreAPI::_pg_worker = Connecter::createWorker();
 
-void CoreAPI::addPurchase(const QString &rec, double summ,
+void CoreAPI::addPurchase(const QString &rec, QString summ,
                           const QString &date_str, int amount)
 {
     QDate date;
+
+    if ( summ.contains(",") ) {
+        for ( int i(0); i < summ.size(); ++i ) {
+            if ( summ[i] == "," ) {
+                summ.replace(i, 1, ".");
+                break;
+            }
+        }
+    }
+
+    auto dsumm = summ.toDouble();
+    qDebug() << summ << "   " << dsumm;
 
     if ( !dateFromStr(date_str,date) ) {
         throw runtime_error("CoreAPI::addPurchase() Invalid date string!");
@@ -42,7 +54,7 @@ void CoreAPI::addPurchase(const QString &rec, double summ,
         (*func)->bindValue("u_group_id", _current_group);
         (*func)->bindValue("user_id", _current_user);
         (*func)->bindValue("record_id", (*rec_it)->id());
-        (*func)->bindValue("p_summ", summ);
+        (*func)->bindValue("p_summ", dsumm);
         (*func)->bindValue("p_date", date);
         (*func)->bindValue("creation_date", QDate::currentDate());
 
