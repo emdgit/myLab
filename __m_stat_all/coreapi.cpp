@@ -18,40 +18,15 @@ using RE = std::runtime_error;
 
 pg::Worker * CoreAPI::_pg_worker = Connecter::createWorker();
 
-void CoreAPI::addPurchase(const QString &rec, double summ,
+void CoreAPI::addPurchase(const QString &rec, QString summ,
                           const QString &date_str, int amount)
 {
-    QDate date;
+    addTransaction( rec, summ, date_str, amount, false );
+}
 
-    if ( !dateFromStr(date_str,date) ) {
-        throw runtime_error("CoreAPI::addPurchase() Invalid date string!");
-    }
-
-    auto rec_it = std::find_if(_records_spend.begin(), _records_spend.end(),
-                               [&rec]( const auto &record ){
-        auto name_qstr = QString::fromStdString( record->name() );
-        return rec.compare(name_qstr, Qt::CaseInsensitive) == 0;
-    });
-
-    if ( rec_it == _records_spend.end() ) {
-        throw runtime_error("CoreAPI::addPurchase() Cannot find given record");
-    }
-
-    for ( int i(0); i < amount; ++i ) {
-        auto func = TypeStorage::func(DB_COMMON(add_purchase));
-        (*func)->bindValue("u_group_id", _current_group);
-        (*func)->bindValue("user_id", _current_user);
-        (*func)->bindValue("record_id", (*rec_it)->id());
-        (*func)->bindValue("p_summ", summ);
-        (*func)->bindValue("p_date", date);
-        (*func)->bindValue("creation_date", QDate::currentDate());
-
-        auto answer = _pg_worker->execute(**func);
-
-        if (!answer) {
-            throw runtime_error("CoreAPI::addPurchase() Cannot add purchase");
-        }
-    }
+void CoreAPI::addProfit(const QString &rec, QString summ, const QString &date_str, int amount)
+{
+    addTransaction( rec, summ, date_str, amount, true );
 }
 
 void CoreAPI::loadGroups(bool profit)
@@ -370,5 +345,55 @@ bool CoreAPI::dateFromStr(const QString &date_str, QDate &date)
     }
 
     return false;
+}
+
+void CoreAPI::addTransaction( const QString &rec, QString summ, const
+                              QString &date_str, int amount, bool profit )
+{
+    QDate date;
+
+    if ( summ.contains(",") ) {
+        for ( int i(0); i < summ.size(); ++i ) {
+            if ( summ[i] == "," ) {
+                summ.replace(i, 1, ".");
+                break;
+            }
+        }
+    }
+
+    auto dsumm = summ.toDouble();
+
+    if ( !dateFromStr(date_str,date) ) {
+        throw runtime_error("CoreAPI::addTransaction() Invalid date string!");
+    }
+
+    auto st = profit ? &_records_profit
+                     : &_records_spend;
+
+    auto rec_it = std::find_if(st->begin(), st->end(),
+                               [&rec]( const auto &record ){
+        auto name_qstr = QString::fromStdString( record->name() );
+        return rec.compare(name_qstr, Qt::CaseInsensitive) == 0;
+    });
+
+    if ( rec_it == st->end() ) {
+        throw runtime_error("CoreAPI::addTransaction() Cannot find given record");
+    }
+
+    for ( int i(0); i < amount; ++i ) {
+        auto func = TypeStorage::func(DB_COMMON(add_purchase));
+        (*func)->bindValue("u_group_id", _current_group);
+        (*func)->bindValue("user_id", _current_user);
+        (*func)->bindValue("record_id", (*rec_it)->id());
+        (*func)->bindValue("p_summ", dsumm);
+        (*func)->bindValue("p_date", date);
+        (*func)->bindValue("creation_date", QDate::currentDate());
+
+        auto answer = _pg_worker->execute(**func);
+
+        if (!answer) {
+            throw runtime_error("CoreAPI::addTransaction() Cannot add purchase"); // todo
+        }
+    }
 }
 

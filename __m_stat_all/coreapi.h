@@ -32,8 +32,20 @@ public:
      * \param[in] amount    Количество единиц
      */
     Q_INVOKABLE
-    static void addPurchase( const QString &rec, double summ,
+    static void addPurchase( const QString &rec, QString summ,
                              const QString &date_str, int amount );
+
+
+    /*!
+     * Добавить запись о прибыли.
+     * \param[in] rec       Наименование записи
+     * \param[in] summ      Полученная сумма
+     * \param[in] date      Дата получения суммы
+     * \param[in] amount    Количество единиц
+     */
+    Q_INVOKABLE
+    static void addProfit( const QString &rec, QString summ,
+                           const QString &date_str, int amount );
 
 
     /*!
@@ -135,7 +147,12 @@ protected:
     /// Загрузить начало рассчетного периода. При смене и установке группы польователей.
     static void reloadStartPoint();
 
+    /// Попытаться конвертировать date_str в объект даты.
     static bool dateFromStr( const QString &date_str, QDate &date );
+
+    /// Добавить информацию о покупке / прибыли.
+    static void addTransaction( const QString &rec, QString summ,
+                                const QString &date_str, int amount, bool profit );
 
 
 private:

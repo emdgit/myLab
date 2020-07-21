@@ -24,6 +24,9 @@ Item {
     }
     */
 
+    // Активный режим. Прибыль / расход.
+    property bool profit: false
+
     MouseArea {
         anchors.fill: parent
         onClicked: {
@@ -122,7 +125,7 @@ Item {
                     hidden: !allBulbsAreGreen()
                     Layout.alignment: Qt.AlignHCenter
                     onClicked: {
-                        topItem.addPurchase();
+                        topItem.addTransaction();
                     }
                 }
                 Rectangle {
@@ -143,11 +146,19 @@ Item {
                         Layout.preferredWidth: 100
                         onCheckedChanged: {
                             if (checked) {
-                                // Доход
-                                CoreAPI.switchHintModel(true)
+                                gTree.model = ModelManager.profitModel;
                             } else {
-                                CoreAPI.switchHintModel(false)
+                                gTree.model = ModelManager.spendModel;
                             }
+
+                            CoreAPI.switchHintModel(checked);
+                            gTree.profit = checked;
+                            topItem.profit = checked;
+                            cartButton.profit = checked;
+
+                            recordEditor.clear();
+                            recordBlub.ok = false;
+                            summEditor.clear();
                         }
                     }
                     Text {
@@ -170,8 +181,8 @@ Item {
                 bottomMargin: 20
             }
             onAccept: {
-                // todo ( real profit flag )
-                CoreAPI.addRecord( groupId, recordEditor.record, false );
+                CoreAPI.addRecord( groupId, recordEditor.record, topItem.profit );
+                recordBlub.ok = true;
             }
         }
 
@@ -220,7 +231,11 @@ Item {
         return recordBlub.ok && summBlub.ok && dateBlub.ok;
     }
 
-    function addPurchase() {
+    function addTransaction() {
+        if (!allBulbsAreGreen()) {
+            return;
+        }
+
         var record = recordEditor.record;
         var summ = summEditor.editorData;
         var date = dateEditor.editorData;
@@ -231,6 +246,10 @@ Item {
         summEditor.clear();
         countEditor.reset();
 
-        CoreAPI.addPurchase(record, summ, date, amount);
+        if ( profit ) {
+            CoreAPI.addProfit(record, summ, date, amount);
+        } else {
+            CoreAPI.addPurchase(record, summ, date, amount);
+        }
     }
 }
