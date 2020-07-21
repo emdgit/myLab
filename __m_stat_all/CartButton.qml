@@ -12,6 +12,7 @@ Rectangle {
 
     // Скрыть
     property bool hidden: true
+    property bool profit: false
 
     signal clicked()
 
@@ -40,7 +41,7 @@ Rectangle {
         sourceSize.width: _d.imageSize
         sourceSize.height: _d.imageSize
 
-        source: "qrc:/img/images/cart.svg"
+        source: getSource( mArea.containsMouse )
 
         Behavior on opacity {
             NumberAnimation {
@@ -60,6 +61,22 @@ Rectangle {
             NumberAnimation {
                 duration: 300
                 easing.type: Easing.OutQuart
+            }
+        }
+
+        function getSource(isHovered) {
+            if ( topRect.profit ) {
+                if ( isHovered ) {
+                    return "qrc:/img/images/money_hovered.svg";
+                } else {
+                    return "qrc:/img/images/money.svg";
+                }
+            } else {
+                if ( isHovered ) {
+                    return "qrc:/img/images/cart_hovered.svg";
+                } else {
+                    return "qrc:/img/images/cart.svg";
+                }
             }
         }
     }
@@ -92,15 +109,9 @@ Rectangle {
     ]
 
     MouseArea {
+        id: mArea
         anchors.fill: parent
         hoverEnabled: true
-        onHoveredChanged: {
-            if (containsMouse) {
-                img.source = "qrc:/img/images/cart_hovered.svg"
-            } else {
-                img.source = "qrc:/img/images/cart.svg"
-            }
-        }
         onPressed: {
             _d.imageSize = topRect.side * 0.63
         }

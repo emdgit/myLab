@@ -49,6 +49,8 @@
         <file>images/red_circle.svg</file>
         <file>images/cart_hovered.svg</file>
         <file>images/cart.svg</file>
+        <file>images/money.svg</file>
+        <file>images/money_hovered.svg</file>
     </qresource>
     <qresource prefix="/notifiers"/>
 </RCC>

@@ -36,6 +36,7 @@ Item {
 
         function setup() {
             ModelManager.spendModel.setRootName(rootName);
+            ModelManager.profitModel.setRootName(rootName);
             return true;
         }
     }
@@ -210,10 +211,11 @@ Item {
             if ( index === 0 ) {
                 controlSwipeView.currentIndex = 0;
                 ModelManager.spendModel.setShowRoot(false);
+                treeView.model.setShowRoot(false);
             }
             else {
-                controlSwipeView.currentIndex = 1
-                ModelManager.spendModel.setShowRoot(true)
+                controlSwipeView.currentIndex = 1;
+                treeView.model.setShowRoot(true);
             }
 
             treeView.resetLastIndex();

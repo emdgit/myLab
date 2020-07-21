@@ -2,6 +2,9 @@
 #include "templates.h"
 #include "exception.h"
 
+#include <string>
+#include <sstream>
+
 class PgFunctionPrivate
 {
 public:
@@ -184,18 +187,24 @@ bool pg::Function::prepare(QSqlQuery &query) const noexcept
     return true;
 }
 
-bool pg::Function::bindValue(const QString &name, QVariant &&val) noexcept
+void pg::Function::bindValue(const QString &name, QVariant &&val)
 {
     auto it = std::find_if( _inArgs.begin(), _inArgs.end(), [&] ( const auto &arg ) {
         return arg.field.get()->name == name;
     } );
 
-    if ( it == _inArgs.end() )
-        return false;
+    if ( it == _inArgs.end() ) {
+        std::stringstream str;
+        str << "pg::Function::bindValue() "
+            << "cannot bind value '" << val.toString().toStdString()
+            << "' by name '" << name.toStdString() << "' "
+            << "in function " << this->_schema.toStdString() << "."
+            << this->_name.toStdString();
+
+        throw std::runtime_error(str.str());
+    }
 
     (*it).value = std::move( val );
-
-    return true;
 }
 
 bool pg::Function::operator<(const pg::Function &other) noexcept

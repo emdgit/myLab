@@ -125,7 +125,7 @@ Item {
                     hidden: !allBulbsAreGreen()
                     Layout.alignment: Qt.AlignHCenter
                     onClicked: {
-                        topItem.addPurchase();
+                        topItem.addTransaction();
                     }
                 }
                 Rectangle {
@@ -146,17 +146,19 @@ Item {
                         Layout.preferredWidth: 100
                         onCheckedChanged: {
                             if (checked) {
-                                // Доход
-                                CoreAPI.switchHintModel(true);
                                 gTree.model = ModelManager.profitModel;
-                                gTree.profit = true;
-                                topItem.profit = true;
                             } else {
-                                CoreAPI.switchHintModel(false);
                                 gTree.model = ModelManager.spendModel;
-                                gTree.profit = false;
-                                topItem.profit = false;
                             }
+
+                            CoreAPI.switchHintModel(checked);
+                            gTree.profit = checked;
+                            topItem.profit = checked;
+                            cartButton.profit = checked;
+
+                            recordEditor.clear();
+                            recordBlub.ok = false;
+                            summEditor.clear();
                         }
                     }
                     Text {
@@ -180,6 +182,7 @@ Item {
             }
             onAccept: {
                 CoreAPI.addRecord( groupId, recordEditor.record, topItem.profit );
+                recordBlub.ok = true;
             }
         }
 
@@ -228,7 +231,7 @@ Item {
         return recordBlub.ok && summBlub.ok && dateBlub.ok;
     }
 
-    function addPurchase() {
+    function addTransaction() {
         if (!allBulbsAreGreen()) {
             return;
         }
@@ -243,6 +246,10 @@ Item {
         summEditor.clear();
         countEditor.reset();
 
-        CoreAPI.addPurchase(record, summ, date, amount);
+        if ( profit ) {
+            CoreAPI.addProfit(record, summ, date, amount);
+        } else {
+            CoreAPI.addPurchase(record, summ, date, amount);
+        }
     }
 }

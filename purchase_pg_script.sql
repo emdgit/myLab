@@ -370,7 +370,8 @@ ALTER TABLE common.purchase_view
   
 CREATE OR REPLACE FUNCTION common.add_group(
     name text,
-    parent_id integer DEFAULT NULL::integer)
+    parent_id integer DEFAULT NULL::integer,
+    profit boolean DEFAULT false)
   RETURNS integer AS
 $BODY$
 DECLARE
@@ -378,6 +379,7 @@ DECLARE
 BEGIN
 	_result := 0;
 
+	-- Проверка наличия родительской группы
 	IF $2 IS NOT NULL AND NOT EXISTS (
 		SELECT * 
 		FROM common.groups
@@ -403,8 +405,8 @@ BEGIN
 	END IF;
 	
 	INSERT 
-	INTO common.groups ( group_name, group_parent_id )
-	VALUES ( $1, $2 )
+	INTO common.groups ( group_name, group_parent_id, is_profit )
+	VALUES ( $1, $2, $3 )
 	RETURNING id INTO _result;
 
 	RETURN _result;
