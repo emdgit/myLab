@@ -5,7 +5,7 @@
 using namespace std;
 
 PurchaseGroupModel::PurchaseGroupModel(QObject * parent) :
-    QAbstractItemModel (parent)
+    QAbstractItemModel (parent), _st(nullptr)
 {
 }
 

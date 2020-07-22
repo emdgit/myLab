@@ -47,7 +47,7 @@ Item {
     SwipeView {
         id: swipeView
         orientation: Qt.Horizontal
-        currentIndex: 1
+        currentIndex: 0
 
         anchors {
             top: titleMenuBtn.bottom
@@ -59,15 +59,7 @@ Item {
 
         Item {
             id: page1
-            Rectangle {
-                anchors.fill: parent
-                Text {
-                    text: "Page 1. Red Button\n Здесь должна быть главная статистика"
-                    anchors.fill: parent
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
+            GeneralStatisticsPage { anchors.fill: parent }
         }
         Item {
             SFAddPage {
