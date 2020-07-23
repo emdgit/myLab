@@ -857,8 +857,41 @@ BEGIN
 	return _result;
 END;
 $BODY$
-  LANGUAGE plpgsql
+  LANGUAGE plpgsql;
   
+  COMMENT ON FUNCTION common.summ_purchases(date, date, integer) IS 'Суммирует все записи за указанный период по данной группе. 
+В расчет берутся записи по всем подгруппам, включая данную.';
+  
+  ---------------------------------------------------FUNC_PERIOD_ROOT_GROUPS
+  
+  CREATE OR REPLACE FUNCTION common.period_root_groups(
+    IN date_from date,
+    IN date_to date,
+    IN profit boolean)
+  RETURNS TABLE(id integer) AS
+$BODY$
+BEGIN
+	return 	query
+	with roots as (
+		select distinct	common.get_root_group_by_record_id(p.record_id) as id
+		from 	common.purchases as p
+		where	p.date >= $1	and
+			p.date <= $2
+		order by id
+	), rgroups as (
+		select	g.id 
+		from	common.groups as g,
+			roots as r
+		where	g.id = r.id and g.is_profit = $3
+	)
+	select	*
+	from	rgroups;
+END;
+$BODY$
+  LANGUAGE plpgsql;
+  
+COMMENT ON FUNCTION common.period_root_groups(date, date, boolean) IS 'Возвращет список корневых групп для покупок, совершенных в указанный период.
+Либо корневых групп прибыли, в зависимости от переданного параметра profit';
   
   ---------------------------------------------------TRIGGER_FUNC_ON_PURCHASE_ADD
   
