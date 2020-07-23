@@ -7,6 +7,7 @@
 #include "purchaserecord.h"
 
 #include <iostream>
+#include <sstream>
 
 #define DB_COMMON(func_name) #func_name, "common"
 #define DB_SERVICE(func_name) #func_name, "service"
@@ -237,6 +238,16 @@ bool CoreAPI::checkDateFormat(const QString &date_str)
     return dateFromStr( date_str, d );
 }
 
+double CoreAPI::currentConsuption()
+{
+    return currentPeriodSumm(false);
+}
+
+double CoreAPI::currentProfit()
+{
+    return currentPeriodSumm(true);
+}
+
 void CoreAPI::setModelManager(ModelManager *mm)
 {
     _modelManager = mm;
@@ -395,5 +406,109 @@ void CoreAPI::addTransaction( const QString &rec, QString summ, const
             throw runtime_error("CoreAPI::addTransaction() Cannot add purchase"); // todo
         }
     }
+}
+
+pair<QDate, QDate> CoreAPI::currentPeriod()
+{
+    if (!_start_point.isValid()) {
+        throw runtime_error("CoreAPI::currentPeriod(): Invalid start point");
+    }
+
+    auto today = QDate::currentDate();
+    QDate from(today.year(), today.month(), _start_point.day());
+    QDate to(from);
+
+    if (from.day() > today.day()) {
+        from = from.addMonths(-1);
+        to = to.addDays(-1);
+    } else {
+        to = to.addMonths(1).addDays(-1);
+    }
+
+    return make_pair(from, to);
+}
+
+vector<int> CoreAPI::periodRootGroups(CoreAPI::date_pair dpair, bool profit)
+{
+    if (!dpair.first.isValid() || !dpair.second.isValid()) {
+        throw runtime_error("CoreAPI::periodRootGroups() Invalid date given.");
+    }
+
+    if (dpair.first.daysTo(dpair.second) < 0) {
+        std::swap(dpair.first, dpair.second);
+    }
+
+    auto func = TypeStorage::func(DB_COMMON(period_root_groups));
+    (*func)->bindValue("date_from", dpair.first);
+    (*func)->bindValue("date_to", dpair.second);
+    (*func)->bindValue("profit", profit);
+
+    auto answer = _pg_worker->execute(**func);
+
+    if (!answer) {
+        throw runtime_error("CoreAPI::periodRootGroups() Cannot exec query");
+    }
+
+    if (answer->columns() != 1) {
+        if (answer->columns() == 0) {
+            return {};
+        }
+        throw runtime_error("CoreAPI::periodRootGroups() Unexpected answer.");
+    }
+
+    const auto rows = answer->rows();
+
+    if (!rows) {
+        return {};
+    }
+
+    vector<int> res(rows);
+
+    for ( size_t i(0); i < rows; ++i ) {
+        res[i] = answer->field(i,0).value.toInt();
+    }
+
+    return res;
+}
+
+double CoreAPI::currentPeriodSumm(bool profit)
+{
+    double summ(0.0);
+    auto period = currentPeriod();
+
+    vector<int> g_ids = periodRootGroups(period, profit);
+
+    for ( const auto &id : g_ids ) {
+        auto func = TypeStorage::func(DB_COMMON(summ_purchases));
+        (*func)->bindValue("date_from", period.first);
+        (*func)->bindValue("date_to", period.second);
+        (*func)->bindValue("group_id", id);
+
+        auto answer = _pg_worker->execute(**func);
+
+        if (!answer) {
+            stringstream ss;
+            ss << "CoreAPI::currentConsuption() Cannot execute "
+               << (*func)->schema().toStdString() << "."
+               << (*func)->name().toStdString() << " with params: "
+               << "date_from = "
+               << period.first.toString().toStdString()
+               << ", date_to = "
+               << period.second.toString().toStdString()
+               << ", group_id = "
+               << id;
+
+            throw runtime_error(ss.str());
+        }
+
+        double res;
+        if (!answer->tryConvert(res)) {
+            throw runtime_error("CoreAPI::currentConsuption() Cannot convert answer");
+        }
+
+        summ += res;
+    }
+
+    return summ;
 }
 

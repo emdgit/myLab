@@ -2,6 +2,8 @@ import QtQuick 2.0
 import QtQuick.Layouts 1.1
 import QtGraphicalEffects 1.0
 
+import OwlComponents 1.0
+
 import "Common.js" as Script
 
 Item {
@@ -43,24 +45,17 @@ Item {
         }
 
         RowLayout {
+            id: headerLayout
             anchors.fill: parent
-            Item {
-                height: parent.height
-                Text {
-                    anchors.top: parent.top
-                    anchors.bottom: parent.bottom
-                    verticalAlignment: Text.AlignVCenter
-                    text: qsTr("Доход: 57394₽")
-                    color: Script.menuTextColor()
-                    font.family: Script.menuTextFontFamily()
-                    font.pixelSize: Script.menuTextFontSize() - 2
-                }
-//                Rectangle {
-//                    width: 100
-//                    height: parent.height
-//                    anchors.verticalCenter: parent.verticalCenter
-//                    color: "red"
-//                }
+
+            MoneyLabel {
+                summ: CoreAPI.currentProfit()
+                meaning: qsTr("Доход")
+            }
+
+            MoneyLabel {
+                summ: CoreAPI.currentConsuption()
+                meaning: qsTr("Расход")
             }
         }
 

@@ -40,7 +40,8 @@ SOURCES     +=           \
             core/purchasegroupmodel.cpp \
             core/hierarchicalstorage.cpp \
     core/purchaserecord.cpp \
-    core/hintmodel.cpp
+    core/hintmodel.cpp \
+    core/period.cpp
 
 RESOURCES   +=  qml.qrc \
                 sql.qrc \
@@ -75,5 +76,6 @@ HEADERS     +=        \
     modelmanager.h \
     core/log.h \
     core/purchaserecord.h \
-    core/hintmodel.h
+    core/hintmodel.h \
+    core/period.h
 

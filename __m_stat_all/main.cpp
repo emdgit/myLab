@@ -89,6 +89,11 @@ int main(int argc, char *argv[])
 
         // Задать пользователя и его группу. (DEV version) // todo
         CoreAPI::setCurrentUser(1,1);
+
+        // Установить начало периода // todo
+        if (!CoreAPI::hasStartPoint()) {
+            CoreAPI::setStartPoint(QDate(2019,5,11));
+        }
     };
 
     QQmlApplicationEngine engine;

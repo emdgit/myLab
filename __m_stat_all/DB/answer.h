@@ -26,9 +26,7 @@ public:
 
     Answer() = delete;
     Answer( const Answer & ) = delete;
-
     Answer( Answer && ) = default;
-
     Answer( const int &len ) noexcept;
 
     virtual ~Answer();

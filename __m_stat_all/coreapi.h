@@ -22,6 +22,8 @@ class CoreAPI : public QObject
 
     Q_OBJECT
 
+    using date_pair = std::pair<QDate, QDate>;
+
 public:
 
     /*!
@@ -125,6 +127,20 @@ public:
     static bool checkDateFormat( const QString &date_str );
 
 
+    /*!
+     * Вернуть значение расходов за текущий период.
+     */
+    Q_INVOKABLE
+    static double currentConsuption();
+
+
+    /*!
+     * Вернуть значение доходов за текущий период.
+     */
+    Q_INVOKABLE
+    static double currentProfit();
+
+
     static void setModelManager( ModelManager * mm );
 
 
@@ -153,6 +169,20 @@ protected:
     /// Добавить информацию о покупке / прибыли.
     static void addTransaction( const QString &rec, QString summ,
                                 const QString &date_str, int amount, bool profit );
+
+    /// Вернуть даты начала и конца текущего периода.
+    static std::pair<QDate,QDate> currentPeriod();
+
+    /// Вернуть корневые группы для записей переданного периода.
+    /*!
+     * \param[in] dpair Даты конца и начала периода.
+     * \param[in] profit Прибыль/траты
+     * \return Вектор идентификаторов корневых групп
+     */
+    static std::vector<int> periodRootGroups(date_pair dpair, bool profit );
+
+    /// Посчитать сумму всех записей за текущий период.
+    static double currentPeriodSumm(bool profit);
 
 
 private:

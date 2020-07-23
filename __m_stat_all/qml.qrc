@@ -20,6 +20,7 @@
         <file>notifiers/Bulb.qml</file>
         <file>CartButton.qml</file>
         <file>GeneralStatisticsPage.qml</file>
+        <file>MoneyLabel.qml</file>
     </qresource>
     <qresource prefix="/img">
         <file>graphs.jpg</file>

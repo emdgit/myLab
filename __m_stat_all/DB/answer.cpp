@@ -8,7 +8,7 @@ pg::Answer::~Answer() {}
 bool pg::Answer::isValid() const noexcept
 {
     if ( _answerMap.empty() )
-        return false;
+        return true;
 
     auto s = _answerMap[0].values.size();
 
