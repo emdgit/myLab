@@ -141,6 +141,36 @@ END;
 $BODY$
   LANGUAGE plpgsql;
   
+  CREATE OR REPLACE FUNCTION service.get_subgroups(IN group_id integer DEFAULT NULL::integer)
+  RETURNS TABLE(id integer) AS
+$BODY$
+BEGIN
+	return QUERY
+	with recursive rec(id) as (
+		select g.id 
+		from common.groups g 
+		where case 
+			when $1 is null 
+			then g.group_parent_id is null
+			else g.group_parent_id = $1
+			end
+
+		union all
+
+		select g.id 
+		from 
+			common.groups g, 
+			rec r 
+		where g.group_parent_id = r.id
+	)
+	select ($1) as id
+	union 
+	select rec.id from rec
+	order by id;
+END;
+$BODY$
+  LANGUAGE plpgsql;
+  
   ---------------------------------------------------------------------------------------
 ------------------------------------------------<< SCHEMA SERVICE ---------------------
 ---------------------------------------------------------------------------------------
@@ -364,7 +394,31 @@ WITH DATA;
 ALTER TABLE common.purchase_view
   OWNER TO postgres;
   
+  ---------------------------------------------------RECORD_GROUP_VIEW
   
+  CREATE OR REPLACE VIEW common.record_group_view AS 
+ WITH id_q AS (
+         SELECT r_1.id
+           FROM common.records r_1
+        ), ids AS (
+         SELECT q.id,
+            group_id.group_id
+           FROM id_q q,
+            LATERAL common.get_root_group_by_record_id(q.id) group_id(group_id)
+        )
+ SELECT ids.id,
+    ids.group_id,
+    r.name AS record_name,
+    g.group_name,
+    g.is_profit
+   FROM ids
+     JOIN common.records r ON r.id = ids.id
+     JOIN common.groups g ON g.id = ids.group_id;
+
+ALTER TABLE common.record_group_view
+  OWNER TO postgres;
+COMMENT ON VIEW common.record_group_view
+  IS 'Для просмотра соответствия записей и их корневых групп';
   
   ---------------------------------------------------FUNC_ADD_GROUP
   
@@ -720,6 +774,91 @@ BEGIN
 END;
 $BODY$
   LANGUAGE plpgsql;
+  
+  ---------------------------------------------------FUNC_GET_ROOT_GROUPS_BY_RECORD_ID
+  
+  CREATE OR REPLACE FUNCTION common.get_root_group_by_record_id(record_id integer)
+  RETURNS integer AS
+$BODY$
+DECLARE
+	_group_id integer := -1;
+BEGIN
+	-- Проверка наличия записи
+	if not exists (
+		select * from common.records where id = $1
+	)
+	then
+		return -1;
+	end if;
+	
+	with recursive rec(id) as (
+		select	r.group_id
+		from   	common.records as r
+		where  	r.id = $1
+
+		union
+
+		select 	g.group_parent_id
+		from   	common.groups as g, rec
+		where  	g.id = rec.id and rec.id is not null
+	)
+	select	* 
+	from 	rec 
+	into	_group_id
+	where 	id is not null 
+	order 	by id asc 
+	limit 	1;
+
+	return _group_id;
+END;
+$BODY$
+  LANGUAGE plpgsql;
+  
+---------------------------------------------------FUNC_SUMM_PURCHASES
+  
+  CREATE OR REPLACE FUNCTION common.summ_purchases(
+    date_from date,
+    date_to date,
+    group_id integer)
+  RETURNS real AS
+$BODY$
+DECLARE 
+	_parent_group 	integer;
+	_result		real;
+BEGIN
+	if ($3 is null) 
+	then	return -1.0::real;
+	end if;
+	
+	if ($3 = 0) 
+	then _parent_group := NULL::integer; 
+	else _parent_group := $3;
+	end if; 
+	
+	with recs as ( 
+		select 	r.id
+		from 
+			service.get_subgroups(_parent_group) as sg,
+			common.records as r
+		where 	r.group_id = sg.id
+	), purchases as (
+		select	p.summ 
+		from 	common.purchases as p,
+			recs as r
+		where 	
+			p.date >= $1 		and
+			p.date <= $2 		and
+			p.record_id = r.id
+	)
+	select	sum(p.summ) 
+	from 	purchases as p
+	into	_result;
+
+	return _result;
+END;
+$BODY$
+  LANGUAGE plpgsql
+  
   
   ---------------------------------------------------TRIGGER_FUNC_ON_PURCHASE_ADD
   
