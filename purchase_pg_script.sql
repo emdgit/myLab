@@ -171,6 +171,28 @@ END;
 $BODY$
   LANGUAGE plpgsql;
   
+  CREATE OR REPLACE FUNCTION service.is_record_profit(id integer)
+  RETURNS boolean AS
+$BODY$
+DECLARE
+	_res boolean := false;
+BEGIN
+	select *
+	from lateral (
+		select g.is_profit 
+		from common.groups as g
+		where g.id = common.get_root_group_by_record_id(12)
+	) s
+	into _res;
+
+	return _res;
+END;
+$BODY$
+  LANGUAGE plpgsql;
+  
+COMMENT ON FUNCTION service.is_record_profit(integer) IS 'Функция определяет, относится запись к прибыльным или нет.
+true - прибыльная, false - нет';
+  
   ---------------------------------------------------------------------------------------
 ------------------------------------------------<< SCHEMA SERVICE ---------------------
 ---------------------------------------------------------------------------------------
