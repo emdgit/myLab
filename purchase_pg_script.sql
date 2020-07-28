@@ -181,7 +181,7 @@ BEGIN
 	from lateral (
 		select g.is_profit 
 		from common.groups as g
-		where g.id = common.get_root_group_by_record_id(12)
+		where g.id = common.get_root_group_by_record_id($1)
 	) s
 	into _res;
 
@@ -318,9 +318,9 @@ CREATE TABLE common.purchases
   user_group_id integer,
   user_id integer,
   record_id integer,
-  summ real,
   date date NOT NULL,
   creation_date date NOT NULL, -- Дата добавления записи о покупке
+  summ double precision,
   CONSTRAINT "purchase_PK" PRIMARY KEY (id),
   CONSTRAINT "purchase_record_FK" FOREIGN KEY (record_id)
       REFERENCES common.records (id) MATCH SIMPLE
@@ -335,7 +335,6 @@ CREATE TABLE common.purchases
 WITH (
   OIDS=FALSE
 );
-
 ALTER TABLE common.purchases
   OWNER TO postgres;
 COMMENT ON COLUMN common.purchases.creation_date IS 'Дата добавления записи о покупке';
@@ -914,6 +913,37 @@ $BODY$
   
 COMMENT ON FUNCTION common.period_root_groups(date, date, boolean) IS 'Возвращет список корневых групп для покупок, совершенных в указанный период.
 Либо корневых групп прибыли, в зависимости от переданного параметра profit';
+  
+---------------------------------------------------FUNC_GET_PURCHASES
+  
+  CREATE OR REPLACE FUNCTION common.get_purchases(
+    IN date_from date,
+    IN date_to date,
+    IN profit boolean)
+  RETURNS TABLE(name text, summ double precision, last_purchase_date date) AS
+$BODY$
+BEGIN
+	return query
+
+	with query as (
+		select	p.record_id,
+			r.name, 
+			sum(p.summ) as summ,
+			(select unnest(array_agg(p.date)) d order by d desc limit 1) as last_date
+		from	common.purchases as p
+		join 	common.records as r on r.id = p.record_id
+		where	$1 <= p.date and p.date <= $2
+		group by p.record_id, r.name
+		order by summ desc
+	)
+	select	q.name, q.summ, q.last_date
+	from	query as q
+	where	service.is_record_profit(q.record_id) = $3;
+END;
+$BODY$
+  LANGUAGE plpgsql;
+  
+COMMENT ON FUNCTION common.get_purchases(date, date, boolean) IS 'Считает сумму всех записей за указанный период.';
   
   ---------------------------------------------------TRIGGER_FUNC_ON_PURCHASE_ADD
   
