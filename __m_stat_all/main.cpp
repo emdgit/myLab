@@ -73,6 +73,8 @@ int main(int argc, char *argv[])
         return -1;
     }
 
+    auto t1 = chrono::high_resolution_clock::now();
+
     if ( !pg::Connecter::readFunctions() ) {
         qDebug() << "Error occured while reading functions";
         return -2;
@@ -96,7 +98,16 @@ int main(int argc, char *argv[])
         if (!CoreAPI::hasStartPoint()) {
             CoreAPI::setStartPoint(QDate(2019,5,11));
         }
+
+        // Загрузить покупки текущего периода
+        CoreAPI::loadPurchases();
     };
+
+    auto t2 = chrono::high_resolution_clock::now();
+
+    chrono::duration<double, std::milli> d(t2-t1);
+
+    cout << "Loaded at " << d.count() << "ms" << endl;
 
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty( "ModelManager", &mmanager );

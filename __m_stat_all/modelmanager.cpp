@@ -2,7 +2,7 @@
 
 ModelManager::ModelManager(QObject *parent) : QObject(parent)
 {
-
+    _purchaseModel = new PurchaseModel(false);
 }
 
 PurchaseGroupModel *ModelManager::profitModel() const

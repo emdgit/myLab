@@ -42,7 +42,7 @@ QVariant PurchaseModel::data(const QModelIndex &index, int role) const
         }
 
         case LastDate: {
-            return (*_purchase_vec)[row]->lastDate();
+            return (*_purchase_vec)[row]->lastDate().toString("dd.MMM.yyyy");
         }
 
         default: return QVariant();

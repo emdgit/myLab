@@ -254,44 +254,19 @@ double CoreAPI::currentProfit()
 
 void CoreAPI::loadPurchases(const QString & dateFrom, const QString & dateTo)
 {
-    auto func = TypeStorage::func(DB_COMMON(get_purchases));
-
     QDate from, to;
 
     if (!dateFromStr(dateFrom,from) || !dateFromStr(dateTo, to)) {
         throw RE("CoreAPI::loadPurchases() Incorrect date string.");
     }
 
-    (*func)->bindValue("date_from", from);
-    (*func)->bindValue("date_to", to);
-    (*func)->bindValue("profit", false);
+    loadPurchases(from, to);
+}
 
-    auto answer = _pg_worker->execute(**func);
-
-    if (!answer) {
-        throw RE("CoreAPI::loadPurchases() Query exec error");
-    }
-
-    auto st = ST.purchasesSpend();
-    st->clear();
-
-    const auto size = answer->rows();
-
-    for (size_t i(0); i < size; ++i) {
-        auto pr = new Purchase();
-
-        try {
-            pr->fromPgAnswer(answer, i);
-        } catch (const exception &ex) {
-            cout << ex.what() << endl;
-            delete pr;
-            throw;
-        }
-
-        st->push_back(pr);
-    }
-
-    _modelManager->purchaseModel()->reloadData();
+void CoreAPI::loadPurchases()
+{
+    auto period = currentPeriod();
+    loadPurchases(period.first, period.second);
 }
 
 void CoreAPI::setModelManager(ModelManager *mm)
@@ -553,5 +528,41 @@ double CoreAPI::currentPeriodSumm(bool profit)
     }
 
     return summ;
+}
+
+void CoreAPI::loadPurchases(const QDate &from, const QDate &to)
+{
+    auto func = TypeStorage::func(DB_COMMON(get_purchases));
+
+    (*func)->bindValue("date_from", from);
+    (*func)->bindValue("date_to", to);
+    (*func)->bindValue("profit", false);
+
+    auto answer = _pg_worker->execute(**func);
+
+    if (!answer) {
+        throw RE("CoreAPI::loadPurchases() Query exec error");
+    }
+
+    auto st = ST.purchasesSpend();
+    st->clear();
+
+    const auto size = answer->rows();
+
+    for (size_t i(0); i < size; ++i) {
+        auto pr = new Purchase();
+
+        try {
+            pr->fromPgAnswer(answer, i);
+        } catch (const exception &ex) {
+            cout << ex.what() << endl;
+            delete pr;
+            throw;
+        }
+
+        st->push_back(pr);
+    }
+
+    _modelManager->purchaseModel()->reloadData();
 }
 

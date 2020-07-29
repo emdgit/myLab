@@ -151,6 +151,13 @@ public:
                               const QString &dateTo);
 
 
+    /*!
+     * \brief Загрузить информацию о покупках за текущий период
+     */
+    Q_INVOKABLE
+    static void loadPurchases();
+
+
     static void setModelManager( ModelManager * mm );
 
 
@@ -193,6 +200,9 @@ protected:
 
     /// Посчитать сумму всех записей за текущий период.
     static double currentPeriodSumm(bool profit);
+
+    /// Загрузить информацию о покупках за период
+    static void loadPurchases(const QDate &from, const QDate &to);
 
 
 private:
