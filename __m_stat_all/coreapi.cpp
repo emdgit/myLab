@@ -1,10 +1,14 @@
 #include "coreapi.h"
 
+#include "storage.h"
+#include "purchase.h"
 #include "connecter.h"
+#include "hintmodel.h"
 #include "typestorage.h"
 #include "modelmanager.h"
 #include "purchasegroup.h"
 #include "purchaserecord.h"
+#include "purchasegroupmodel.h"
 
 #include <iostream>
 #include <sstream>
@@ -48,14 +52,14 @@ void CoreAPI::loadGroups(bool profit)
         return;
     }
 
-    auto st = profit ? &_p_g_storage_profit
-                     : &_p_g_storage_spend;
+    auto st = profit ? ST.groupsProfit()
+                     : ST.groupsSpend();
 
     if ( !st ) {
         throw RE("Target storage wasn't set");
     }
 
-    packGroups( answer.get(), *st, {} );
+    packGroups( answer.get(), st, {} );
 }
 
 void CoreAPI::loadRecords(bool profit)
@@ -65,10 +69,10 @@ void CoreAPI::loadRecords(bool profit)
 
     if ( profit ) {
         work_pair.first = "get_all_records_profit";
-        work_pair.second = &_records_profit;
+        work_pair.second = ST.recordsProfit();
     } else {
         work_pair.first = "get_all_records_spend";
-        work_pair.second = &_records_spend;
+        work_pair.second = ST.recordsSpend();
     }
 
     auto func = TypeStorage::func( work_pair.first, "common" );
@@ -117,8 +121,8 @@ void CoreAPI::switchHintModel(bool profit)
         throw runtime_error("Attempt to switch model in NULL model manager");
     }
 
-    auto records = profit ? &_records_profit
-                          : &_records_spend;
+    auto records = profit ? ST.recordsProfit()
+                          : ST.recordsSpend();
 
     _modelManager->hintModel()->setRecords( records );
 }
@@ -186,8 +190,8 @@ void CoreAPI::addPurchaseGroup(const QString &name, int parentGroupId, bool prof
         throw RE( "Error in psql function: 'common.add_group'" );
     }
 
-    auto st = profit ? _p_g_storage_profit
-                     : _p_g_storage_spend;
+    auto st = profit ? ST.groupsProfit()
+                     : ST.groupsSpend();
 
     st->clear();
 
@@ -248,35 +252,74 @@ double CoreAPI::currentProfit()
     return currentPeriodSumm(true);
 }
 
+void CoreAPI::loadPurchases(const QString & dateFrom, const QString & dateTo)
+{
+    auto func = TypeStorage::func(DB_COMMON(get_purchases));
+
+    QDate from, to;
+
+    if (!dateFromStr(dateFrom,from) || !dateFromStr(dateTo, to)) {
+        throw RE("CoreAPI::loadPurchases() Incorrect date string.");
+    }
+
+    (*func)->bindValue("date_from", from);
+    (*func)->bindValue("date_to", to);
+    (*func)->bindValue("profit", false);
+
+    auto answer = _pg_worker->execute(**func);
+
+    if (!answer) {
+        throw RE("CoreAPI::loadPurchases() Query exec error");
+    }
+
+    auto st = ST.purchasesSpend();
+    st->clear();
+
+    const auto size = answer->rows();
+
+    for (size_t i(0); i < size; ++i) {
+        auto pr = new Purchase();
+
+        try {
+            pr->fromPgAnswer(answer, i);
+        } catch (const exception &ex) {
+            cout << ex.what() << endl;
+            delete pr;
+            throw;
+        }
+
+        st->push_back(pr);
+    }
+
+    _modelManager->purchaseModel()->reloadData();
+}
+
 void CoreAPI::setModelManager(ModelManager *mm)
 {
     _modelManager = mm;
 }
 
-void CoreAPI::setProfitGroupSt(PGStorage * st) noexcept
+void CoreAPI::initProfitGroupCallback() noexcept
 {
-    _p_g_storage_profit = st;
-
-    st->setInsertHandler( [&](PNodeIndex index) -> void {
+    ST.groupsProfit()->setInsertHandler( [&](PNodeIndex index) -> void {
         try {
-            loadGroupsByParent( index, _p_g_storage_profit );
+            loadGroupsByParent( index, ST.groupsProfit() );
         } catch ( const exception &ex ) {
             cout << ex.what() << endl;
         }
     } );
 }
 
-void CoreAPI::setSpendGroupSt(PGStorage * st) noexcept
+void CoreAPI::initSpendGroupCallback() noexcept
 {
-    _p_g_storage_spend = st;
-
-    st->setInsertHandler( [&](PNodeIndex index) -> void {
+    ST.groupsSpend()->setInsertHandler( [&](PNodeIndex index) -> void {
         try {
-            loadGroupsByParent( index, _p_g_storage_spend );
+            loadGroupsByParent( index, ST.groupsSpend() );
         } catch ( const exception &ex ) {
             cout << ex.what() << endl;
         }
     } );
+
 }
 
 void CoreAPI::loadGroupsByParent(PNodeIndex parent, PGStorage *st)
@@ -378,8 +421,8 @@ void CoreAPI::addTransaction( const QString &rec, QString summ, const
         throw runtime_error("CoreAPI::addTransaction() Invalid date string!");
     }
 
-    auto st = profit ? &_records_profit
-                     : &_records_spend;
+    auto st = profit ? ST.recordsProfit()
+                     : ST.recordsSpend();
 
     auto rec_it = std::find_if(st->begin(), st->end(),
                                [&rec]( const auto &record ){

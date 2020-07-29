@@ -141,15 +141,25 @@ public:
     static double currentProfit();
 
 
+    /*!
+     * \brief Загрузить информацию о покупках за период
+     * \param[in] dateFrom Дата "с" в строковом виде
+     * \param[in] dateTo Дата "по" в строковом виде
+     */
+    Q_INVOKABLE
+    static void loadPurchases(const QString &dateFrom,
+                              const QString &dateTo);
+
+
     static void setModelManager( ModelManager * mm );
 
 
-    /// Задать хранилище групп дохода
-    static void setProfitGroupSt( PGStorage *st ) noexcept;
+    /// Задать callback групп дохода
+    static void initProfitGroupCallback() noexcept;
 
 
-    /// Задать хранилище групп расхода
-    static void setSpendGroupSt( PGStorage *st ) noexcept;
+    /// Задать callback групп расхода
+    static void initSpendGroupCallback() noexcept;
 
 
 protected:
@@ -190,18 +200,6 @@ private:
     static pg::Worker * _pg_worker;
 
     static inline ModelManager * _modelManager = nullptr;
-
-    /// Хранилка групп доходов.
-    static inline PGStorage *  _p_g_storage_profit;
-
-    /// Хранилка групп попупок.
-    static inline PGStorage *  _p_g_storage_spend;
-
-    /// Хранилка доходных записей.
-    static inline std::vector<PurchaseRecord*> _records_profit;
-
-    /// Хранилка расходных записей.
-    static inline std::vector<PurchaseRecord*> _records_spend;
 
     /// Идентификатор залогиненого пользователя
     static inline int _current_user = 0;

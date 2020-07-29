@@ -16,6 +16,8 @@
 #include "coreapi.h"
 #include "modelmanager.h"
 #include "hintmodel.h"
+#include "storage.h"
+#include "purchasegroupmodel.h"
 
 using namespace std;
 
@@ -45,22 +47,22 @@ int main(int argc, char *argv[])
                                          "HintModel is an uncreatable type" );
 
     // Хранилище доходных групп
-    PGStorage stProfit;
+    auto stProfit = ST.groupsProfit();
 
     // Хранилище расходных групп
-    PGStorage stSpend;
+    auto stSpend = ST.groupsSpend();
 
     auto hints = new HintModel();
 
     // Менеджер моделей
     ModelManager mmanager;
-    mmanager.setSpendModel( new PurchaseGroupModel(&stSpend) );
-    mmanager.setProfitModel( new PurchaseGroupModel(&stProfit) );
+    mmanager.setSpendModel( new PurchaseGroupModel(stSpend) );
+    mmanager.setProfitModel( new PurchaseGroupModel(stProfit) );
     mmanager.setHintModel( hints );
 
     // Установить хранилища
-    CoreAPI::setSpendGroupSt( &stSpend );
-    CoreAPI::setProfitGroupSt( &stProfit );
+    CoreAPI::initSpendGroupCallback();
+    CoreAPI::initProfitGroupCallback();
     CoreAPI::setModelManager( &mmanager );
 
     try {
