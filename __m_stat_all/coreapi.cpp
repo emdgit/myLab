@@ -252,7 +252,25 @@ double CoreAPI::currentProfit()
     return currentPeriodSumm(true);
 }
 
-void CoreAPI::loadPurchases(const QString & dateFrom, const QString & dateTo)
+void CoreAPI::loadPurchasesSumm(const QString & dateFrom,
+                                const QString & dateTo, bool profit)
+{
+    QDate from, to;
+
+    if (!dateFromStr(dateFrom,from) || !dateFromStr(dateTo, to)) {
+        throw RE("CoreAPI::loadPurchasesSumm() Incorrect date string.");
+    }
+
+    loadPurchasesSumm(from, to, profit);
+}
+
+void CoreAPI::loadPurchasesSumm(bool profit)
+{
+    auto period = currentPeriod();
+    loadPurchasesSumm(period.first, period.second, profit);
+}
+
+void CoreAPI::loadPurchases(const QString & dateFrom, const QString & dateTo, bool profit)
 {
     QDate from, to;
 
@@ -260,13 +278,13 @@ void CoreAPI::loadPurchases(const QString & dateFrom, const QString & dateTo)
         throw RE("CoreAPI::loadPurchases() Incorrect date string.");
     }
 
-    loadPurchases(from, to);
+    loadPurchases(from, to, profit);
 }
 
-void CoreAPI::loadPurchases()
+void CoreAPI::loadPurchases(bool profit)
 {
     auto period = currentPeriod();
-    loadPurchases(period.first, period.second);
+    loadPurchases(period.first, period.second, profit);
 }
 
 void CoreAPI::setModelManager(ModelManager *mm)
@@ -530,21 +548,23 @@ double CoreAPI::currentPeriodSumm(bool profit)
     return summ;
 }
 
-void CoreAPI::loadPurchases(const QDate &from, const QDate &to)
+void CoreAPI::loadPurchasesSumm(const QDate &from, const QDate &to, bool profit)
 {
-    auto func = TypeStorage::func(DB_COMMON(get_purchases));
+    auto func = TypeStorage::func(DB_COMMON(get_purchases_summ));
 
     (*func)->bindValue("date_from", from);
     (*func)->bindValue("date_to", to);
-    (*func)->bindValue("profit", false);
+    (*func)->bindValue("profit", profit);
 
     auto answer = _pg_worker->execute(**func);
 
     if (!answer) {
-        throw RE("CoreAPI::loadPurchases() Query exec error");
+        throw RE("CoreAPI::loadPurchasesSumm() Query exec error");
     }
 
-    auto st = ST.purchasesSpend();
+    auto st = profit ? ST.purchasesProfitSumm()
+                     : ST.purchasesSpendSumm();
+
     st->clear();
 
     const auto size = answer->rows();
@@ -553,7 +573,45 @@ void CoreAPI::loadPurchases(const QDate &from, const QDate &to)
         auto pr = new Purchase();
 
         try {
-            pr->fromPgAnswer(answer, i);
+            pr->fromPgAnswer(answer, static_cast<ulong>(i));
+        } catch (const exception &ex) {
+            cout << ex.what() << endl;
+            delete pr;
+            throw;
+        }
+
+        st->push_back(pr);
+    }
+
+    _modelManager->purchaseModel()->reloadData();
+}
+
+void CoreAPI::loadPurchases(const QDate & from, const QDate & to, bool profit)
+{
+    auto func = TypeStorage::func(DB_COMMON(get_purchases));
+
+    (*func)->bindValue("date_from", from);
+    (*func)->bindValue("date_to", to);
+    (*func)->bindValue("profit", profit);
+
+    auto answer = _pg_worker->execute(**func);
+
+    if (!answer) {
+        throw RE("CoreAPI::loadPurchases() Query exec error");
+    }
+
+    auto st = profit ? ST.purchasesProfit()
+                     : ST.purchasesSpend();
+
+    st->clear();
+
+    const auto size = answer->rows();
+
+    for (size_t i(0); i < size; ++i) {
+        auto pr = new Purchase();
+
+        try {
+            pr->fromPgAnswer(answer, static_cast<ulong>(i));
         } catch (const exception &ex) {
             cout << ex.what() << endl;
             delete pr;

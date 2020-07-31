@@ -44,7 +44,8 @@ SOURCES     +=           \
     core/period.cpp \
     core/purchase.cpp \
     core/storage.cpp \
-    core/purchasemodel.cpp
+    core/purchasemodel.cpp \
+    core/purchasemodeldaily.cpp
 
 RESOURCES   +=  qml.qrc \
                 sql.qrc \
@@ -84,5 +85,6 @@ HEADERS     +=        \
     core/purchase.h \
     core/storage.h \
     core/singleton.h \
-    core/purchasemodel.h
+    core/purchasemodel.h \
+    core/purchasemodeldaily.h
 

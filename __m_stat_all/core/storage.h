@@ -32,6 +32,11 @@ public:
     /// Вернуть указатель на хранилище расходных записей
     record_vec *     recordsSpend() noexcept;
 
+    /// Вернуть указатель на хранилище СУММ доходных транзакций
+    purchase_vec *   purchasesProfitSumm() noexcept;
+    /// Вернуть указатель на хранилище СУММ расходных транзакций
+    purchase_vec *   purchasesSpendSumm() noexcept;
+
     /// Вернуть указатель на хранилище доходных транзакций
     purchase_vec *   purchasesProfit() noexcept;
     /// Вернуть указатель на хранилище расходных транзакций
@@ -52,12 +57,21 @@ private:
     /// Хранилка расходных записей.
     std::vector<PurchaseRecord*> _records_spend;
 
-    /// Хранилка расходных покупок.
+    /// Хранилка расходных покупок. Хранит сумму покупок по
+    /// конкретной группе за период
+    std::vector<Purchase*>  _purchases_spend_sm;
+
+    /// Хранилка доходных покупок. (ЗП) Хранит сумму ЗП по
+    /// конкретной группе за период
+    std::vector<Purchase*>  _purchases_profit_sm;
+
+    /// Хранилка расходных покупок. Хранит покупки по
+    /// конкретной группе за период
     std::vector<Purchase*>  _purchases_spend;
 
-    /// Хранилка доходных покупок.
+    /// Хранилка доходных покупок. (ЗП) Хранит ЗП по
+    /// конкретной группе за период
     std::vector<Purchase*>  _purchases_profit;
-
 };
 
 #endif // STORAGE_H

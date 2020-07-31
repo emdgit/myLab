@@ -16,6 +16,7 @@ namespace pg {
 
 class PurchaseRecord;
 class ModelManager;
+class Purchase;
 
 class CoreAPI : public QObject
 {
@@ -142,20 +143,42 @@ public:
 
 
     /*!
-     * \brief Загрузить информацию о покупках за период
+     * \brief Загрузить информацию о покупках за период.
+     * Общие суммы по конкретным группам.
      * \param[in] dateFrom Дата "с" в строковом виде
      * \param[in] dateTo Дата "по" в строковом виде
      */
     Q_INVOKABLE
-    static void loadPurchases(const QString &dateFrom,
-                              const QString &dateTo);
+    static void loadPurchasesSumm(const QString &dateFrom,
+                                  const QString &dateTo,
+                                  bool profit);
 
 
     /*!
      * \brief Загрузить информацию о покупках за текущий период
      */
     Q_INVOKABLE
-    static void loadPurchases();
+    static void loadPurchasesSumm(bool profit);
+
+
+    /*!
+     * \brief loadPurchases Загрузить покупки за период
+     * \param[in] dateFrom Дата с
+     * \param[in] dateTo Дата по
+     * \param[in] profit Доход/расход
+     */
+    Q_INVOKABLE
+    static void loadPurchases(const QString &dateFrom,
+                              const QString &dateTo,
+                              bool profit);
+
+
+    /*!
+     * \brief Загрузить покупки за текущий период
+     * \param[in] profit Доход/расход
+     */
+    Q_INVOKABLE
+    static void loadPurchases(bool profit);
 
 
     static void setModelManager( ModelManager * mm );
@@ -201,8 +224,11 @@ protected:
     /// Посчитать сумму всех записей за текущий период.
     static double currentPeriodSumm(bool profit);
 
-    /// Загрузить информацию о покупках за период
-    static void loadPurchases(const QDate &from, const QDate &to);
+    /// Загрузить информацию о покупках за период.
+    static void loadPurchasesSumm(const QDate &from, const QDate &to, bool profit);
+
+    /// Загрузить информацию о покупках за период.
+    static void loadPurchases(const QDate &from, const QDate &to, bool profit);
 
 
 private:

@@ -26,12 +26,22 @@ Storage::record_vec * Storage::recordsSpend() noexcept
     return &_records_spend;
 }
 
-Storage::purchase_vec * Storage::purchasesProfit() noexcept
+Storage::purchase_vec * Storage::purchasesProfitSumm() noexcept
+{
+    return &_purchases_profit_sm;
+}
+
+Storage::purchase_vec * Storage::purchasesSpendSumm() noexcept
+{
+    return &_purchases_spend_sm;
+}
+
+Storage::purchase_vec *Storage::purchasesProfit() noexcept
 {
     return &_purchases_profit;
 }
 
-Storage::purchase_vec * Storage::purchasesSpend() noexcept
+Storage::purchase_vec *Storage::purchasesSpend() noexcept
 {
     return &_purchases_spend;
 }

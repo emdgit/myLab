@@ -914,9 +914,9 @@ $BODY$
 COMMENT ON FUNCTION common.period_root_groups(date, date, boolean) IS 'Возвращет список корневых групп для покупок, совершенных в указанный период.
 Либо корневых групп прибыли, в зависимости от переданного параметра profit';
   
----------------------------------------------------FUNC_GET_PURCHASES
+---------------------------------------------------FUNC_GET_PURCHASES_SUMM
   
-  CREATE OR REPLACE FUNCTION common.get_purchases(
+  CREATE OR REPLACE FUNCTION common.get_purchases_summ(
     IN date_from date,
     IN date_to date,
     IN profit boolean)
@@ -943,7 +943,38 @@ END;
 $BODY$
   LANGUAGE plpgsql;
   
-COMMENT ON FUNCTION common.get_purchases(date, date, boolean) IS 'Считает сумму всех записей за указанный период.';
+COMMENT ON FUNCTION common.get_purchases_summ(date, date, boolean) IS 'Считает сумму всех записей за указанный период.';
+  
+---------------------------------------------------FUNC_GET_PURCHASES
+  
+CREATE OR REPLACE FUNCTION common.get_purchases(
+    IN date_from date,
+    IN date_to date,
+    IN profit boolean)
+  RETURNS TABLE(name text, summ double precision, last_purchase_date date) AS
+$BODY$
+BEGIN
+	return query
+
+	with query as (
+		select	p.record_id,
+			r.name, 
+			p.summ,
+			p.date
+		from	common.purchases as p
+		join 	common.records as r on r.id = p.record_id
+		where	$1 <= p.date and p.date <= $2
+		order by date desc
+	)
+	select	q.name, q.summ, q.date
+	from	query as q
+	where	service.is_record_profit(q.record_id) = $3;
+END;
+$BODY$
+  LANGUAGE plpgsql;
+  
+COMMENT ON FUNCTION common.get_purchases(date, date, boolean) IS 'Отдать все транзакции за период';
+  
   
   ---------------------------------------------------TRIGGER_FUNC_ON_PURCHASE_ADD
   

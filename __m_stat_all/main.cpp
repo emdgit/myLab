@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
         }
 
         // Загрузить покупки текущего периода
-        CoreAPI::loadPurchases();
+        CoreAPI::loadPurchasesSumm(false);
     };
 
     auto t2 = chrono::high_resolution_clock::now();

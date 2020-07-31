@@ -78,8 +78,8 @@ void PurchaseModel::setProfit(bool profit)
 
     _profit = profit;
 
-    _purchase_vec = _profit ? ST.purchasesProfit()
-                            : ST.purchasesSpend();
+    _purchase_vec = _profit ? ST.purchasesProfitSumm()
+                            : ST.purchasesSpendSumm();
 
     emit profitChanged(_profit);
 }

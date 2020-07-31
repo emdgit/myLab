@@ -5,6 +5,7 @@
 
 class Purchase;
 
+/// Модель данных, для работы с суммой транзакций за период.
 class PurchaseModel : public QAbstractListModel
 {
 
