@@ -12,51 +12,135 @@ Window {
     height: Screen.desktopAvailableHeight
     title: qsTr("Uot tak uot")
 
-    MMenuBar {
-        id: bar
+//    MMenuBar {
+//        id: bar
 
-        onButtonClicked: {
-            topLabel.setText( name )
-            mainWindow.onButtonClicked( number )
+//        onButtonClicked: {
+//            topLabel.setText( name )
+//            mainWindow.onButtonClicked( number )
+//        }
+
+//    }
+
+//    TopLabel {
+//        id: topLabel
+//        anchors.left: bar.right
+//    }
+
+//    StackLayout {
+//        id: layout
+
+//        anchors.left: bar.right
+//        anchors.top: topLabel.bottom
+//        anchors.right: parent.right
+//        anchors.bottom: parent.bottom
+
+//        currentIndex: 1
+
+//        StackElement{
+//            id: first
+//        }
+//        StatisticForm{
+//            id:second
+//        }
+//        StackElement{
+//            id: third
+//            color: 'blue'
+//        }
+
+//    }
+
+//    // Handler of menu buttons click
+//    function onButtonClicked( number ) {
+//        if ( number !== layout.currentIndex ) {
+//            layout.itemAt(layout.currentIndex).focus = false
+//            layout.currentIndex = number
+//        }
+//    }
+
+
+    ListView {
+        id: list
+        model: 16
+
+        anchors.centerIn: parent
+
+        width: 300
+        height: 850
+
+        delegate: Item {
+            property int row: index
+            property int count: index + 1
+
+            width: parent.width
+            height: 20 * count
+
+            Rectangle{
+                anchors.fill: parent
+                border.color: "gray"
+                border.width: 5
+                Column {
+                    id: column
+                    anchors.fill: parent
+                    anchors.topMargin: 2
+                    anchors.bottomMargin: 2
+                    Repeater {
+                        model: row + 1
+                        Rectangle {
+                            height: 20
+                            width: parent.width
+                            Text {
+                                anchors.fill: parent
+                                text: row + " " + index
+                            }
+                        }
+                    }
+                }
+            }
+
         }
-
     }
 
-    TopLabel {
-        id: topLabel
-        anchors.left: bar.right
-    }
 
-    StackLayout {
-        id: layout
+//    Rectangle {
+//        anchors.centerIn: parent
 
-        anchors.left: bar.right
-        anchors.top: topLabel.bottom
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
+//        width: 300
+//        height: 850
 
-        currentIndex: 1
+//        border.color: "black"
+//        border.width: 2
 
-        StackElement{
-            id: first
-        }
-        StatisticForm{
-            id:second
-        }
-        StackElement{
-            id: third
-            color: 'blue'
-        }
+//        Column {
+//            anchors.fill: parent
 
-    }
+//            Repeater {
+//                model: 10 // model
 
-    // Handler of menu buttons click
-    function onButtonClicked( number ) {
-        if ( number !== layout.currentIndex ) {
-            layout.itemAt(layout.currentIndex).focus = false
-            layout.currentIndex = number
-        }
-    }
+//                delegate: Column {
+//                    width: parent.width
+//                    property int ind: index
+//                    Repeater {
+//                        model: ind
+//                        Rectangle {
+//                            height: 40
+//                            width: parent.width
+//                            border.width: 2
+//                            border.color: "gray"
+//                            Text {
+//                                anchors.fill: parent
+//                                text: ind
+//                            }
+//                        }
+
+//                    }
+//                }
+
+//            }
+//        }
+//    }
+
+
 
 }
 
