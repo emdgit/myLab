@@ -621,6 +621,6 @@ void CoreAPI::loadPurchases(const QDate & from, const QDate & to, bool profit)
         st->push_back(pr);
     }
 
-    _modelManager->purchaseModel()->reloadData();
+    _modelManager->purchaseModelDaily()->reloadMap();
 }
 

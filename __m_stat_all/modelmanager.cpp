@@ -25,6 +25,11 @@ HintModel *ModelManager::hintModel() const
     return _hintModel;
 }
 
+PurchaseModelDaily *ModelManager::purchaseModelDaily() const
+{
+    return _purchaseModelDaily;
+}
+
 void ModelManager::setProfitModel(PurchaseGroupModel * profitModel)
 {
     if (_profitModel == profitModel)
@@ -61,4 +66,13 @@ void ModelManager::setPurchaseModel(PurchaseModel * purchaseModel)
 
     _purchaseModel = purchaseModel;
     emit purchaseModelChanged(_purchaseModel);
+}
+
+void ModelManager::setPurchaseModelDaily(PurchaseModelDaily *purchaseModelDaily)
+{
+    if (_purchaseModelDaily == purchaseModelDaily)
+        return;
+
+    _purchaseModelDaily = purchaseModelDaily;
+    emit purchaseModelDailyChanged(_purchaseModelDaily);
 }

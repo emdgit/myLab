@@ -6,6 +6,7 @@
 #include "hintmodel.h"
 #include "purchasemodel.h"
 #include "purchasegroupmodel.h"
+#include "purchasemodeldaily.h"
 
 class ModelManager : public QObject
 {
@@ -30,6 +31,11 @@ class ModelManager : public QObject
                WRITE setPurchaseModel
                NOTIFY purchaseModelChanged)
 
+    Q_PROPERTY(PurchaseModelDaily* purchaseModelDaily
+               READ purchaseModelDaily
+               WRITE setPurchaseModelDaily
+               NOTIFY purchaseModelDailyChanged)
+
     Q_OBJECT
 
 public:
@@ -40,7 +46,7 @@ public:
     PurchaseGroupModel* spendModel() const;
     PurchaseModel*      purchaseModel() const;
     HintModel*          hintModel() const;
-
+    PurchaseModelDaily* purchaseModelDaily() const;
 
 public slots:
 
@@ -48,7 +54,7 @@ public slots:
     void setSpendModel(PurchaseGroupModel* spendModel);
     void setHintModel(HintModel *hintModel);
     void setPurchaseModel(PurchaseModel *purchaseModel);
-
+    void setPurchaseModelDaily(PurchaseModelDaily* purchaseModelDaily);
 
 signals:
 
@@ -56,14 +62,16 @@ signals:
     void spendModelChanged(PurchaseGroupModel* spendModel);
     void hintModelChanged(HintModel* hintModel);
     void purchaseModelChanged(PurchaseModel* purchaseModel);
+    void purchaseModelDailyChanged(PurchaseModelDaily* purchaseModelDaily);
 
 
 private:
 
-    PurchaseGroupModel* _profitModel    = nullptr;
-    PurchaseGroupModel* _spendModel     = nullptr;
-    HintModel*          _hintModel      = nullptr;
-    PurchaseModel*      _purchaseModel  = nullptr;
+    PurchaseGroupModel* _profitModel        = nullptr;
+    PurchaseGroupModel* _spendModel         = nullptr;
+    HintModel*          _hintModel          = nullptr;
+    PurchaseModel*      _purchaseModel      = nullptr;
+    PurchaseModelDaily* _purchaseModelDaily = nullptr;
 };
 
 #endif // MODELMANAGER_H
