@@ -6,6 +6,8 @@
 
 #include <set>
 
+class Purchase;
+
 /*!
  * Класс - модель данных для представления отдельных транзакций
  * в виде блоков, сгруппированных по дням.
@@ -48,6 +50,23 @@ public:
     Q_INVOKABLE
     QString name(int day, int row) const;
 
+    /// Вернуть сумму транзакции
+    /*!
+     * \param[in] day Порядковый номер дня, начиная с последнего
+     * \param[in] row Номер транзакции внутри
+     * \return Сумма транзакции в строковом виде
+     */
+    Q_INVOKABLE
+    QString summ(int day, int row) const;
+
+    /// Вернуть дату транзакции
+    /*!
+     * \param[in] day Порядковый номер дня, начиная с последнего
+     * \return Дата транзакции в строковом виде
+     */
+    Q_INVOKABLE
+    QString date(int day) const;
+
     /// Составить карту транзакций заново
     void    reloadMap();
 
@@ -56,6 +75,8 @@ protected:
 
     QDate   startDate() const;
     QDate   finishFate() const;
+
+    Purchase * purchaseAt(int day, int row) const;
 
 
 private:

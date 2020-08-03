@@ -82,29 +82,29 @@ int main(int argc, char *argv[])
     }
     else {
         // Загрузить все группы расходов/доходов
-//        CoreAPI::loadGroups( false );
-//        CoreAPI::loadGroups( true );
+        CoreAPI::loadGroups( false );
+        CoreAPI::loadGroups( true );
 
-//        // Загрузить все записи расходов/доходов
-//        CoreAPI::loadRecords( false );
-//        CoreAPI::loadRecords( true );
+        // Загрузить все записи расходов/доходов
+        CoreAPI::loadRecords( false );
+        CoreAPI::loadRecords( true );
 
-//        // Модель подсказок по умолчанию показывает расходы
-//        CoreAPI::switchHintModel(false);
+        // Модель подсказок по умолчанию показывает расходы
+        CoreAPI::switchHintModel(false);
 
-//        // Задать пользователя и его группу. (DEV version) // todo
-//        CoreAPI::setCurrentUser(1,1);
+        // Задать пользователя и его группу. (DEV version) // todo
+        CoreAPI::setCurrentUser(1,1);
 
-//        // Установить начало периода // todo
-//        if (!CoreAPI::hasStartPoint()) {
-//            CoreAPI::setStartPoint(QDate(2019,5,11));
-//        }
+        // Установить начало периода // todo
+        if (!CoreAPI::hasStartPoint()) {
+            CoreAPI::setStartPoint(QDate(2019,5,11));
+        }
 
-//        // Загрузить покупки текущего периода
-//        CoreAPI::loadPurchasesSumm(false);
-//        CoreAPI::loadPurchasesSumm(true);
-//        CoreAPI::loadPurchases(false);
-//        CoreAPI::loadPurchases(true);
+        // Загрузить покупки текущего периода
+        CoreAPI::loadPurchasesSumm(false);
+        CoreAPI::loadPurchasesSumm(true);
+        CoreAPI::loadPurchases(false);
+        CoreAPI::loadPurchases(true);
     };
 
     auto t2 = chrono::high_resolution_clock::now();

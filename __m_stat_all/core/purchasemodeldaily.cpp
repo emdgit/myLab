@@ -47,18 +47,21 @@ int PurchaseModelDaily::count(int day) const
 
 QString PurchaseModelDaily::name(int day, int row) const
 {
-    const auto &node = map_[static_cast<size_t>(day)];
+    const auto &name = purchaseAt(day, row)->name();
+    return QString::fromStdString(name);
+}
 
-    Purchase * p;
+QString PurchaseModelDaily::summ(int day, int row) const
+{
+    const auto sum = purchaseAt(day, row)->summ();
+    return QString::number(sum);
+}
 
-    if (row <= node.s_end - node.s_begin) {
-        p = ST.purchasesSpend()->at(static_cast<size_t>(row));
-    } else {
-        row -= (node.s_end - node.s_begin + 1);
-        p = ST.purchasesProfit()->at(static_cast<size_t>(row));
-    }
-
-    return QString::fromStdString(p->name());
+QString PurchaseModelDaily::date(int day) const
+{
+    auto it = --dates_.end();
+    std::advance(it, -day);
+    return (*it).toString("dd.MM.yyyy");
 }
 
 void PurchaseModelDaily::reloadMap()
@@ -155,6 +158,18 @@ QDate PurchaseModelDaily::finishFate() const
     } else {
         return std::min(st_s->back()->lastDate(),
                         st_p->back()->lastDate());
+    }
+}
+
+Purchase *PurchaseModelDaily::purchaseAt(int day, int row) const
+{
+    const auto &node = map_[static_cast<size_t>(day)];
+
+    if (row <= node.s_end - node.s_begin) {
+        return ST.purchasesSpend()->at(static_cast<size_t>(node.s_begin+row));
+    } else {
+        row -= (node.s_end - node.s_begin + 1);
+        return ST.purchasesProfit()->at(static_cast<size_t>(node.p_begin+row));
     }
 }
 

@@ -12,131 +12,98 @@ Window {
     height: Screen.desktopAvailableHeight
     title: qsTr("Uot tak uot")
 
-//    MMenuBar {
-//        id: bar
+    MMenuBar {
+        id: bar
 
-//        onButtonClicked: {
-//            topLabel.setText( name )
-//            mainWindow.onButtonClicked( number )
-//        }
+        onButtonClicked: {
+            topLabel.setText( name )
+            mainWindow.onButtonClicked( number )
+        }
 
-//    }
+    }
 
-//    TopLabel {
-//        id: topLabel
-//        anchors.left: bar.right
-//    }
+    TopLabel {
+        id: topLabel
+        anchors.left: bar.right
+    }
 
-//    StackLayout {
-//        id: layout
+    StackLayout {
+        id: layout
 
-//        anchors.left: bar.right
-//        anchors.top: topLabel.bottom
-//        anchors.right: parent.right
-//        anchors.bottom: parent.bottom
+        anchors.left: bar.right
+        anchors.top: topLabel.bottom
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
 
-//        currentIndex: 1
+        currentIndex: 1
 
-//        StackElement{
-//            id: first
-//        }
-//        StatisticForm{
-//            id:second
-//        }
-//        StackElement{
-//            id: third
-//            color: 'blue'
-//        }
+        StackElement{
+            id: first
+        }
+        StatisticForm{
+            id:second
+        }
+        StackElement{
+            id: third
+            color: 'blue'
+        }
 
-//    }
+    }
 
-//    // Handler of menu buttons click
-//    function onButtonClicked( number ) {
-//        if ( number !== layout.currentIndex ) {
-//            layout.itemAt(layout.currentIndex).focus = false
-//            layout.currentIndex = number
-//        }
-//    }
-
-
-    ListView {
-        id: list
-        model: 16
-
-        anchors.centerIn: parent
-
-        width: 300
-        height: 850
-
-        delegate: Item {
-            property int row: index
-            property int count: index + 1
-
-            width: parent.width
-            height: 20 * count
-
-            Rectangle{
-                anchors.fill: parent
-                border.color: "gray"
-                border.width: 5
-                Column {
-                    id: column
-                    anchors.fill: parent
-                    anchors.topMargin: 2
-                    anchors.bottomMargin: 2
-                    Repeater {
-                        model: row + 1
-                        Rectangle {
-                            height: 20
-                            width: parent.width
-                            Text {
-                                anchors.fill: parent
-                                text: row + " " + index
-                            }
-                        }
-                    }
-                }
-            }
-
+    // Handler of menu buttons click
+    function onButtonClicked( number ) {
+        if ( number !== layout.currentIndex ) {
+            layout.itemAt(layout.currentIndex).focus = false
+            layout.currentIndex = number
         }
     }
 
 
-//    Rectangle {
+//    ListView {
+//        id: list
+//        model: 16
+
 //        anchors.centerIn: parent
 
 //        width: 300
-//        height: 850
+//        height: 400
 
-//        border.color: "black"
-//        border.width: 2
+//        clip: true
 
-//        Column {
-//            anchors.fill: parent
+////        flickableDirection: Flickable.VerticalFlick
 
-//            Repeater {
-//                model: 10 // model
+////        ScrollBar.vertical: ScrollBar{}
 
-//                delegate: Column {
-//                    width: parent.width
-//                    property int ind: index
+//        delegate: Item {
+//            property int row: index
+//            property int count: index + 1
+
+//            width: parent.width
+//            height: 20 * count
+
+//            Rectangle{
+//                anchors.fill: parent
+//                border.color: "gray"
+//                border.width: 5
+//                Column {
+//                    id: column
+//                    anchors.fill: parent
+//                    anchors.topMargin: 2
+//                    anchors.bottomMargin: 2
 //                    Repeater {
-//                        model: ind
+//                        model: row + 1
 //                        Rectangle {
-//                            height: 40
+//                            height: 20
 //                            width: parent.width
-//                            border.width: 2
-//                            border.color: "gray"
 //                            Text {
 //                                anchors.fill: parent
-//                                text: ind
+//                                text: row + " " + index
 //                            }
 //                        }
-
 //                    }
 //                }
-
 //            }
+
 //        }
 //    }
 
