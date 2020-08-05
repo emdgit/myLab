@@ -15,6 +15,7 @@ namespace pg {
 }
 
 class PurchaseRecord;
+class SignalManager;
 class ModelManager;
 class Purchase;
 
@@ -181,7 +182,8 @@ public:
     static void loadPurchases(bool profit);
 
 
-    static void setModelManager( ModelManager * mm );
+    static void setModelManager( ModelManager * mm ) noexcept;
+    static void setSignalManager( SignalManager * sm ) noexcept;
 
 
     /// Задать callback групп дохода
@@ -190,6 +192,11 @@ public:
 
     /// Задать callback групп расхода
     static void initSpendGroupCallback() noexcept;
+
+
+signals:
+
+    void purchaseAdded();
 
 
 protected:
@@ -236,6 +243,8 @@ private:
     static pg::Worker * _pg_worker;
 
     static inline ModelManager * _modelManager = nullptr;
+
+    static inline SignalManager * _signalManager = nullptr;
 
     /// Идентификатор залогиненого пользователя
     static inline int _current_user = 0;

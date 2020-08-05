@@ -67,6 +67,14 @@ public:
     Q_INVOKABLE
     QString date(int day) const;
 
+    /// Является ли транзакция доходной или нет
+    /*!
+     * \param day Порядковый номер дня, начиная с последнего
+     * \param row Номер транзакции внутри
+     */
+    Q_INVOKABLE
+    bool isProfit(int day, int row) const;
+
     /// Составить карту транзакций заново
     void    reloadMap();
 

@@ -21,10 +21,20 @@ Item {
 
         currentIndex: 0
 
+        Connections {
+            target: SignalManager
+            onPurchaseAdded: {
+                list.updateModel();
+            }
+        }
+
         ListView {
             id: list
+
+            property int days: setupModel()
+
             clip: true
-            model: ModelManager.purchaseModelDaily.days()
+            model: days
             delegate: Item {
                 id: listDelegate
                 property int row: index
@@ -40,9 +50,11 @@ Item {
                     property int ind: listDelegate.row
 
                     Column {
+                        id: dayColumn
                         anchors.fill: parent
                         Repeater {
-                            // to separate...
+                            // to separate... Make Repeater
+                            // or all delegate separate element.
                             model: listDelegate.count
                             Rectangle {
                                 height: 20
@@ -59,7 +71,7 @@ Item {
                     function getText(day, index) {
                         var name = getName(day, index);
                         var summ = getSumm(day, index);
-                        return name + ": " + summ + ": " + day + ", " + index;
+                        return name + summ;
                     }
 
                     function getName(day, index) {
@@ -85,6 +97,18 @@ Item {
                     text: ModelManager.purchaseModelDaily.date(row)
                 }
             }
+
+            function setupModel() {
+                return ModelManager.purchaseModelDaily.days();
+            }
+
+            function updateModel() {
+                var d = ModelManager.purchaseModelDaily.days();
+                if (d === days) {
+                    days = 0;
+                }
+                days = d;
+            }
         }
 
         TableView {
@@ -103,8 +127,6 @@ Item {
                 title: qsTr("Последняя покупка")
             }
         }
-
-
     }
 
 

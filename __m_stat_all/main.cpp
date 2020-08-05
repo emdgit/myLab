@@ -18,6 +18,7 @@
 #include "hintmodel.h"
 #include "storage.h"
 #include "purchasegroupmodel.h"
+#include "signalmanager.h"
 
 using namespace std;
 
@@ -61,10 +62,14 @@ int main(int argc, char *argv[])
     mmanager.setHintModel( hints );
     mmanager.setPurchaseModelDaily(new PurchaseModelDaily());
 
+    // Менеджер сигналов
+    SignalManager smanager;
+
     // Установить хранилища
     CoreAPI::initSpendGroupCallback();
     CoreAPI::initProfitGroupCallback();
     CoreAPI::setModelManager( &mmanager );
+    CoreAPI::setSignalManager( &smanager );
 
     try {
         readConfigFile();
@@ -115,6 +120,7 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty( "ModelManager", &mmanager );
+    engine.rootContext()->setContextProperty( "SignalManager", &smanager );
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
 

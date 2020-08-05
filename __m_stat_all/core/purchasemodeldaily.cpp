@@ -2,6 +2,8 @@
 #include "purchase.h"
 #include "storage.h"
 
+#include <iostream>
+
 PurchaseModelDaily::PurchaseModelDaily(QObject *parent)
     : QObject(parent)
 {
@@ -62,6 +64,26 @@ QString PurchaseModelDaily::date(int day) const
     auto it = --dates_.end();
     std::advance(it, -day);
     return (*it).toString("dd.MM.yyyy");
+}
+
+bool PurchaseModelDaily::isProfit(int day, int row) const
+{
+    const auto &node = map_[static_cast<size_t>(day)];
+
+    if (node.s_begin != -1) {
+        if (row <= node.s_end - node.s_begin) {
+            return false;
+        } else {
+            if (node.p_begin == -1) {
+                throw std::runtime_error("PurchaseModelDaily::purchaseAt() Wrong index");
+            }
+            return true;
+        }
+    } else if (node.p_begin != -1) {
+        return true;
+    } else {
+        throw std::runtime_error("PurchaseModelDaily::purchaseAt() Wrong index");
+    }
 }
 
 void PurchaseModelDaily::reloadMap()
@@ -165,11 +187,28 @@ Purchase *PurchaseModelDaily::purchaseAt(int day, int row) const
 {
     const auto &node = map_[static_cast<size_t>(day)];
 
-    if (row <= node.s_end - node.s_begin) {
-        return ST.purchasesSpend()->at(static_cast<size_t>(node.s_begin+row));
+    st_t *vec(nullptr);
+    size_t offset(0);
+
+    if (node.s_begin != -1) {
+        if (row <= node.s_end - node.s_begin) {
+            vec = ST.purchasesSpend();
+            offset = static_cast<size_t>(node.s_begin + row);
+        } else {
+            if (node.p_begin == -1) {
+                throw std::runtime_error("PurchaseModelDaily::purchaseAt() Wrong index");
+            }
+            row -= (node.s_end - node.s_begin + 1);
+            vec = ST.purchasesProfit();
+            offset = static_cast<size_t>(node.p_begin + row);
+        }
+    } else if (node.p_begin != -1) {
+        vec = ST.purchasesProfit();
+        offset = static_cast<size_t>(node.p_begin + row);
     } else {
-        row -= (node.s_end - node.s_begin + 1);
-        return ST.purchasesProfit()->at(static_cast<size_t>(node.p_begin+row));
+        throw std::runtime_error("PurchaseModelDaily::purchaseAt() Wrong index");
     }
+
+    return (*vec)[offset];
 }
 

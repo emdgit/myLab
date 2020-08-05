@@ -45,7 +45,8 @@ SOURCES     +=           \
     core/purchase.cpp \
     core/storage.cpp \
     core/purchasemodel.cpp \
-    core/purchasemodeldaily.cpp
+    core/purchasemodeldaily.cpp \
+    core/signalmanager.cpp
 
 RESOURCES   +=  qml.qrc \
                 sql.qrc \
@@ -86,5 +87,6 @@ HEADERS     +=        \
     core/storage.h \
     core/singleton.h \
     core/purchasemodel.h \
-    core/purchasemodeldaily.h
+    core/purchasemodeldaily.h \
+    core/signalmanager.h
 

@@ -7,6 +7,7 @@
 #include "typestorage.h"
 #include "modelmanager.h"
 #include "purchasegroup.h"
+#include "signalmanager.h"
 #include "purchaserecord.h"
 #include "purchasegroupmodel.h"
 
@@ -287,9 +288,14 @@ void CoreAPI::loadPurchases(bool profit)
     loadPurchases(period.first, period.second, profit);
 }
 
-void CoreAPI::setModelManager(ModelManager *mm)
+void CoreAPI::setModelManager(ModelManager *mm) noexcept
 {
     _modelManager = mm;
+}
+
+void CoreAPI::setSignalManager(SignalManager *sm) noexcept
+{
+    _signalManager = sm;
 }
 
 void CoreAPI::initProfitGroupCallback() noexcept
@@ -441,6 +447,21 @@ void CoreAPI::addTransaction( const QString &rec, QString summ, const
         if (!answer) {
             throw runtime_error("CoreAPI::addTransaction() Cannot add purchase"); // todo
         }
+    }
+
+    loadPurchases(profit);
+    loadPurchasesSumm(profit);
+
+    _modelManager->purchaseModelDaily()->reloadMap();
+
+    if (profit) {
+        _modelManager->profitModel()->reloadData();
+    } else {
+        _modelManager->spendModel()->reloadData();
+    }
+
+    if (_signalManager) {
+        _signalManager->emitPurchaseAdd();
     }
 }
 
