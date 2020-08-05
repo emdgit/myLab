@@ -2,7 +2,7 @@
 
 ModelManager::ModelManager(QObject *parent) : QObject(parent)
 {
-
+    _purchaseModel = new PurchaseModel(false);
 }
 
 PurchaseGroupModel *ModelManager::profitModel() const
@@ -15,9 +15,19 @@ PurchaseGroupModel *ModelManager::spendModel() const
     return _spendModel;
 }
 
+PurchaseModel *ModelManager::purchaseModel() const
+{
+    return _purchaseModel;
+}
+
 HintModel *ModelManager::hintModel() const
 {
     return _hintModel;
+}
+
+PurchaseModelDaily *ModelManager::purchaseModelDaily() const
+{
+    return _purchaseModelDaily;
 }
 
 void ModelManager::setProfitModel(PurchaseGroupModel * profitModel)
@@ -46,4 +56,23 @@ void ModelManager::setHintModel(HintModel *hintModel)
 
     _hintModel = hintModel;
     emit hintModelChanged(_hintModel);
+}
+
+void ModelManager::setPurchaseModel(PurchaseModel * purchaseModel)
+{
+    if ( _purchaseModel == purchaseModel ) {
+        return;
+    }
+
+    _purchaseModel = purchaseModel;
+    emit purchaseModelChanged(_purchaseModel);
+}
+
+void ModelManager::setPurchaseModelDaily(PurchaseModelDaily *purchaseModelDaily)
+{
+    if (_purchaseModelDaily == purchaseModelDaily)
+        return;
+
+    _purchaseModelDaily = purchaseModelDaily;
+    emit purchaseModelDailyChanged(_purchaseModelDaily);
 }

@@ -58,6 +58,57 @@ Window {
         }
     }
 
+
+//    ListView {
+//        id: list
+//        model: 16
+
+//        anchors.centerIn: parent
+
+//        width: 300
+//        height: 400
+
+//        clip: true
+
+////        flickableDirection: Flickable.VerticalFlick
+
+////        ScrollBar.vertical: ScrollBar{}
+
+//        delegate: Item {
+//            property int row: index
+//            property int count: index + 1
+
+//            width: parent.width
+//            height: 20 * count
+
+//            Rectangle{
+//                anchors.fill: parent
+//                border.color: "gray"
+//                border.width: 5
+//                Column {
+//                    id: column
+//                    anchors.fill: parent
+//                    anchors.topMargin: 2
+//                    anchors.bottomMargin: 2
+//                    Repeater {
+//                        model: row + 1
+//                        Rectangle {
+//                            height: 20
+//                            width: parent.width
+//                            Text {
+//                                anchors.fill: parent
+//                                text: row + " " + index
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+
+//        }
+//    }
+
+
+
 }
 
 

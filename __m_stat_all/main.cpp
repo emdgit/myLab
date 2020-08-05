@@ -16,6 +16,9 @@
 #include "coreapi.h"
 #include "modelmanager.h"
 #include "hintmodel.h"
+#include "storage.h"
+#include "purchasegroupmodel.h"
+#include "signalmanager.h"
 
 using namespace std;
 
@@ -45,23 +48,28 @@ int main(int argc, char *argv[])
                                          "HintModel is an uncreatable type" );
 
     // Хранилище доходных групп
-    PGStorage stProfit;
+    auto stProfit = ST.groupsProfit();
 
     // Хранилище расходных групп
-    PGStorage stSpend;
+    auto stSpend = ST.groupsSpend();
 
     auto hints = new HintModel();
 
     // Менеджер моделей
     ModelManager mmanager;
-    mmanager.setSpendModel( new PurchaseGroupModel(&stSpend) );
-    mmanager.setProfitModel( new PurchaseGroupModel(&stProfit) );
+    mmanager.setSpendModel( new PurchaseGroupModel(stSpend) );
+    mmanager.setProfitModel( new PurchaseGroupModel(stProfit) );
     mmanager.setHintModel( hints );
+    mmanager.setPurchaseModelDaily(new PurchaseModelDaily());
+
+    // Менеджер сигналов
+    SignalManager smanager;
 
     // Установить хранилища
-    CoreAPI::setSpendGroupSt( &stSpend );
-    CoreAPI::setProfitGroupSt( &stProfit );
+    CoreAPI::initSpendGroupCallback();
+    CoreAPI::initProfitGroupCallback();
     CoreAPI::setModelManager( &mmanager );
+    CoreAPI::setSignalManager( &smanager );
 
     try {
         readConfigFile();
@@ -70,6 +78,8 @@ int main(int argc, char *argv[])
         cout << ex.what() << endl;
         return -1;
     }
+
+    auto t1 = chrono::high_resolution_clock::now();
 
     if ( !pg::Connecter::readFunctions() ) {
         qDebug() << "Error occured while reading functions";
@@ -94,10 +104,23 @@ int main(int argc, char *argv[])
         if (!CoreAPI::hasStartPoint()) {
             CoreAPI::setStartPoint(QDate(2019,5,11));
         }
+
+        // Загрузить покупки текущего периода
+        CoreAPI::loadPurchasesSumm(false);
+        CoreAPI::loadPurchasesSumm(true);
+        CoreAPI::loadPurchases(false);
+        CoreAPI::loadPurchases(true);
     };
+
+    auto t2 = chrono::high_resolution_clock::now();
+
+    chrono::duration<double, std::milli> d(t2-t1);
+
+    cout << "Loaded at " << d.count() << "ms" << endl;
 
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty( "ModelManager", &mmanager );
+    engine.rootContext()->setContextProperty( "SignalManager", &smanager );
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
 

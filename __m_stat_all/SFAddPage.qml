@@ -193,6 +193,20 @@ Item {
         }
     }
 
+    PurchaseView {
+
+        id: purchaseView
+
+        anchors {
+            top: topItem.top
+            bottom: topItem.bottom
+            right: topItem.right
+            bottomMargin: 20
+        }
+
+        width: parent.width / 4 + 55
+    }
+
 
     /// Обработчик сигналов активации виджетов "SlideEditor",
     /// устанавливает активному эдитору повышенное значение z

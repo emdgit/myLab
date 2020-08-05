@@ -21,6 +21,7 @@
         <file>CartButton.qml</file>
         <file>GeneralStatisticsPage.qml</file>
         <file>MoneyLabel.qml</file>
+        <file>PurchaseView.qml</file>
     </qresource>
     <qresource prefix="/img">
         <file>graphs.jpg</file>

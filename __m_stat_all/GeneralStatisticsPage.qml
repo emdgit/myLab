@@ -48,13 +48,24 @@ Item {
             id: headerLayout
             anchors.fill: parent
 
+            property int profitMoney: CoreAPI.currentProfit()
+            property int spendModey: CoreAPI.currentConsuption()
+
+            Connections {
+                target: SignalManager
+                onPurchaseAdded: {
+                    headerLayout.profitMoney = CoreAPI.currentProfit();
+                    headerLayout.spendModey = CoreAPI.currentConsuption();
+                }
+            }
+
             MoneyLabel {
-                summ: CoreAPI.currentProfit()
+                summ: parent.profitMoney
                 meaning: qsTr("Доход")
             }
 
             MoneyLabel {
-                summ: CoreAPI.currentConsuption()
+                summ: parent.spendModey
                 meaning: qsTr("Расход")
             }
         }

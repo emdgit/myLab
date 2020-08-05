@@ -31,6 +31,14 @@ Item {
         font.family: Script.menuTextFontFamily()
         font.pixelSize: Script.menuTextFontSize() - 2
 
+        onSummChanged: {
+            text = summInRub();
+        }
+
+        onMeaningChanged: {
+            text = summInRub();
+        }
+
         function summInRub() {
             if ( meaning === "" ) {
                 return summ + "₽";
