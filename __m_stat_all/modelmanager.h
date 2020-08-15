@@ -4,6 +4,7 @@
 #include <QObject>
 
 #include "hintmodel.h"
+#include "periodmodel.h"
 #include "purchasemodel.h"
 #include "purchasegroupmodel.h"
 #include "purchasemodeldaily.h"
@@ -36,6 +37,12 @@ class ModelManager : public QObject
                WRITE setPurchaseModelDaily
                NOTIFY purchaseModelDailyChanged)
 
+    Q_PROPERTY(PeriodModel* periodModel
+               READ periodModel
+               WRITE
+               setPeriodModel
+               NOTIFY periodModelChanged)
+
     Q_OBJECT
 
 public:
@@ -47,6 +54,8 @@ public:
     PurchaseModel*      purchaseModel() const;
     HintModel*          hintModel() const;
     PurchaseModelDaily* purchaseModelDaily() const;
+    PeriodModel*        periodModel() const;
+
 
 public slots:
 
@@ -55,6 +64,8 @@ public slots:
     void setHintModel(HintModel *hintModel);
     void setPurchaseModel(PurchaseModel *purchaseModel);
     void setPurchaseModelDaily(PurchaseModelDaily* purchaseModelDaily);
+    void setPeriodModel(PeriodModel* periodModel);
+
 
 signals:
 
@@ -63,6 +74,7 @@ signals:
     void hintModelChanged(HintModel* hintModel);
     void purchaseModelChanged(PurchaseModel* purchaseModel);
     void purchaseModelDailyChanged(PurchaseModelDaily* purchaseModelDaily);
+    void periodModelChanged(PeriodModel* periodModel);
 
 
 private:
@@ -72,6 +84,7 @@ private:
     HintModel*          _hintModel          = nullptr;
     PurchaseModel*      _purchaseModel      = nullptr;
     PurchaseModelDaily* _purchaseModelDaily = nullptr;
+    PeriodModel*        _periodModel        = nullptr;
 };
 
 #endif // MODELMANAGER_H

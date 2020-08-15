@@ -11,7 +11,7 @@ class Period : public QObject
     Q_OBJECT
 
     Q_PROPERTY(QDate from READ from WRITE setFrom NOTIFY fromChanged)
-    Q_PROPERTY(QDate to READ to WRITE setTo NOTIFY toChanged)
+    Q_PROPERTY(QDate to   READ to   WRITE setTo   NOTIFY toChanged)
 
 public:
 
@@ -20,6 +20,9 @@ public:
 
     QDate from() const;
     QDate to() const;
+
+    Q_INVOKABLE
+    QString toString() const;
 
 
 public slots:

@@ -19,6 +19,7 @@
 #include "storage.h"
 #include "purchasegroupmodel.h"
 #include "signalmanager.h"
+#include "period.h"
 
 using namespace std;
 
@@ -46,6 +47,8 @@ int main(int argc, char *argv[])
     qmlRegisterSingletonType<CoreAPI>( "OwlComponents", 1, 0, "CoreAPI", core_api_singleton_f );
     qmlRegisterUncreatableType<HintModel>( "OwlComponents", 1, 0, "HintModel",
                                          "HintModel is an uncreatable type" );
+    qmlRegisterUncreatableType<Period>("OwlComponents", 1, 0, "Period",
+                                       "Period is an uncreatable type");
 
     // Хранилище доходных групп
     auto stProfit = ST.groupsProfit();
@@ -61,6 +64,7 @@ int main(int argc, char *argv[])
     mmanager.setProfitModel( new PurchaseGroupModel(stProfit) );
     mmanager.setHintModel( hints );
     mmanager.setPurchaseModelDaily(new PurchaseModelDaily());
+    mmanager.setPeriodModel(new PeriodModel());
 
     // Менеджер сигналов
     SignalManager smanager;

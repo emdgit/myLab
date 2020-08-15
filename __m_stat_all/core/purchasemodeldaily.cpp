@@ -94,6 +94,10 @@ void PurchaseModelDaily::reloadMap()
     dates_.clear();
     map_.clear();
 
+    if (st_s->empty() && st_p->empty()) {
+        return;
+    }
+
     for (const auto &p : *st_s) {
         dates_.insert(p->lastDate());
     }

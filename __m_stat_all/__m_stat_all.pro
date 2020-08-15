@@ -34,28 +34,31 @@ SOURCES     +=           \
             paint/gline.cpp    \
             paint/gpoliline.cpp \
             paint/graphbase.cpp  \
-            core/pnode.cpp           \
-            core/iobject.cpp          \
-            core/purchasegroup.cpp     \
+            core/pnode.cpp   \
+            core/period.cpp   \
+            core/iobject.cpp   \
+            core/storage.cpp    \
+            core/purchase.cpp    \
+            core/hintmodel.cpp    \
+            core/periodmodel.cpp   \
+            core/signalmanager.cpp  \
+            core/purchasemodel.cpp   \
+            core/purchasegroup.cpp    \
+            core/purchaserecord.cpp    \
             core/purchasegroupmodel.cpp \
             core/hierarchicalstorage.cpp \
-    core/purchaserecord.cpp \
-    core/hintmodel.cpp \
-    core/period.cpp \
-    core/purchase.cpp \
-    core/storage.cpp \
-    core/purchasemodel.cpp \
-    core/purchasemodeldaily.cpp \
-    core/signalmanager.cpp
+            core/purchasemodeldaily.cpp
 
 RESOURCES   +=  qml.qrc \
-                sql.qrc \
-    conf.qrc
+                sql.qrc  \
+                conf.qrc
 
 HEADERS     +=        \
             private.h  \
-            templates.h \
+            coreapi.h   \
+            templates.h  \
             exception.h   \
+            modelmanager.h \
             DB/Set.h \
             DB/head.h \
             DB/field.h \
@@ -67,26 +70,25 @@ HEADERS     +=        \
             DB/connecter.h   \
             DB/typedfield.h   \
             DB/typestorage.h   \
-            paint/chart.h   \
-            paint/gline.h    \
-            paint/gpoliline.h \
-            paint/graphbase.h \
-    coreapi.h \
-    core/purchasegroup.h \
-    core/iobject.h \
-    core/hierarchicalstorage.h \
-    core/pnode.h \
-    core/storagedefinition.h \
-    core/purchasegroupmodel.h \
-    modelmanager.h \
-    core/log.h \
-    core/purchaserecord.h \
-    core/hintmodel.h \
-    core/period.h \
-    core/purchase.h \
-    core/storage.h \
-    core/singleton.h \
-    core/purchasemodel.h \
-    core/purchasemodeldaily.h \
-    core/signalmanager.h
+            core/log.h  \
+            core/pnode.h \
+            core/period.h \
+            paint/chart.h  \
+            paint/gline.h   \
+            core/storage.h   \
+            core/iobject.h    \
+            core/purchase.h    \
+            core/singleton.h    \
+            core/hintmodel.h     \
+            paint/gpoliline.h     \
+            paint/graphbase.h      \
+            core/periodmodel.h      \
+            core/purchasemodel.h     \
+            core/purchasegroup.h      \
+            core/signalmanager.h       \
+            core/purchaserecord.h       \
+            core/storagedefinition.h     \
+            core/purchasegroupmodel.h     \
+            core/purchasemodeldaily.h      \
+            core/hierarchicalstorage.h
 

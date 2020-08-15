@@ -30,6 +30,11 @@ PurchaseModelDaily *ModelManager::purchaseModelDaily() const
     return _purchaseModelDaily;
 }
 
+PeriodModel *ModelManager::periodModel() const
+{
+    return _periodModel;
+}
+
 void ModelManager::setProfitModel(PurchaseGroupModel * profitModel)
 {
     if (_profitModel == profitModel)
@@ -75,4 +80,13 @@ void ModelManager::setPurchaseModelDaily(PurchaseModelDaily *purchaseModelDaily)
 
     _purchaseModelDaily = purchaseModelDaily;
     emit purchaseModelDailyChanged(_purchaseModelDaily);
+}
+
+void ModelManager::setPeriodModel(PeriodModel *periodModel)
+{
+    if (_periodModel == periodModel)
+        return;
+
+    _periodModel = periodModel;
+    emit periodModelChanged(_periodModel);
 }

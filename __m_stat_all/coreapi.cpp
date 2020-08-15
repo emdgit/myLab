@@ -379,7 +379,10 @@ void CoreAPI::reloadStartPoint()
         return;
     }
 
-    _start_point = date;
+    if (_start_point != date) {
+        _start_point = date;
+        _modelManager->periodModel()->setStartPoint(_start_point);
+    }
 }
 
 bool CoreAPI::dateFromStr(const QString &date_str, QDate &date)
