@@ -4,16 +4,36 @@ import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.0 // 1.12 Win
 import QtQuick.Layouts 1.3
 
+import OwlComponents 1.0
+
 import "Common.js" as Script
 
 Item {
 
     id: topItem
 
+    PeriodSelector {
+        id: periodSelector
+        periodNumber: ModelManager.periodModel.size() - 1
+        anchors {
+            top: parent.top
+            left: parent.left
+            right: parent.right
+        }
+        onPeriodChanged: {
+            var from = ModelManager.periodModel.dateFrom(periodNumber);
+            var to = ModelManager.periodModel.dateTo(periodNumber);
+            CoreAPI.loadPurchases(from, to, false);
+            CoreAPI.loadPurchases(from, to, true);
+            CoreAPI.loadPurchasesSumm(from, to, false);
+            CoreAPI.loadPurchasesSumm(from, to, true);
+        }
+    }
+
     StackLayout {
         id: stack
         anchors {
-            top: parent.top
+            top: periodSelector.bottom
             left: parent.left
             right: parent.right
             bottom: switchLine.top
@@ -23,7 +43,7 @@ Item {
 
         Connections {
             target: SignalManager
-            onPurchaseAdded: {
+            onDailyModelReloaded: {
                 list.updateModel();
             }
         }

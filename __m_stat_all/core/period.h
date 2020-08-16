@@ -7,12 +7,6 @@
 /// Класс представляет рассчетный период
 class Period : public QObject
 {
-
-    Q_OBJECT
-
-    Q_PROPERTY(QDate from READ from WRITE setFrom NOTIFY fromChanged)
-    Q_PROPERTY(QDate to   READ to   WRITE setTo   NOTIFY toChanged)
-
 public:
 
     explicit Period(QObject *parent = nullptr);
@@ -21,20 +15,12 @@ public:
     QDate from() const;
     QDate to() const;
 
-    Q_INVOKABLE
     QString toString() const;
-
-
-public slots:
+    QString fromAsString() const;
+    QString toAsString() const;
 
     void setFrom(QDate from);
     void setTo(QDate to);
-
-
-signals:
-
-    void fromChanged(QDate from);
-    void toChanged(QDate to);
 
 
 private:

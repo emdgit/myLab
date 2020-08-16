@@ -22,6 +22,15 @@ public:
     Q_INVOKABLE
     Period *period(int index) const;
 
+    Q_INVOKABLE
+    QString periodString(int index) const;
+
+    Q_INVOKABLE
+    QString dateFrom(int index) const;
+
+    Q_INVOKABLE
+    QString dateTo(int index) const;
+
     void setStartPoint(const QDate &date);
 
 

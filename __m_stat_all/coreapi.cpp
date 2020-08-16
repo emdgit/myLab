@@ -464,7 +464,7 @@ void CoreAPI::addTransaction( const QString &rec, QString summ, const
     }
 
     if (_signalManager) {
-        _signalManager->emitPurchaseAdd();
+        _signalManager->reloadDailyModel();
     }
 }
 
@@ -646,5 +646,9 @@ void CoreAPI::loadPurchases(const QDate & from, const QDate & to, bool profit)
     }
 
     _modelManager->purchaseModelDaily()->reloadMap();
+
+    if (_signalManager) {
+        _signalManager->reloadDailyModel();
+    }
 }
 

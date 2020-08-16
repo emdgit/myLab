@@ -5,7 +5,7 @@ SignalManager::SignalManager(QObject *parent) : QObject(parent)
 
 }
 
-void SignalManager::emitPurchaseAdd()
+void SignalManager::reloadDailyModel()
 {
-    emit purchaseAdded();
+    emit dailyModelReloaded();
 }
