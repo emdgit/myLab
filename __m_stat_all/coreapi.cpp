@@ -457,13 +457,11 @@ void CoreAPI::addTransaction( const QString &rec, QString summ, const
 
     _modelManager->purchaseModelDaily()->reloadMap();
 
-    if (profit) {
-        _modelManager->profitModel()->reloadData();
-    } else {
-        _modelManager->spendModel()->reloadData();
-    }
-
     if (_signalManager) {
+        auto cur = currentPeriod();
+        if (cur.first <= date && date <= cur.second) {
+            _signalManager->currentPeriodPurchaseAdd();
+        }
         _signalManager->reloadDailyModel();
     }
 }
