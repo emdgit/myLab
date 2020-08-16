@@ -53,7 +53,7 @@ Item {
 
             Connections {
                 target: SignalManager
-                onPurchaseAdded: {
+                onCurrentPeriodPurchaseAdded: {
                     headerLayout.profitMoney = CoreAPI.currentProfit();
                     headerLayout.spendModey = CoreAPI.currentConsuption();
                 }

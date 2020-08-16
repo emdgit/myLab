@@ -16,6 +16,21 @@ Period *PeriodModel::period(int index) const
     return _periods[static_cast<size_t>(index)];
 }
 
+QString PeriodModel::periodString(int index) const
+{
+    return period(index)->toString();
+}
+
+QString PeriodModel::dateFrom(int index) const
+{
+    return period(index)->from().toString("dd.MM.yyyy");
+}
+
+QString PeriodModel::dateTo(int index) const
+{
+    return period(index)->to().toString("dd.MM.yyyy");
+}
+
 void PeriodModel::setStartPoint(const QDate &date)
 {
     if (date == _startPoint) {

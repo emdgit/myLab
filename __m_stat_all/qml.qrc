@@ -22,6 +22,7 @@
         <file>GeneralStatisticsPage.qml</file>
         <file>MoneyLabel.qml</file>
         <file>PurchaseView.qml</file>
+        <file>PeriodSelector.qml</file>
     </qresource>
     <qresource prefix="/img">
         <file>graphs.jpg</file>
@@ -54,6 +55,12 @@
         <file>images/cart.svg</file>
         <file>images/money.svg</file>
         <file>images/money_hovered.svg</file>
+        <file>images/left_circle_arrow.svg</file>
+        <file>images/left_circle_arrow_hover.svg</file>
+        <file>images/left_circle_arrow_unactive.svg</file>
+        <file>images/right_circle_arrow.svg</file>
+        <file>images/right_circle_arrow_hover.svg</file>
+        <file>images/right_circle_arrow_unactive.svg</file>
     </qresource>
     <qresource prefix="/notifiers"/>
 </RCC>

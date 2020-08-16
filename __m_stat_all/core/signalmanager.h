@@ -11,12 +11,14 @@ class SignalManager : public QObject
 public:
     explicit SignalManager(QObject *parent = nullptr);
 
-    void    emitPurchaseAdd();
+    void    currentPeriodPurchaseAdd();
+    void    reloadDailyModel();
 
 
 signals:
 
-    void    purchaseAdded();
+    void    currentPeriodPurchaseAdded();
+    void    dailyModelReloaded();
 
 };
 

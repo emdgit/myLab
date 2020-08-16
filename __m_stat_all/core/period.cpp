@@ -4,12 +4,18 @@
 
 static constexpr std::string_view _months[] =
 {
+    // Первый пуст, потому что индекстация в
+    // QDate с единицы.
     "", "янв", "фев", "мар", "апр", "май", "июн",
-    "июн", "авг", "сен", "окт", "ноя", "дек",
+    "июл", "авг", "сен", "окт", "ноя", "дек",
 };
 
 QString dateToStr(const QDate &date)
 {
+    if (!date.isValid()) {
+        return {};
+    }
+
     auto d = QString::number(date.day());
     auto m = QString(_months[date.month()].data());
     auto y = QString::number(date.year());
@@ -45,13 +51,22 @@ QString Period::toString() const
     return str;
 }
 
+QString Period::fromAsString() const
+{
+    return dateToStr(_from);
+}
+
+QString Period::toAsString() const
+{
+    return dateToStr(_to);
+}
+
 void Period::setFrom(QDate from)
 {
     if (_from == from)
         return;
 
     _from = from;
-    emit fromChanged(_from);
 }
 
 void Period::setTo(QDate to)
@@ -60,5 +75,4 @@ void Period::setTo(QDate to)
         return;
 
     _to = to;
-    emit toChanged(_to);
 }
