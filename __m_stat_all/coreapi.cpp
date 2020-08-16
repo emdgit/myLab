@@ -1,5 +1,6 @@
 #include "coreapi.h"
 
+#include "period.h"
 #include "storage.h"
 #include "purchase.h"
 #include "connecter.h"
@@ -243,6 +244,11 @@ bool CoreAPI::checkDateFormat(const QString &date_str)
     return dateFromStr( date_str, d );
 }
 
+bool CoreAPI::checkSummStr(const QString &summ_str)
+{
+    return QRegExp("^(\\d+\\s{0,})+$").indexIn(summ_str) != -1;
+}
+
 double CoreAPI::currentConsuption()
 {
     return currentPeriodSumm(false);
@@ -417,8 +423,6 @@ void CoreAPI::addTransaction( const QString &rec, QString summ, const
         }
     }
 
-    auto dsumm = summ.toDouble();
-
     if ( !dateFromStr(date_str,date) ) {
         throw runtime_error("CoreAPI::addTransaction() Invalid date string!");
     }
@@ -432,28 +436,44 @@ void CoreAPI::addTransaction( const QString &rec, QString summ, const
         return rec.compare(name_qstr, Qt::CaseInsensitive) == 0;
     });
 
+    list<double> summs;
+    int offset(0);
+    QRegExp rx("\\d+");
+
+    while ((offset = rx.indexIn(summ,offset)) != -1) {
+        auto val = rx.cap().toDouble();
+        offset += rx.matchedLength();
+        if (val == 0.0) {
+            continue;
+        }
+        summs.push_back(val);
+    }
+
     if ( rec_it == st->end() ) {
         throw runtime_error("CoreAPI::addTransaction() Cannot find given record");
     }
 
     for ( int i(0); i < amount; ++i ) {
         auto func = TypeStorage::func(DB_COMMON(add_purchase));
-        (*func)->bindValue("u_group_id", _current_group);
-        (*func)->bindValue("user_id", _current_user);
-        (*func)->bindValue("record_id", (*rec_it)->id());
-        (*func)->bindValue("p_summ", dsumm);
-        (*func)->bindValue("p_date", date);
-        (*func)->bindValue("creation_date", QDate::currentDate());
+        for (const auto &sm : summs) {
+            (*func)->bindValue("u_group_id", _current_group);
+            (*func)->bindValue("user_id", _current_user);
+            (*func)->bindValue("record_id", (*rec_it)->id());
+            (*func)->bindValue("p_summ", sm);
+            (*func)->bindValue("p_date", date);
+            (*func)->bindValue("creation_date", QDate::currentDate());
 
-        auto answer = _pg_worker->execute(**func);
+            auto answer = _pg_worker->execute(**func);
 
-        if (!answer) {
-            throw runtime_error("CoreAPI::addTransaction() Cannot add purchase"); // todo
+            if (!answer) {
+                throw runtime_error("CoreAPI::addTransaction() Cannot add purchase"); // todo
+            }
         }
     }
 
-    loadPurchases(profit);
-    loadPurchasesSumm(profit);
+    auto period = _modelManager->periodModel()->period(date);
+    loadPurchases(period->from(), period->to(), profit);
+    loadPurchasesSumm(period->from(), period->to(), profit);
 
     _modelManager->purchaseModelDaily()->reloadMap();
 

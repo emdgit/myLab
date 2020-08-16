@@ -129,6 +129,11 @@ public:
     static bool checkDateFormat( const QString &date_str );
 
 
+    /// Проверить валидность введенных данных в поле суммы.
+    Q_INVOKABLE
+    static bool checkSummStr(const QString &summ_str);
+
+
     /*!
      * Вернуть значение расходов за текущий период.
      */

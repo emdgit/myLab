@@ -16,6 +16,17 @@ Period *PeriodModel::period(int index) const
     return _periods[static_cast<size_t>(index)];
 }
 
+Period *PeriodModel::period(const QDate &date) const
+{
+    for (const auto &d : _periods) {
+        if (d->from() <= date && date <= d->to()) {
+            return d;
+        }
+    }
+
+    return {};
+}
+
 QString PeriodModel::periodString(int index) const
 {
     return period(index)->toString();

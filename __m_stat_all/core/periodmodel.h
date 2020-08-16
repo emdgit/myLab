@@ -19,8 +19,12 @@ public:
     Q_INVOKABLE
     int size() const;
 
+    /// Вернуть период под данным номером.
     Q_INVOKABLE
     Period *period(int index) const;
+
+    /// Вернуть период, которому принадлежит данная дата
+    Period *period(const QDate &date) const;
 
     Q_INVOKABLE
     QString periodString(int index) const;

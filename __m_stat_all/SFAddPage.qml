@@ -91,12 +91,8 @@ Item {
                         id: summEditor
                         internalId: 1
                         text: qsTr("Сумма")
-                        validator: DoubleValidator {
-                            bottom: 1
-                            top: 2000000000
-                        }
                         onEditorTextChanged: {
-                            summBlub.ok = editorText !== "";
+                            summBlub.ok = CoreAPI.checkSummStr(editorText);
                         }
                     }
                     Bulb { id: summBlub }
