@@ -1048,7 +1048,45 @@ $BODY$
   LANGUAGE plpgsql;
   
 COMMENT ON FUNCTION common.get_purchases(date, date, boolean) IS 'Отдать все транзакции за период';
+
+---------------------------------------------------FUNC_GET_CLEAN_PROFIT
+
+CREATE OR REPLACE FUNCTION common.get_clean_profit()
+  RETURNS double precision AS
+$BODY$
+DECLARE
+	_result double precision;
+BEGIN
+	select	clean_profit
+	from	common.accumulation
+	into	_result;
+
+	RETURN _result;
+END;
+$BODY$
+  LANGUAGE plpgsql;
   
+COMMENT ON FUNCTION common.get_clean_profit() IS 'Вернуть чистую прибыль за всё время';
+
+---------------------------------------------------FUNC_GET_SAVED_PERCENT
+  
+CREATE OR REPLACE FUNCTION common.get_saved_percent()
+  RETURNS double precision AS
+$BODY$
+DECLARE
+	_result double precision;
+BEGIN
+	select	saved_percent
+	from	common.accumulation
+	into	_result;
+
+	RETURN _result;
+END;
+$BODY$
+  LANGUAGE plpgsql;
+  
+COMMENT ON FUNCTION common.get_saved_percent() IS 'Вернуть процент сохраненных средств за все время';
+
   
   ---------------------------------------------------TRIGGER_FUNC_ON_PURCHASE_ADD
   
