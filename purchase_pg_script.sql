@@ -402,10 +402,10 @@ COMMENT ON COLUMN common.record_prices_stat.count IS 'Сколько раз вс
 
 CREATE TABLE common.accumulation
 (
-  all_profit real DEFAULT 0.0, -- Всего получено
-  all_spend real DEFAULT 0.0, -- Всего потрачено
-  clean_profit real DEFAULT 0.0, -- Чистая прибыль
-  saved_percent real DEFAULT 0.0 -- Процентов сохранено
+  all_profit double precision DEFAULT 0.0, -- Всего получено
+  all_spend double precision DEFAULT 0.0, -- Всего потрачено
+  clean_profit double precision DEFAULT 0.0, -- Чистая прибыль
+  saved_percent double precision DEFAULT 0.0 -- Процентов сохранено
 )
 WITH (
   OIDS=FALSE
@@ -419,6 +419,7 @@ COMMENT ON COLUMN common.accumulation.all_spend IS 'Всего потрачен�
 COMMENT ON COLUMN common.accumulation.clean_profit IS 'Чистая прибыль';
 COMMENT ON COLUMN common.accumulation.saved_percent IS 'Процентов сохранено';
 
+insert into common.accumulation	values (0,0,0,0);
 
 
 
