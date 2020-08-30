@@ -192,6 +192,54 @@ $BODY$
   
 COMMENT ON FUNCTION service.is_record_profit(integer) IS 'Функция определяет, относится запись к прибыльным или нет.
 true - прибыльная, false - нет';
+
+
+
+CREATE OR REPLACE FUNCTION service.update_accumulation_t(
+    summ double precision,
+    record_id integer)
+  RETURNS boolean AS
+$BODY$
+DECLARE
+	-- record existance is guaranteed here
+	-- this function is called only by add_purchase trigger.
+	_is_profit 	boolean := service.is_record_profit($2);
+	_all_profit 	double precision;
+	_all_spend	double precision;
+	_clean_profit	double precision;
+	_saved_percent	double precision;
+BEGIN
+	select 	all_profit, all_spend
+	from 	common.accumulation
+	into	_all_profit, _all_spend;
+
+	if (_is_profit) then
+		_all_profit := _all_profit + $1;
+	else
+		_all_spend := _all_spend + $1;
+	end if;
+
+	_clean_profit := _all_profit - _all_spend;
+
+	if (_all_profit = 0.0) then
+		_saved_percent := 0.0;
+	else
+		_saved_percent := _clean_profit * 100 / _all_profit;
+	end if;
+	
+
+	update	common.accumulation
+	set	all_profit = _all_profit,
+		all_spend = _all_spend,
+		clean_profit = _clean_profit,
+		saved_percent = _saved_percent;
+
+	RETURN TRUE;
+END;
+$BODY$
+  LANGUAGE plpgsql;
+
+
   
   ---------------------------------------------------------------------------------------
 ------------------------------------------------<< SCHEMA SERVICE ---------------------
@@ -1004,10 +1052,12 @@ COMMENT ON FUNCTION common.get_purchases(date, date, boolean) IS 'Отдать �
   
   ---------------------------------------------------TRIGGER_FUNC_ON_PURCHASE_ADD
   
-  CREATE OR REPLACE FUNCTION on_purchase_add()
-RETURNS TRIGGER AS 
-$$
-BEGIN
+CREATE OR REPLACE FUNCTION on_purchase_add()
+  RETURNS trigger AS
+$BODY$
+DECLARE
+	_accum_result	boolean;
+begin
 	-- add record to record_stat
 	if not exists (
 		select * 
@@ -1049,10 +1099,13 @@ BEGIN
 			rps.summ = NEW.summ;
 	end if;
 
-	RETURN NEW;
-END;
-$$
-language plpgsql;
+	-- accumulate summ
+	_accum_result := service.update_accumulation_t(NEW.summ, NEW.record_id);
+
+	return NEW;
+end;
+$BODY$
+  LANGUAGE plpgsql;
   
   ---------------------------------------------------TRIGGER_PURCHASE_ADD
   
