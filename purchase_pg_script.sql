@@ -397,6 +397,31 @@ COMMENT ON COLUMN common.record_prices_stat.summ IS 'Сумма, которая 
 COMMENT ON COLUMN common.record_prices_stat.count IS 'Сколько раз встречалась затраченная сумма в рамках этой группы';
 
 
+---------------------------------------------------ACCUMULATION
+
+
+CREATE TABLE common.accumulation
+(
+  all_profit real DEFAULT 0.0, -- Всего получено
+  all_spend real DEFAULT 0.0, -- Всего потрачено
+  clean_profit real DEFAULT 0.0, -- Чистая прибыль
+  saved_percent real DEFAULT 0.0 -- Процентов сохранено
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE common.accumulation
+  OWNER TO postgres;
+COMMENT ON TABLE common.accumulation
+  IS 'Накопления и характеристики за всё время';
+COMMENT ON COLUMN common.accumulation.all_profit IS 'Всего получено';
+COMMENT ON COLUMN common.accumulation.all_spend IS 'Всего потрачено';
+COMMENT ON COLUMN common.accumulation.clean_profit IS 'Чистая прибыль';
+COMMENT ON COLUMN common.accumulation.saved_percent IS 'Процентов сохранено';
+
+
+
+
   ---------------------------------------------------PURCHASE_VIEW
   
   
