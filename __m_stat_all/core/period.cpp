@@ -77,6 +77,11 @@ void Period::setTo(QDate to)
     _to = to;
 }
 
+bool Period::containsDate(const QDate & date) const
+{
+    return (_from <= date && date <= _to);
+}
+
 bool Period::operator==(const Period &other) const
 {
     return (_from == other.from() && _to == other.to());

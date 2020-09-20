@@ -11,13 +11,16 @@ class SignalManager : public QObject
 public:
     explicit SignalManager(QObject *parent = nullptr);
 
-    void    currentPeriodPurchaseAdd();
     void    reloadDailyModel();
 
 
 signals:
 
-    void    currentPeriodPurchaseAdded();
+    /*!
+     * \brief   Была обновлена модель, представляющая
+     *          блоками содержимое покупок каждого дня.
+     *          Нужно обновить данные в GUI PurchaseView
+     */
     void    dailyModelReloaded();
 
 };

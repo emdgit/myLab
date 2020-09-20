@@ -487,17 +487,18 @@ void CoreAPI::addTransaction( const QString &rec, QString summ, const
         }
     }
 
-    auto period = _modelManager->periodModel()->period(date);
+    auto period = _modelManager->periodModel()->period(_purchase_view_period);
+
+    if (!period->containsDate(date)) {
+        return;
+    }
+
     loadPurchases(period->from(), period->to(), profit);
     loadPurchasesSumm(period->from(), period->to(), profit);
 
     _modelManager->purchaseModelDaily()->reloadMap();
 
     if (_signalManager) {
-        auto cur = currentPeriod();
-        if (cur.first <= date && date <= cur.second) {
-            _signalManager->currentPeriodPurchaseAdd();
-        }
         _signalManager->reloadDailyModel();
     }
 }
