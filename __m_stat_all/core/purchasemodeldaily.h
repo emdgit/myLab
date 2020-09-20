@@ -21,16 +21,46 @@ class PurchaseModelDaily : public QObject
 
     Q_OBJECT
 
-    struct map_node {
-        int s_begin, s_end;
-        int p_begin, p_end;
+    /*!
+     * \brief Блок покупок. В нем лежит сумма
+     * покупок за день по конкретной грппе
+     */
+    struct day_block {
+        double summ = 0.0;
+        std::string name;
+        std::vector<Purchase*> block_data;
+        bool is_profit = false;
+
+        day_block() = delete;
+        day_block(const std::string &name, bool is_profit);
+
+        void add(Purchase *p);
+
+        // Является ли блок суммой нескольких покупок
+        bool is_complex() const noexcept;
     };
 
-    using map_t = std::vector<map_node>;
-    using date_set = std::set<QDate>;
+    /*!
+     * \brief Данные покупок за день.
+     */
+    struct day_info {
+        std::vector<day_block*> data_;
+
+        QDate date;
+
+        day_info() = delete;
+        day_info(const QDate &d);
+        ~day_info();
+
+        // Добавить информацию о покупке в список.
+        void add(Purchase *p, bool is_profit);
+    };
+
+    using day_vec = std::vector<day_info*>;
 
 public:
     explicit PurchaseModelDaily(QObject *parent = nullptr);
+    ~PurchaseModelDaily() override;
 
     /*!
      * Вернуть количество разных дней в периоде.
@@ -84,14 +114,16 @@ protected:
     QDate   startDate() const;
     QDate   finishFate() const;
 
-    Purchase * purchaseAt(int day, int row) const;
+    day_info * dayInfo(int day) const;
+
+    day_block * dayBlock(int day, int row) const;
+
+    void    clear();
 
 
 private:
 
-    map_t       map_;
-
-    date_set    dates_;
+    day_vec     days_;
 
 };
 
