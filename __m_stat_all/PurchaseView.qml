@@ -75,18 +75,31 @@ Item {
                                 height: 20
                                 width: parent.width
                                 Text {
-                                    anchors.fill: parent
-                                    text: dayRect.getText(dayRect.ind, index)
+                                    id: recordNameText
+                                    anchors {
+                                        top: parent.top
+                                        bottom: parent.bottom
+                                        left: parent.left
+                                    }
+                                    width: parent.width * 0.45
+                                    text: dayRect.getName(dayRect.ind, index)
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+                                Text {
+                                    id: recordSummText
+                                    anchors {
+                                        top: parent.top
+                                        bottom: parent.bottom
+                                        right: parent.right
+                                        left: recordNameText.right
+                                    }
+                                    color: dayRect.getSummColor(dayRect.ind, index)
+                                    font.bold: dayRect.getIsProfit(dayRect.ind, index)
+                                    text: dayRect.getSumm(dayRect.ind, index)
                                     verticalAlignment: Text.AlignVCenter
                                 }
                             }
                         }
-                    }
-
-                    function getText(day, index) {
-                        var name = getName(day, index);
-                        var summ = getSumm(day, index);
-                        return name + summ;
                     }
 
                     function getName(day, index) {
@@ -95,6 +108,15 @@ Item {
 
                     function getSumm(day, index) {
                         return ModelManager.purchaseModelDaily.summ(day, index);
+                    }
+
+                    function getIsProfit(day, index) {
+                        return ModelManager.purchaseModelDaily.isProfit(day, index);
+                    }
+
+                    function getSummColor(day, index) {
+                        var profit = getIsProfit(day, index);
+                        return profit ? "green" : "red";
                     }
                 }
                 Rectangle {
