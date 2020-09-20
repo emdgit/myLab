@@ -6,6 +6,7 @@ import OwlComponents 1.0
 
 import "Common.js" as Script
 
+// Самая левая страница на форме статистик
 Item {
 
     id: topItem
@@ -67,6 +68,21 @@ Item {
             MoneyLabel {
                 summ: parent.spendModey
                 meaning: qsTr("Расход")
+            }
+
+            MoneyLabel {
+                summ: parent.profitMoney - parent.spendModey
+                meaning: qsTr("За месяц")
+            }
+
+            MoneyLabel {
+                summ: parent.profitMoney - parent.spendModey
+                meaning: qsTr("Итого")
+            }
+
+            MoneyLabel {
+                summ: parent.profitMoney - parent.spendModey
+                meaning: qsTr("Сохранено")
             }
         }
 

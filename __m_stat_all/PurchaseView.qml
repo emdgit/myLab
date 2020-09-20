@@ -21,12 +21,7 @@ Item {
             right: parent.right
         }
         onPeriodChanged: {
-            var from = ModelManager.periodModel.dateFrom(periodNumber);
-            var to = ModelManager.periodModel.dateTo(periodNumber);
-            CoreAPI.loadPurchases(from, to, false);
-            CoreAPI.loadPurchases(from, to, true);
-            CoreAPI.loadPurchasesSumm(from, to, false);
-            CoreAPI.loadPurchasesSumm(from, to, true);
+            CoreAPI.setPurchaseViewPeriod(periodNumber)
         }
     }
 

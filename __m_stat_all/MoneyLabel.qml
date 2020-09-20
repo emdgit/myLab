@@ -21,6 +21,11 @@ Item {
         // Что означает сумма. Пояснение перед ней.
         property string meaning: ""
 
+        QtObject {
+            id: _d
+            property string symbol: "₽"
+        }
+
         anchors.top: parent.top
         anchors.bottom: parent.bottom
 
@@ -41,12 +46,16 @@ Item {
 
         function summInRub() {
             if ( meaning === "" ) {
-                return summ + "₽";
+                return summ + _d.symbol;
             } else {
-                return meaning + ": " + summ + "₽";
+                return meaning + ": " + summ + _d.symbol;
             }
         }
+
+        function setSymbol(symbol) { _d.symbol = symbol; }
     }
 
+    function setMoneyMode() { label.setSymbol( "₽" ); }
+    function setPercentMode() { label.setSymbol( "%" ); }
 }
 

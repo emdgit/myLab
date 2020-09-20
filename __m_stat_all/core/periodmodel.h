@@ -19,7 +19,7 @@ public:
     Q_INVOKABLE
     int size() const;
 
-    /// Вернуть период под данным номером.
+    /// Вернуть период под данным номером. 0 - самый старый, последний - текущий.
     Q_INVOKABLE
     Period *period(int index) const;
 
