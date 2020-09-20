@@ -294,6 +294,22 @@ void CoreAPI::loadPurchases(bool profit)
     loadPurchases(period.first, period.second, profit);
 }
 
+void CoreAPI::setPurchaseViewPeriod(int period)
+{
+    if (period == _purchase_view_period) {
+        return;
+    }
+
+    _purchase_view_period = period;
+
+    auto p = _modelManager->periodModel()->period(period);
+
+    loadPurchases(p->from(), p->to(), false);
+    loadPurchases(p->from(), p->to(), true);
+    loadPurchasesSumm(p->from(), p->to(), false);
+    loadPurchasesSumm(p->from(), p->to(), true);
+}
+
 void CoreAPI::setModelManager(ModelManager *mm) noexcept
 {
     _modelManager = mm;
@@ -625,7 +641,12 @@ void CoreAPI::loadPurchasesSumm(const QDate &from, const QDate &to, bool profit)
         st->push_back(pr);
     }
 
-    _modelManager->purchaseModel()->reloadData();
+    auto period = _modelManager->periodModel()->period(_purchase_view_period);
+
+    if (*period == Period(from, to)) {
+        _modelManager->purchaseModel()->reloadData();
+    }
+
 }
 
 void CoreAPI::loadPurchases(const QDate & from, const QDate & to, bool profit)
@@ -663,10 +684,14 @@ void CoreAPI::loadPurchases(const QDate & from, const QDate & to, bool profit)
         st->push_back(pr);
     }
 
-    _modelManager->purchaseModelDaily()->reloadMap();
+    auto period = _modelManager->periodModel()->period(_purchase_view_period);
 
-    if (_signalManager) {
-        _signalManager->reloadDailyModel();
+    if (*period == Period(from, to)) {
+        _modelManager->purchaseModelDaily()->reloadMap();
+
+        if (_signalManager) {
+            _signalManager->reloadDailyModel();
+        }
     }
 }
 

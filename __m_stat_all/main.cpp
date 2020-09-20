@@ -107,11 +107,7 @@ int main(int argc, char *argv[])
             CoreAPI::setStartPoint(QDate(2019,5,11));
         }
 
-        // Загрузить покупки текущего периода
-        CoreAPI::loadPurchasesSumm(false);
-        CoreAPI::loadPurchasesSumm(true);
-        CoreAPI::loadPurchases(false);
-        CoreAPI::loadPurchases(true);
+        CoreAPI::setPurchaseViewPeriod(mmanager.periodModel()->size() - 1);
     };
 
     auto t2 = chrono::high_resolution_clock::now();

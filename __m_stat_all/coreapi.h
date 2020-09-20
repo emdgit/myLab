@@ -18,6 +18,7 @@ class PurchaseRecord;
 class SignalManager;
 class ModelManager;
 class Purchase;
+class Period;
 
 class CoreAPI : public QObject
 {
@@ -187,6 +188,15 @@ public:
     static void loadPurchases(bool profit);
 
 
+    /*!
+     * \brief   Установить период, который показывается в
+     *          GUI PurchaseView
+     * \param[in] period Номер периода
+     */
+    Q_INVOKABLE
+    static void setPurchaseViewPeriod(int period);
+
+
     static void setModelManager( ModelManager * mm ) noexcept;
     static void setSignalManager( SignalManager * sm ) noexcept;
 
@@ -259,6 +269,9 @@ private:
 
     /// Даты начала рассчетного периода
     static inline QDate _start_point;
+
+    /// Период, который показывается в GUI PurchaseView
+    static inline int _purchase_view_period = -1;
 
 };
 

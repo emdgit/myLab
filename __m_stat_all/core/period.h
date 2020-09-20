@@ -22,6 +22,8 @@ public:
     void setFrom(QDate from);
     void setTo(QDate to);
 
+    bool operator==(const Period &other) const;
+
 
 private:
 
