@@ -111,9 +111,6 @@ public:
 
 protected:
 
-    QDate   startDate() const;
-    QDate   finishFate() const;
-
     day_info * dayInfo(int day) const;
 
     day_block * dayBlock(int day, int row) const;
