@@ -86,7 +86,7 @@ void PurchaseModelDaily::reloadMap()
     }
 
     std::sort(days_.begin(), days_.end(), [](day_info *l, day_info *r){
-        return l->date < r->date;
+        return l->date > r->date;
     });
 }
 
