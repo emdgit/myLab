@@ -55,7 +55,7 @@ Item {
         function setSymbol(symbol) { _d.symbol = symbol; }
     }
 
-    function setMoneyMode() { label.setSymbol( "₽" ); }
-    function setPercentMode() { label.setSymbol( "%" ); }
+    function setMoneyMode() { label.setSymbol( "₽" ); return true; }
+    function setPercentMode() { label.setSymbol( "%" ); return true; }
 }
 

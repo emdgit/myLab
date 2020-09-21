@@ -197,6 +197,20 @@ public:
     static void setPurchaseViewPeriod(int period);
 
 
+    /*!
+     * \brief Вернуть чистую прибыль за все время
+     */
+    Q_INVOKABLE
+    static int  getCleanProfit();
+
+
+    /*!
+     * \brief Вернуть сохраненный процент за все время
+     */
+    Q_INVOKABLE
+    static QString getCleanPercent();
+
+
     static void setModelManager( ModelManager * mm ) noexcept;
     static void setSignalManager( SignalManager * sm ) noexcept;
 

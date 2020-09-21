@@ -14,6 +14,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <iomanip>
 
 #define DB_COMMON(func_name) #func_name, "common"
 #define DB_SERVICE(func_name) #func_name, "service"
@@ -24,6 +25,38 @@ using namespace std;
 using RE = std::runtime_error;
 
 pg::Worker * CoreAPI::_pg_worker = Connecter::createWorker();
+
+
+/*!
+ * \brief Выполнить простую pg-процедуру без входных параметров
+ * с одним возвращаемым значением. (1 строка, 1 столбец).
+ * \param[in] schema    Схема БД
+ * \param[in] func      Имя функции БД (без указания схемы)
+ * \param[in] worker    Объект pg::Worker
+ * \tparam T Тип, к которому нужно привести результат
+ */
+template <class T>
+T executeSimpleProcedure(const char *func, const char *schema,
+                         Worker *worker)
+{
+    auto f = TypeStorage::func(func, schema);
+    auto answer = worker->execute(**f);
+
+    if (!answer) {
+        stringstream ss;
+        ss << "Error in function " << schema << "." << func;
+
+        throw RE(ss.str());
+    }
+
+    T res(0);
+
+    if (!answer->tryConvert<T>(res)) {
+        throw RE("executeSimpleProcedure<>: Error in answer convertation");
+    }
+
+    return res;
+}
 
 void CoreAPI::addPurchase(const QString &rec, QString summ,
                           const QString &date_str, int amount)
@@ -310,6 +343,22 @@ void CoreAPI::setPurchaseViewPeriod(int period)
     loadPurchasesSumm(p->from(), p->to(), true);
 }
 
+int CoreAPI::getCleanProfit()
+{
+    return executeSimpleProcedure<int>(DB_COMMON(get_clean_profit),
+                                       _pg_worker);
+}
+
+QString CoreAPI::getCleanPercent()
+{
+    auto p = executeSimpleProcedure<double>(DB_COMMON(get_saved_percent),
+                                            _pg_worker);
+    stringstream ss;
+    ss << setprecision(4) << p;
+
+    return QString::fromStdString(ss.str());
+}
+
 void CoreAPI::setModelManager(ModelManager *mm) noexcept
 {
     _modelManager = mm;
@@ -488,6 +537,8 @@ void CoreAPI::addTransaction( const QString &rec, QString summ, const
     }
 
     auto period = _modelManager->periodModel()->period(_purchase_view_period);
+
+    _signalManager->purchaseAdd();
 
     if (!period->containsDate(date)) {
         return;

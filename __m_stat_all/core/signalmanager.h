@@ -11,7 +11,11 @@ class SignalManager : public QObject
 public:
     explicit SignalManager(QObject *parent = nullptr);
 
+    /// Сымитировать сигнал 'dailyModelReloaded()'
     void    reloadDailyModel();
+
+    /// Сымитировать сигнал 'purchaseAdded()'
+    void    purchaseAdd();
 
 
 signals:
@@ -22,6 +26,12 @@ signals:
      *          Нужно обновить данные в GUI PurchaseView
      */
     void    dailyModelReloaded();
+
+    /*!
+     * \brief   В базу данных была добавлена запись о
+     *          новой покупке
+     */
+    void    purchaseAdded();
 
 };
 

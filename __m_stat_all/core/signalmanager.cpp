@@ -8,3 +8,8 @@ void SignalManager::reloadDailyModel()
 {
     emit dailyModelReloaded();
 }
+
+void SignalManager::purchaseAdd()
+{
+    emit purchaseAdded();
+}

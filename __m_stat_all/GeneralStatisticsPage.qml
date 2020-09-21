@@ -51,12 +51,19 @@ Item {
 
             property int profitMoney: CoreAPI.currentProfit()
             property int spendModey: CoreAPI.currentConsuption()
+            property int cleanProfit: CoreAPI.getCleanProfit()
+
+            property real savedPercent: CoreAPI.getCleanPercent()
 
             Connections {
                 target: SignalManager
                 onCurrentPeriodPurchaseAdded: {
                     headerLayout.profitMoney = CoreAPI.currentProfit();
                     headerLayout.spendModey = CoreAPI.currentConsuption();
+                }
+                onPurchaseAdded: {
+                    headerLayout.cleanProfit = CoreAPI.getCleanProfit();
+                    headerLayout.savedPercent = CoreAPI.getCleanPercent();
                 }
             }
 
@@ -76,13 +83,19 @@ Item {
             }
 
             MoneyLabel {
-                summ: parent.profitMoney - parent.spendModey
+                summ: parent.cleanProfit
                 meaning: qsTr("Итого")
             }
 
             MoneyLabel {
-                summ: parent.profitMoney - parent.spendModey
+                id: percentLabel
+                summ: parent.savedPercent
                 meaning: qsTr("Сохранено")
+            }
+
+            QtObject {
+                id: _d
+                readonly property bool percentInit: percentLabel.setPercentMode()
             }
         }
 
