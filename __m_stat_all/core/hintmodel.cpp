@@ -49,7 +49,7 @@ void HintModel::updateModel()
     for ( const auto &rec : *_records ) {
         QString str(rec->name().data());
 
-        if ( str.startsWith( _hintFactor, Qt::CaseInsensitive ) ) {
+        if (str.contains(_hintFactor, Qt::CaseInsensitive)) {
             lst << str;
         }
     }
