@@ -10,6 +10,7 @@ class Period : public QObject
 public:
 
     explicit Period(QObject *parent = nullptr);
+    explicit Period(std::pair<QDate, QDate> date_pair, QObject * parent = nullptr);
     Period(QDate from, QDate to, QObject * parent = nullptr);
 
     QDate from() const;

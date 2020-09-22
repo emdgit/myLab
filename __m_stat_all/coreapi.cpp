@@ -540,6 +540,10 @@ void CoreAPI::addTransaction( const QString &rec, QString summ, const
 
     _signalManager->purchaseAdd();
 
+    if (Period(currentPeriod()).containsDate(date)) {
+        _signalManager->lastPeriodPurchaseAdd();
+    }
+
     if (!period->containsDate(date)) {
         return;
     }
@@ -548,10 +552,7 @@ void CoreAPI::addTransaction( const QString &rec, QString summ, const
     loadPurchasesSumm(period->from(), period->to(), profit);
 
     _modelManager->purchaseModelDaily()->reloadMap();
-
-    if (_signalManager) {
-        _signalManager->reloadDailyModel();
-    }
+    _signalManager->reloadDailyModel();
 }
 
 pair<QDate, QDate> CoreAPI::currentPeriod()

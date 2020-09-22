@@ -27,6 +27,12 @@ Period::Period(QObject *parent) : QObject(parent)
 {
 }
 
+Period::Period(std::pair<QDate, QDate> date_pair, QObject *parent) :
+    QObject (parent), _from(std::min(date_pair.first, date_pair.second)),
+    _to(std::max(date_pair.first, date_pair.second))
+{
+}
+
 Period::Period(QDate from, QDate to, QObject *parent) :
     QObject (parent), _from(from), _to(to)
 {
