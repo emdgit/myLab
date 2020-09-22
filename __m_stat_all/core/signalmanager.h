@@ -17,6 +17,9 @@ public:
     /// Сымитировать сигнал 'purchaseAdded()'
     void    purchaseAdd();
 
+    /// Сымитировать сигнал 'lastPeriodPurchaseAdded()'
+    void    lastPeriodPurchaseAdd();
+
 
 signals:
 
@@ -32,6 +35,11 @@ signals:
      *          новой покупке
      */
     void    purchaseAdded();
+
+    /*!
+     * \brief Вызывается при добавлении записи в последний период.
+     */
+    void    lastPeriodPurchaseAdded();
 
 };
 

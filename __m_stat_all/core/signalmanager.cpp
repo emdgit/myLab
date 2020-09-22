@@ -13,3 +13,8 @@ void SignalManager::purchaseAdd()
 {
     emit purchaseAdded();
 }
+
+void SignalManager::lastPeriodPurchaseAdd()
+{
+    emit lastPeriodPurchaseAdded();
+}

@@ -70,25 +70,25 @@ HEADERS     +=        \
             DB/connecter.h   \
             DB/typedfield.h   \
             DB/typestorage.h   \
+            paint/chart.h   \
+            paint/gline.h    \
+            paint/gpoliline.h \
+            paint/graphbase.h  \
             core/log.h  \
             core/pnode.h \
             core/period.h \
-            paint/chart.h  \
-            paint/gline.h   \
-            core/storage.h   \
-            core/iobject.h    \
-            core/purchase.h    \
-            core/singleton.h    \
-            core/hintmodel.h     \
-            paint/gpoliline.h     \
-            paint/graphbase.h      \
-            core/periodmodel.h      \
-            core/purchasemodel.h     \
-            core/purchasegroup.h      \
-            core/signalmanager.h       \
-            core/purchaserecord.h       \
-            core/storagedefinition.h     \
-            core/purchasegroupmodel.h     \
-            core/purchasemodeldaily.h      \
+            core/storage.h \
+            core/iobject.h  \
+            core/purchase.h  \
+            core/singleton.h  \
+            core/hintmodel.h   \
+            core/periodmodel.h  \
+            core/purchasemodel.h \
+            core/purchasegroup.h  \
+            core/signalmanager.h   \
+            core/purchaserecord.h   \
+            core/storagedefinition.h \
+            core/purchasegroupmodel.h \
+            core/purchasemodeldaily.h  \
             core/hierarchicalstorage.h
 
