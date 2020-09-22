@@ -470,6 +470,10 @@ bool CoreAPI::dateFromStr(const QString &date_str, QDate &date)
         date = QDate::fromString(date_str, "dd:MM:yyyy");
         return true;
     }
+    if ( QDate::fromString(date_str, "dd,MM,yyyy").isValid() ) {
+        date = QDate::fromString(date_str, "dd,MM,yyyy");
+        return true;
+    }
 
     return false;
 }
