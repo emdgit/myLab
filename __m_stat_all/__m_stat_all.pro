@@ -30,10 +30,13 @@ SOURCES     +=           \
             DB/connecter.cpp \
             DB/typedfield.cpp \
             DB/typestorage.cpp \
-            paint/chart.cpp   \
-            paint/gline.cpp    \
-            paint/gpoliline.cpp \
-            paint/graphbase.cpp  \
+            paint/chart.cpp  \
+            paint/gline.cpp   \
+            paint/plotform.cpp \
+            paint/plotbase.cpp  \
+            paint/gpoliline.cpp  \
+            paint/graphbase.cpp   \
+            paint/plotlinear.cpp   \
             core/pnode.cpp   \
             core/period.cpp   \
             core/iobject.cpp   \
@@ -70,10 +73,13 @@ HEADERS     +=        \
             DB/connecter.h   \
             DB/typedfield.h   \
             DB/typestorage.h   \
-            paint/chart.h   \
-            paint/gline.h    \
-            paint/gpoliline.h \
-            paint/graphbase.h  \
+            paint/chart.h  \
+            paint/gline.h   \
+            paint/plotform.h \
+            paint/plotbase.h  \
+            paint/gpoliline.h  \
+            paint/graphbase.h   \
+            paint/plotlinear.h   \
             core/log.h  \
             core/pnode.h \
             core/period.h \

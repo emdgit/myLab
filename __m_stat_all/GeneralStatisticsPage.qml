@@ -106,4 +106,11 @@ Item {
         }
     }
 
+    PlotForm {
+//        anchors.centerIn: parent
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.verticalCenter: parent.verticalCenter
+    }
+
 }

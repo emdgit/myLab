@@ -20,6 +20,7 @@
 #include "purchasegroupmodel.h"
 #include "signalmanager.h"
 #include "period.h"
+#include "plotform.h"
 
 using namespace std;
 
@@ -43,6 +44,7 @@ int main(int argc, char *argv[])
     qRegisterMetaType<PNodeIndex>( "PNodeIndex" );
 
     qmlRegisterType<Chart>( "OwlComponents", 1, 0, "Chart" );
+    qmlRegisterType<PlotForm>( "OwlComponents", 1, 0, "PlotForm" );
     qmlRegisterType<PurchaseGroupModel>( "OwlComponents", 1, 0, "PGroupModel" );
     qmlRegisterSingletonType<CoreAPI>( "OwlComponents", 1, 0, "CoreAPI", core_api_singleton_f );
     qmlRegisterUncreatableType<HintModel>( "OwlComponents", 1, 0, "HintModel",
