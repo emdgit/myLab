@@ -50,7 +50,8 @@ SOURCES     +=           \
             core/purchasegroupmodel.cpp \
             core/hierarchicalstorage.cpp \
             core/purchasemodeldaily.cpp \
-    paint/plothisto.cpp
+    paint/plothisto.cpp \
+    core/plotmanager.cpp
 
 RESOURCES   +=  qml.qrc \
                 sql.qrc  \
@@ -96,5 +97,6 @@ HEADERS     +=        \
             core/purchasegroupmodel.h \
             core/purchasemodeldaily.h  \
             core/hierarchicalstorage.h \
-    paint/plothisto.h
+    paint/plothisto.h \
+    core/plotmanager.h
 

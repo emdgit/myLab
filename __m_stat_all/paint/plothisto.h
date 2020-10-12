@@ -24,6 +24,11 @@ public:
     void printHintLabel(int x, int y) const override;
 
 
+protected:
+
+    void paintYScale(QPainter * painter) const;
+
+
 private:
 
     /// Ширина, отведенная наотрисовку шкалы Y

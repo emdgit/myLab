@@ -5,14 +5,26 @@
 #define INT(expr) static_cast<int>(expr)
 
 PlotHisto::PlotHisto(QQuickItem * parent) :
-    PlotBase (parent)
-{
-
-}
+    PlotBase (parent) {}
 
 void PlotHisto::paint(QPainter * painter)
 {
-    // Paint Y-scale
+    paintYScale(painter);
+
+    // Paint X-scale
+
+    // Paint histograms
+
+}
+
+void PlotHisto::printHintLabel(int x, int y) const
+{
+    (void)x;
+    (void)y;
+}
+
+void PlotHisto::paintYScale(QPainter * painter) const
+{
     auto y_scale = yScale();    // min -> max
     auto y_scale_h = INT(height() - 2 * margin_);
     auto y_scale_label_h = INT(y_scale_h / INT(y_scale.size()));
@@ -49,15 +61,4 @@ void PlotHisto::paint(QPainter * painter)
     }
 
     painter->restore();
-
-    // Paint X-scale
-
-    // Paint histograms
-
-}
-
-void PlotHisto::printHintLabel(int x, int y) const
-{
-    (void)x;
-    (void)y;
 }

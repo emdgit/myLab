@@ -1,4 +1,5 @@
 #include "plotbase.h"
+#include "plotmanager.h"
 
 using namespace std;
 
@@ -12,6 +13,8 @@ PlotBase::PlotBase(QQuickItem * parent) :
     connect(this, &PlotBase::heightChanged, [&] {
         resizePlot();
     });
+
+    PlotManager::registerPlot(this);
 }
 
 void PlotBase::addData(const QVariant & k, double v)
@@ -28,6 +31,20 @@ void PlotBase::setViewRange(size_t left, size_t right)
 const std::pair<size_t, size_t> &PlotBase::viewRange() const
 {
     return viewRange_;
+}
+
+int PlotBase::plotId() const
+{
+    return plotId_;
+}
+
+void PlotBase::setPlotId(int plotId)
+{
+    if (plotId_ != plotId)
+        return;
+
+    plotId_ = plotId;
+    emit plotIdChanged(plotId_);
 }
 
 void PlotBase::resizePlot()

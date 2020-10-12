@@ -1,15 +1,25 @@
-#ifndef PLOTBASE_H
-#define PLOTBASE_H
+#pragma once
 
 #include <QQuickPaintedItem>
 
 #include <vector>
+
+;   // haha, QtCreator's bug detected. =)
+#pragma pack(push, 1)
 
 // Базовый класс, рисующий непосредственно
 // данные графика.
 // Встраивается в PlotForm. // todo make it independent
 class PlotBase : public QQuickPaintedItem
 {
+
+    Q_OBJECT
+
+    Q_PROPERTY(int plotId
+               READ plotId
+               WRITE setPlotId
+               NOTIFY plotIdChanged)
+
 public:
     PlotBase(QQuickItem *parent = nullptr);
 
@@ -27,6 +37,18 @@ public:
     void setViewRange(size_t left, size_t right);
 
     const std::pair<size_t, size_t> &viewRange() const;
+
+    int plotId() const;
+
+
+public slots:
+
+    void setPlotId(int plotId);
+
+
+signals:
+
+    void plotIdChanged(int plotId);
 
 
 protected:
@@ -49,6 +71,7 @@ private:
 
     std::vector<std::pair<QVariant, double>>    data_;
 
+    int plotId_;
 };
 
-#endif // PLOTBASE_H
+#pragma pack(pop)
