@@ -106,8 +106,9 @@ Item {
         }
     }
 
-    PlotForm {
+    Histogram {
 //        anchors.centerIn: parent
+        height: 400
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter

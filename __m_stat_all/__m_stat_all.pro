@@ -32,7 +32,6 @@ SOURCES     +=           \
             DB/typestorage.cpp \
             paint/chart.cpp  \
             paint/gline.cpp   \
-            paint/plotform.cpp \
             paint/plotbase.cpp  \
             paint/gpoliline.cpp  \
             paint/graphbase.cpp   \
@@ -50,7 +49,8 @@ SOURCES     +=           \
             core/purchaserecord.cpp    \
             core/purchasegroupmodel.cpp \
             core/hierarchicalstorage.cpp \
-            core/purchasemodeldaily.cpp
+            core/purchasemodeldaily.cpp \
+    paint/plothisto.cpp
 
 RESOURCES   +=  qml.qrc \
                 sql.qrc  \
@@ -75,7 +75,6 @@ HEADERS     +=        \
             DB/typestorage.h   \
             paint/chart.h  \
             paint/gline.h   \
-            paint/plotform.h \
             paint/plotbase.h  \
             paint/gpoliline.h  \
             paint/graphbase.h   \
@@ -96,5 +95,6 @@ HEADERS     +=        \
             core/storagedefinition.h \
             core/purchasegroupmodel.h \
             core/purchasemodeldaily.h  \
-            core/hierarchicalstorage.h
+            core/hierarchicalstorage.h \
+    paint/plothisto.h
 
