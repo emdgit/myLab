@@ -9,7 +9,6 @@
 
 // Базовый класс, рисующий непосредственно
 // данные графика.
-// Встраивается в PlotForm. // todo make it independent
 class PlotBase : public QQuickPaintedItem
 {
 
@@ -54,23 +53,31 @@ signals:
 protected:
 
     /*!
-     * \brief Вызывается, если была изменена ширина или
-     * высота Item'a в GUI
+     * \brief   Вызывается, если была изменена ширина или
+     *          высота Item'a в GUI
      * \default По  умолчанию ничего не происходит.
      */
     virtual void resizePlot();
 
+    /// Вернуть отображаемые на шкале Y значения
     std::vector<int> yScale() const;
 
+    /// Точки центрирования данных графика.
+    std::vector<QPoint> anchors_;
+
+    /// Диапазон отображаемых значений. Индексы массива данных
     std::pair<size_t, size_t>   viewRange_ = {0,0};
 
 
 private:
 
+    /// Проверить валидность данных во viewRange_
     bool checkViewRange() const;
 
+    /// Данные графика. (Подпись по оси Х / значение)
     std::vector<std::pair<QVariant, double>>    data_;
 
+    /// Идентификатор графика. Получается при создании.
     int plotId_;
 };
 

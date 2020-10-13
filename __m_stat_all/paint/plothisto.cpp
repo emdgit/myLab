@@ -13,8 +13,7 @@ void PlotHisto::paint(QPainter * painter)
 
     // Paint X-scale
 
-    // Paint histograms
-
+    paintHisto(painter);
 }
 
 void PlotHisto::printHintLabel(int x, int y) const
@@ -61,4 +60,14 @@ void PlotHisto::paintYScale(QPainter * painter) const
     }
 
     painter->restore();
+}
+
+void PlotHisto::paintHisto(QPainter *painter) const
+{
+    auto x = yScaleWidth_ + margin_ * 2;
+    auto y = margin_;
+    auto w = INT(width()) - x - (margin_ * 2);
+    auto h = INT(height()) - (margin_ * 2);
+
+    QRect histo_rect(x, y, w, h);
 }

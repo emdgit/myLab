@@ -27,6 +27,7 @@ public:
 protected:
 
     void paintYScale(QPainter * painter) const;
+    void paintHisto(QPainter * painter) const;
 
 
 private:
@@ -34,16 +35,16 @@ private:
     /// Ширина, отведенная наотрисовку шкалы Y
     static constexpr int yScaleWidth_ = 50;
 
-    // Высота области значения в шкале Y
+    /// Высота области значения в шкале Y
     static constexpr int yScaleLabelHeight_ = 25;
 
-    // Ширина столбика гистограммы
+    /// Ширина столбика гистограммы
     static constexpr int histoWidth_ = 25;
 
-    // Интервал между столбиками гистограммы
+    /// Интервал между столбиками гистограммы
     static constexpr int histoMargin_ = 25;
 
-    // Общий отступ от границ
+    /// Общий отступ от границ
     static constexpr int margin_ = 5;
 
 };

@@ -50,6 +50,7 @@ void PlotBase::setPlotId(int plotId)
 void PlotBase::resizePlot()
 {
     // update viewRange
+    // update anchors
     // repaint
     qt_noop();
 }
