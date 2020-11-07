@@ -177,23 +177,53 @@ $BODY$
 DECLARE
 	_res boolean := false;
 BEGIN
-	select *
-	from lateral (
-		select g.is_profit 
-		from common.groups as g
-		where g.id = common.get_root_group_by_record_id($1)
-	) s
-	into _res;
+	if exists (
+		select	p.is_profit	
+		from	common.records	as p
+		where	p.id = $1
+	) then
+		select	p.is_profit
+		into	_res
+		from	common.records	as p
+		where	p.id = $1;
+		
+		return _res;
+	end if;
 
-	return _res;
+	RAISE EXCEPTION 'Nonexistent record ID --> %', $1;
 END;
 $BODY$
   LANGUAGE plpgsql;
   
-COMMENT ON FUNCTION service.is_record_profit(integer) IS 'Функция определяет, относится запись к прибыльным или нет.
+  COMMENT ON FUNCTION service.is_record_profit(integer) IS 'Функция определяет, относится запись к прибыльным или нет.
 true - прибыльная, false - нет';
+  
+ CREATE OR REPLACE FUNCTION service.is_group_profit(id integer)
+  RETURNS boolean AS
+$BODY$
+DECLARE
+	_res boolean := false;
+BEGIN
+	if exists (
+		select	g.is_profit	
+		from	common.groups	as g
+		where	g.id = $1
+	) then
+		select	g.is_profit
+		into	_res
+		from	common.groups	as g
+		where	g.id = $1;
+		
+		return _res;
+	end if;
 
-
+	RAISE EXCEPTION 'Nonexistent group ID --> %', $1;
+END;
+$BODY$
+  LANGUAGE plpgsql;
+  
+COMMENT ON FUNCTION service.is_group_profit(integer) IS 'Функция определяет, относится группа к прибыльным или нет.
+true - прибыльная, false - нет';
 
 CREATE OR REPLACE FUNCTION service.update_accumulation_t(
     summ double precision,
@@ -295,6 +325,7 @@ CREATE TABLE common.records
   id serial NOT NULL,
   group_id integer,
   name text NOT NULL,
+  is_profit boolean,
   CONSTRAINT records_primary_key PRIMARY KEY (id),
   CONSTRAINT records_foreign_key FOREIGN KEY (group_id)
       REFERENCES common.groups (id) MATCH SIMPLE
@@ -369,6 +400,7 @@ CREATE TABLE common.purchases
   date date NOT NULL,
   creation_date date NOT NULL, -- Дата добавления записи о покупке
   summ double precision,
+  is_profit boolean,
   CONSTRAINT "purchase_PK" PRIMARY KEY (id),
   CONSTRAINT "purchase_record_FK" FOREIGN KEY (record_id)
       REFERENCES common.records (id) MATCH SIMPLE
@@ -577,24 +609,31 @@ DECLARE
 	_resultId	integer;
 BEGIN
 	_resultId := 0;
-	
+
+	-- Проверка родительской группы
 	IF NOT ( service.group_exists( $1 ) )
 	THEN
 		RETURN -1;
 	END IF;
 
+	-- Проверка существования группы. Игнорируя регистр.
 	IF EXISTS ( 
 		SELECT * FROM 
 		common.get_records( $1 ) AS r
-		WHERE r.name = $2
+		WHERE lower(r.name) = lower($2)
 	)
 	THEN
-		RETURN -2;
+		SELECT	id
+		FROM 	common.get_records( $1 ) AS r
+		INTO	_resultId
+		WHERE 	lower(r.name) = lower($2);
+
+		RETURN _resultId;
 	END IF;
 
 	INSERT 
-	INTO common.records ( group_id, name )
-	VALUES ( $1, $2 )
+	INTO common.records ( group_id, name, is_profit )
+	VALUES ( $1, $2, service.is_group_profit($1) )
 	RETURNING id INTO _resultId;
 
 	RETURN _resultId;
@@ -753,8 +792,8 @@ BEGIN
 	END IF;
 
 	INSERT
-	INTO common.purchases ( user_group_id, user_id, record_id, summ, date, creation_date )
-	VALUES ( $1, $2, $3, $4, $5, $6 )
+	INTO common.purchases ( user_group_id, user_id, record_id, summ, date, creation_date, is_profit )
+	VALUES ( $1, $2, $3, $4, $5, $6, service.is_record_profit($3) )
 	RETURNING id INTO _purchase_id;
 
 	RETURN _purchase_id;
@@ -1003,16 +1042,17 @@ BEGIN
 		select	p.record_id,
 			r.name, 
 			sum(p.summ) as summ,
-			(select unnest(array_agg(p.date)) d order by d desc limit 1) as last_date
+			(select unnest(array_agg(p.date)) d order by d desc limit 1) as last_date,
+			r.is_profit
 		from	common.purchases as p
 		join 	common.records as r on r.id = p.record_id
 		where	$1 <= p.date and p.date <= $2
-		group by p.record_id, r.name
+		group by p.record_id, r.name, r.is_profit
 		order by summ desc
 	)
 	select	q.name, q.summ, q.last_date
 	from	query as q
-	where	service.is_record_profit(q.record_id) = $3;
+	where	q.is_profit = $3;
 END;
 $BODY$
   LANGUAGE plpgsql;
