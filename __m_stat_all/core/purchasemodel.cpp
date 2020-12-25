@@ -16,7 +16,7 @@ PurchaseModel::PurchaseModel(bool profit, QObject *parent)
 
 int PurchaseModel::rowCount(const QModelIndex &parent) const
 {
-    if (parent.isValid()) {
+    if (parent.isValid() || !_purchase_vec) {
         return 0;
     }
 
