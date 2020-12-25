@@ -57,11 +57,11 @@ Item {
 
             Connections {
                 target: SignalManager
-                onLastPeriodPurchaseAdded: {
+                function onLastPeriodPurchaseAdded() {
                     headerLayout.profitMoney = CoreAPI.currentProfit();
                     headerLayout.spendModey = CoreAPI.currentConsuption();
                 }
-                onPurchaseAdded: {
+                function onPurchaseAdded() {
                     headerLayout.cleanProfit = CoreAPI.getCleanProfit();
                     headerLayout.savedPercent = CoreAPI.getCleanPercent();
                 }

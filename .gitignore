@@ -1,3 +1,4 @@
+*.directory
 *BuildDebug/*
 *.~
 *.orig
@@ -7,9 +8,11 @@
 *.exe
 *.o
 *.autosave
+*.pro.user*
 *moc_*
 *Makefile*
 *qrc_*.cpp
 build-*
 build-__m_stat_all-Desktop_Qt_5_12_0_MinGW_64_bit-Debug/*
+Build/*
 desktop.ini

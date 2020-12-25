@@ -38,7 +38,7 @@ Item {
 
         Connections {
             target: SignalManager
-            onDailyModelReloaded: {
+            function onDailyModelReloaded() {
                 list.updateModel();
             }
         }
