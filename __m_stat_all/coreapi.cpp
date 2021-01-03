@@ -359,6 +359,34 @@ QString CoreAPI::getCleanPercent()
     return QString::fromStdString(ss.str());
 }
 
+void CoreAPI::loadProfitChartData()
+{
+    using data_arr = ChartDataStorage::data_arr;
+
+    auto p_model = _modelManager->periodModel();
+    auto chartST = ST.chartStorage();
+    auto func = TypeStorage::func(DB_COMMON(get_summ));
+
+    data_arr data;
+
+    for (int i(0); i < p_model->size(); ++i) {
+        auto period = p_model->period(i);
+        (*func)->bindValue("date_from", period->from());
+        (*func)->bindValue("date_to", period->to());
+        (*func)->bindValue("profit", true);
+
+        auto res = std::unique_ptr<Answer>(_pg_worker->execute(**func));
+        double val;
+        if (!res->tryConvert<double>(val)) {
+            val = 0.0;
+        }
+
+        data.emplace_back(val, period->name());
+    }
+
+    chartST->setProfits(move(data));
+}
+
 void CoreAPI::setModelManager(ModelManager *mm) noexcept
 {
     _modelManager = mm;

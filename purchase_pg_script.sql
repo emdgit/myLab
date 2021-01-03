@@ -1127,6 +1127,38 @@ $BODY$
   
 COMMENT ON FUNCTION common.get_saved_percent() IS 'Вернуть процент сохраненных средств за все время';
 
+
+---------------------------------------------------FUNC_GET_SUMM
+
+
+CREATE OR REPLACE FUNCTION common.get_summ(
+    date_from date,
+    date_to date,
+    profit boolean)
+  RETURNS double precision AS
+$BODY$
+DECLARE
+	_result double precision := 0.0;
+BEGIN
+	with summ_q as (
+		select * from common.get_purchases_summ($1, $2, $3)
+	)
+	select 	sum(q.summ)	as spend
+	into	_result
+	from	summ_q		as q;
+
+	return _result;
+END;
+$BODY$
+  LANGUAGE plpgsql;
+  
+ALTER FUNCTION common.get_summ(date, date, boolean)
+  OWNER TO postgres;
+  
+COMMENT ON FUNCTION common.get_summ(date, date, boolean) IS 'Рассчитывает сумму за данный период.
+Возвращает результат одним значением.
+Не берет в расчет ни группы, ни записи.';
+
   
   ---------------------------------------------------TRIGGER_FUNC_ON_PURCHASE_ADD
   

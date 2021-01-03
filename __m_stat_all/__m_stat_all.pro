@@ -1,5 +1,6 @@
 QT          +=  quick
 QT          +=  sql
+QT          +=  widgets
 
 CONFIG      +=  c++17
 
@@ -30,17 +31,18 @@ SOURCES     +=           \
             paint/gline.cpp    \
             paint/gpoliline.cpp \
             paint/graphbase.cpp  \
-            core/pnode.cpp   \
-            core/period.cpp   \
-            core/iobject.cpp   \
-            core/storage.cpp    \
-            core/purchase.cpp    \
-            core/hintmodel.cpp    \
-            core/periodmodel.cpp   \
-            core/signalmanager.cpp  \
-            core/purchasemodel.cpp   \
-            core/purchasegroup.cpp    \
-            core/purchaserecord.cpp    \
+            core/pnode.cpp  \
+            core/period.cpp  \
+            core/iobject.cpp  \
+            core/storage.cpp   \
+            core/purchase.cpp   \
+            core/hintmodel.cpp   \
+            core/periodmodel.cpp  \
+            core/signalmanager.cpp \
+            core/purchasemodel.cpp  \
+            core/purchasegroup.cpp   \
+            core/purchaserecord.cpp   \
+            core/chartdatastorage.cpp  \
             core/purchasegroupmodel.cpp \
             core/hierarchicalstorage.cpp \
             core/purchasemodeldaily.cpp
@@ -83,8 +85,9 @@ HEADERS     +=        \
             core/purchasegroup.h  \
             core/signalmanager.h   \
             core/purchaserecord.h   \
-            core/storagedefinition.h \
-            core/purchasegroupmodel.h \
-            core/purchasemodeldaily.h  \
+            core/chartdatastorage.h  \
+            core/storagedefinition.h  \
+            core/purchasegroupmodel.h  \
+            core/purchasemodeldaily.h   \
             core/hierarchicalstorage.h
 

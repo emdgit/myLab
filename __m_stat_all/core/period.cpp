@@ -67,6 +67,11 @@ QString Period::toAsString() const
     return dateToStr(_to);
 }
 
+QString Period::name() const
+{
+    return _months[_from.month()].data();
+}
+
 void Period::setFrom(QDate from)
 {
     if (_from == from)

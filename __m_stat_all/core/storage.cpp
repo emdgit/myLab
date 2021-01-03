@@ -46,3 +46,8 @@ Storage::purchase_vec *Storage::purchasesSpend() noexcept
     return &_purchases_spend;
 }
 
+ChartDataStorage * Storage::chartStorage() noexcept
+{
+    return &_charts_data;
+}
+

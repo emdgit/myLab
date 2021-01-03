@@ -211,6 +211,13 @@ public:
     static QString getCleanPercent();
 
 
+    /*!
+     * \brief Загрузить данные для графика общей прибыли
+     */
+    Q_INVOKABLE
+    static void loadProfitChartData();
+
+
     static void setModelManager( ModelManager * mm ) noexcept;
     static void setSignalManager( SignalManager * sm ) noexcept;
 
