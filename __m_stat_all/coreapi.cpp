@@ -361,30 +361,12 @@ QString CoreAPI::getCleanPercent()
 
 void CoreAPI::loadProfitChartData()
 {
-    using data_arr = ChartDataStorage::data_arr;
+    loadChartData(true);
+}
 
-    auto p_model = _modelManager->periodModel();
-    auto chartST = ST.chartStorage();
-    auto func = TypeStorage::func(DB_COMMON(get_summ));
-
-    data_arr data;
-
-    for (int i(0); i < p_model->size(); ++i) {
-        auto period = p_model->period(i);
-        (*func)->bindValue("date_from", period->from());
-        (*func)->bindValue("date_to", period->to());
-        (*func)->bindValue("profit", true);
-
-        auto res = std::unique_ptr<Answer>(_pg_worker->execute(**func));
-        double val;
-        if (!res->tryConvert<double>(val)) {
-            val = 0.0;
-        }
-
-        data.emplace_back(val, period->name());
-    }
-
-    chartST->setProfits(move(data));
+void CoreAPI::loadSpendChartData()
+{
+    loadChartData(false);
 }
 
 void CoreAPI::setModelManager(ModelManager *mm) noexcept
@@ -777,6 +759,38 @@ void CoreAPI::loadPurchases(const QDate & from, const QDate & to, bool profit)
         if (_signalManager) {
             _signalManager->reloadDailyModel();
         }
+    }
+}
+
+void CoreAPI::loadChartData(bool profit)
+{
+    using data_arr = ChartDataStorage::data_arr;
+
+    auto p_model = _modelManager->periodModel();
+    auto chartST = ST.chartStorage();
+    auto func = TypeStorage::func(DB_COMMON(get_summ));
+
+    data_arr data;
+
+    for (int i(0); i < p_model->size(); ++i) {
+        auto period = p_model->period(i);
+        (*func)->bindValue("date_from", period->from());
+        (*func)->bindValue("date_to", period->to());
+        (*func)->bindValue("profit", profit);
+
+        auto res = std::unique_ptr<Answer>(_pg_worker->execute(**func));
+        double val;
+        if (!res->tryConvert<double>(val)) {
+            val = 0.0;
+        }
+
+        data.emplace_back(val, period->name());
+    }
+
+    if (profit) {
+        chartST->setProfits(move(data));
+    } else {
+        chartST->setSpends(move(data));
     }
 }
 

@@ -96,6 +96,7 @@ int main(int argc, char *argv[])
             CoreAPI::setStartPoint(QDate(2019,5,11));
         }
 
+        // Загрузить данные для графика прибыли
         CoreAPI::loadProfitChartData();
 
         // Загрузить все группы расходов/доходов
@@ -108,8 +109,6 @@ int main(int argc, char *argv[])
 
         // Модель подсказок по умолчанию показывает расходы
         CoreAPI::switchHintModel(false);
-
-
 
         CoreAPI::setPurchaseViewPeriod(mmanager.periodModel()->size() - 1);
     };

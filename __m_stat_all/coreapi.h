@@ -218,6 +218,13 @@ public:
     static void loadProfitChartData();
 
 
+    /*!
+     * \brief Загрузить данные для графика общих расходов
+     */
+    Q_INVOKABLE
+    static void loadSpendChartData();
+
+
     static void setModelManager( ModelManager * mm ) noexcept;
     static void setSignalManager( SignalManager * sm ) noexcept;
 
@@ -272,6 +279,9 @@ protected:
 
     /// Загрузить информацию о покупках за период.
     static void loadPurchases(const QDate &from, const QDate &to, bool profit);
+
+    /// Загрузить данные для основного графика
+    static void loadChartData(bool profit);
 
 
 private:

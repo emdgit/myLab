@@ -16,6 +16,7 @@ public:
     ChartDataStorage();
 
     void    setProfits(data_arr &&data);
+    void    setSpends(data_arr &&data);
 
 
 private:
