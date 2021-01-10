@@ -4,7 +4,6 @@
 #include <vector>
 
 #include "storagedefinition.h"
-#include "chartdatastorage.h"
 #include "singleton.h"
 #include "pnode.h"
 
@@ -43,8 +42,6 @@ public:
     /// Вернуть указатель на хранилище расходных транзакций
     purchase_vec *   purchasesSpend() noexcept;
 
-    ChartDataStorage * chartStorage() noexcept;
-
 
 private:
 
@@ -75,9 +72,6 @@ private:
     /// Хранилка доходных покупок. (ЗП) Хранит ЗП по
     /// конкретной группе за период
     std::vector<Purchase*>  _purchases_profit;
-
-    /// Данные графиков
-    ChartDataStorage        _charts_data;
 };
 
 #endif // STORAGE_H

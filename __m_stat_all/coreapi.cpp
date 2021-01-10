@@ -7,9 +7,11 @@
 #include "hintmodel.h"
 #include "typestorage.h"
 #include "modelmanager.h"
+#include "chartmanager.h"
 #include "purchasegroup.h"
 #include "signalmanager.h"
 #include "purchaserecord.h"
+#include "chartdatastorage.h"
 #include "purchasegroupmodel.h"
 
 #include <iostream>
@@ -359,14 +361,33 @@ QString CoreAPI::getCleanPercent()
     return QString::fromStdString(ss.str());
 }
 
-void CoreAPI::loadProfitChartData()
+void CoreAPI::updateProfitChartData()
 {
-    loadChartData(true);
-}
+    using data_arr = ChartDataStorage::data_arr;
 
-void CoreAPI::loadSpendChartData()
-{
-    loadChartData(false);
+    auto p_model = _modelManager->periodModel();
+    auto chartST = _chartManager->storageProfit();
+    auto func = TypeStorage::func(DB_COMMON(get_summ));
+
+    data_arr data;
+
+    for (int i(0); i < p_model->size(); ++i) {
+        auto period = p_model->period(i);
+        (*func)->bindValue("date_from", period->from());
+        (*func)->bindValue("date_to", period->to());
+        (*func)->bindValue("profit", true);
+
+        auto res = std::unique_ptr<Answer>(_pg_worker->execute(**func));
+        double val;
+        if (!res->tryConvert<double>(val)) {
+            val = 0.0;
+        }
+
+        data.emplace_back(val, period->name());
+    }
+
+    *chartST = move(data);
+    _chartManager->updateProfit();
 }
 
 void CoreAPI::setModelManager(ModelManager *mm) noexcept
@@ -377,6 +398,11 @@ void CoreAPI::setModelManager(ModelManager *mm) noexcept
 void CoreAPI::setSignalManager(SignalManager *sm) noexcept
 {
     _signalManager = sm;
+}
+
+void CoreAPI::setChartManager(ChartManager * cm) noexcept
+{
+    _chartManager = cm;
 }
 
 void CoreAPI::initProfitGroupCallback() noexcept
@@ -762,35 +788,4 @@ void CoreAPI::loadPurchases(const QDate & from, const QDate & to, bool profit)
     }
 }
 
-void CoreAPI::loadChartData(bool profit)
-{
-    using data_arr = ChartDataStorage::data_arr;
-
-    auto p_model = _modelManager->periodModel();
-    auto chartST = ST.chartStorage();
-    auto func = TypeStorage::func(DB_COMMON(get_summ));
-
-    data_arr data;
-
-    for (int i(0); i < p_model->size(); ++i) {
-        auto period = p_model->period(i);
-        (*func)->bindValue("date_from", period->from());
-        (*func)->bindValue("date_to", period->to());
-        (*func)->bindValue("profit", profit);
-
-        auto res = std::unique_ptr<Answer>(_pg_worker->execute(**func));
-        double val;
-        if (!res->tryConvert<double>(val)) {
-            val = 0.0;
-        }
-
-        data.emplace_back(val, period->name());
-    }
-
-    if (profit) {
-        chartST->setProfits(move(data));
-    } else {
-        chartST->setSpends(move(data));
-    }
-}
 

@@ -16,6 +16,7 @@ namespace pg {
 
 class PurchaseRecord;
 class SignalManager;
+class ChartManager;
 class ModelManager;
 class Purchase;
 class Period;
@@ -215,18 +216,12 @@ public:
      * \brief Загрузить данные для графика общей прибыли
      */
     Q_INVOKABLE
-    static void loadProfitChartData();
+    static void updateProfitChartData();
 
 
-    /*!
-     * \brief Загрузить данные для графика общих расходов
-     */
-    Q_INVOKABLE
-    static void loadSpendChartData();
-
-
-    static void setModelManager( ModelManager * mm ) noexcept;
-    static void setSignalManager( SignalManager * sm ) noexcept;
+    static void setModelManager(ModelManager * mm) noexcept;
+    static void setSignalManager(SignalManager * sm) noexcept;
+    static void setChartManager(ChartManager *cm) noexcept;
 
 
     /// Задать callback групп дохода
@@ -280,9 +275,6 @@ protected:
     /// Загрузить информацию о покупках за период.
     static void loadPurchases(const QDate &from, const QDate &to, bool profit);
 
-    /// Загрузить данные для основного графика
-    static void loadChartData(bool profit);
-
 
 private:
 
@@ -291,6 +283,8 @@ private:
     static inline ModelManager * _modelManager = nullptr;
 
     static inline SignalManager * _signalManager = nullptr;
+
+    static inline ChartManager * _chartManager = nullptr;
 
     /// Идентификатор залогиненого пользователя
     static inline int _current_user = 0;

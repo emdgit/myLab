@@ -14,12 +14,15 @@ public:
     using data_map = std::unordered_map<std::string, data_arr*>;
 
     ChartDataStorage();
+    ~ChartDataStorage();
 
     void    setProfits(data_arr &&data);
     void    setSpends(data_arr &&data);
 
 
 private:
+
+    friend class ChartManagerPrivate;
 
     /// Суммы по доходам за каждый месяц
     data_arr    profits_;

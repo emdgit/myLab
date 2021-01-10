@@ -1,5 +1,6 @@
-QT          +=  quick
 QT          +=  sql
+QT          +=  quick
+QT          +=  charts
 QT          +=  widgets
 
 CONFIG      +=  c++17
@@ -14,6 +15,7 @@ INCLUDEPATH +=  $$PWD/core/
 DEPENDPATH  +=  $$PWD/core/
 
 SOURCES     +=           \
+            core/chartmetaobject.cpp \
             main.cpp      \
             coreapi.cpp    \
             templates.cpp   \
@@ -37,14 +39,15 @@ SOURCES     +=           \
             core/storage.cpp   \
             core/purchase.cpp   \
             core/hintmodel.cpp   \
-            core/periodmodel.cpp  \
-            core/signalmanager.cpp \
-            core/purchasemodel.cpp  \
-            core/purchasegroup.cpp   \
-            core/purchaserecord.cpp   \
-            core/chartdatastorage.cpp  \
-            core/purchasegroupmodel.cpp \
-            core/hierarchicalstorage.cpp \
+            core/chartmanager.cpp \
+            core/periodmodel.cpp   \
+            core/signalmanager.cpp  \
+            core/purchasemodel.cpp   \
+            core/purchasegroup.cpp    \
+            core/purchaserecord.cpp    \
+            core/chartdatastorage.cpp   \
+            core/purchasegroupmodel.cpp  \
+            core/hierarchicalstorage.cpp  \
             core/purchasemodeldaily.cpp
 
 RESOURCES   +=  qml.qrc \
@@ -52,6 +55,8 @@ RESOURCES   +=  qml.qrc \
                 conf.qrc
 
 HEADERS     +=        \
+            Error.h \
+            core/chartmetaobject.h \
             private.h  \
             coreapi.h   \
             templates.h  \
@@ -81,13 +86,14 @@ HEADERS     +=        \
             core/singleton.h  \
             core/hintmodel.h   \
             core/periodmodel.h  \
-            core/purchasemodel.h \
-            core/purchasegroup.h  \
-            core/signalmanager.h   \
-            core/purchaserecord.h   \
-            core/chartdatastorage.h  \
-            core/storagedefinition.h  \
-            core/purchasegroupmodel.h  \
-            core/purchasemodeldaily.h   \
+            core/chartmanager.h  \
+            core/purchasemodel.h  \
+            core/purchasegroup.h   \
+            core/signalmanager.h    \
+            core/purchaserecord.h    \
+            core/chartdatastorage.h   \
+            core/storagedefinition.h   \
+            core/purchasegroupmodel.h   \
+            core/purchasemodeldaily.h    \
             core/hierarchicalstorage.h
 

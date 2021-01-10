@@ -20,6 +20,7 @@
 #include "purchasegroupmodel.h"
 #include "signalmanager.h"
 #include "period.h"
+#include "chartmanager.h"
 
 using namespace std;
 
@@ -67,11 +68,15 @@ int main(int argc, char *argv[])
     // Менеджер сигналов
     SignalManager smanager;
 
+    ChartManager chartManager;
+
     // Установить хранилища
     CoreAPI::initSpendGroupCallback();
     CoreAPI::initProfitGroupCallback();
     CoreAPI::setModelManager( &mmanager );
     CoreAPI::setSignalManager( &smanager );
+    CoreAPI::setChartManager(&chartManager);
+
 
     try {
         readConfigFile();
@@ -95,9 +100,6 @@ int main(int argc, char *argv[])
         if (!CoreAPI::hasStartPoint()) {
             CoreAPI::setStartPoint(QDate(2019,5,11));
         }
-
-        // Загрузить данные для графика прибыли
-        CoreAPI::loadProfitChartData();
 
         // Загрузить все группы расходов/доходов
         CoreAPI::loadGroups( false );
@@ -131,6 +133,7 @@ int main(int argc, char *argv[])
 
     engine.rootContext()->setContextProperty( "ModelManager", &mmanager );
     engine.rootContext()->setContextProperty( "SignalManager", &smanager );
+    engine.rootContext()->setContextProperty( "ChartManager", &chartManager );
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
 
