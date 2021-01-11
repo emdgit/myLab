@@ -12,6 +12,8 @@
 
 #include <iostream>
 
+static constexpr auto axis_step = 50000;
+
 class ChartManagerPrivate
 {
 public:
@@ -145,12 +147,19 @@ void ChartManager::updateProfit()
     series->setName(QString::fromUtf8("Доход"));
     series->setPointsVisible(true);
 
-    minY -= 0.05 * (maxY - minY);
-    maxY += 0.05 * (maxY - minY);
+    if (minY % axis_step != 0) {
+        auto min = minY - axis_step;
+        minY = (min / axis_step) * axis_step;
+    }
+    if (maxY % axis_step != 0) {
+        auto max = maxY + axis_step;
+        maxY = (max / axis_step) * axis_step;
+    }
 
     auto yAxies = new QValueAxis(chart);
     yAxies->setMin(minY);
     yAxies->setMax(maxY);
+    yAxies->setTickCount((maxY - minY) / axis_step + 1);
 
     chart->addAxis(yAxies, Qt::AlignLeft);
     chart->addSeries(series);
