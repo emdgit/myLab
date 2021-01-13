@@ -45,4 +45,3 @@ Storage::purchase_vec *Storage::purchasesSpend() noexcept
 {
     return &_purchases_spend;
 }
-

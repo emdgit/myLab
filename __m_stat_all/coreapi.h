@@ -16,6 +16,7 @@ namespace pg {
 
 class PurchaseRecord;
 class SignalManager;
+class ChartManager;
 class ModelManager;
 class Purchase;
 class Period;
@@ -211,8 +212,16 @@ public:
     static QString getCleanPercent();
 
 
-    static void setModelManager( ModelManager * mm ) noexcept;
-    static void setSignalManager( SignalManager * sm ) noexcept;
+    /*!
+     * \brief Загрузить данные для главного графика (прибыль / расход)
+     */
+    Q_INVOKABLE
+    static void updateMainChartData();
+
+
+    static void setModelManager(ModelManager * mm) noexcept;
+    static void setSignalManager(SignalManager * sm) noexcept;
+    static void setChartManager(ChartManager *cm) noexcept;
 
 
     /// Задать callback групп дохода
@@ -274,6 +283,8 @@ private:
     static inline ModelManager * _modelManager = nullptr;
 
     static inline SignalManager * _signalManager = nullptr;
+
+    static inline ChartManager * _chartManager = nullptr;
 
     /// Идентификатор залогиненого пользователя
     static inline int _current_user = 0;

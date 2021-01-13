@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import QtQuick.Layouts 1.1
 import QtGraphicalEffects 1.0
+import QtCharts 2.3
 
 import OwlComponents 1.0
 
@@ -103,6 +104,36 @@ Item {
             id: mArea
             anchors.fill: parent
             hoverEnabled: true
+        }
+    }
+
+    Rectangle {
+        id: chartProfitRect
+        height: 300
+
+        anchors {
+            top: gradientRect.bottom
+            topMargin: 15
+            left: parent.left
+            leftMargin: 15
+            right: parent.right
+            rightMargin: 15
+            verticalCenter: parent.verticalCenter
+        }
+
+        border.color: "black"
+        border.width: 2
+
+        ChartView {
+            id: chartProfit
+
+            antialiasing: true
+
+            anchors.fill: parent
+
+            Component.onCompleted: {
+                ChartManager.registerMain(chartProfit)
+            }
         }
     }
 

@@ -1,11 +1,11 @@
-#include <QGuiApplication>
+#include <QtWidgets/QApplication>
 #include <QQmlApplicationEngine>
-#include <QQmlContext>
 #include <QJsonDocument>
+#include <QTextStream>
+#include <QQmlContext>
+#include <QFileInfo>
 #include <QtDebug>
 #include <QFile>
-#include <QTextStream>
-#include <QFileInfo>
 
 #include <iostream>
 
@@ -20,6 +20,7 @@
 #include "purchasegroupmodel.h"
 #include "signalmanager.h"
 #include "period.h"
+#include "chartmanager.h"
 
 using namespace std;
 
@@ -38,7 +39,7 @@ int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
-    QGuiApplication app(argc, argv);
+    QApplication app(argc, argv);
 
     qRegisterMetaType<PNodeIndex>( "PNodeIndex" );
 
@@ -67,11 +68,15 @@ int main(int argc, char *argv[])
     // Менеджер сигналов
     SignalManager smanager;
 
+    ChartManager chartManager;
+
     // Установить хранилища
     CoreAPI::initSpendGroupCallback();
     CoreAPI::initProfitGroupCallback();
     CoreAPI::setModelManager( &mmanager );
     CoreAPI::setSignalManager( &smanager );
+    CoreAPI::setChartManager(&chartManager);
+
 
     try {
         readConfigFile();
@@ -88,6 +93,14 @@ int main(int argc, char *argv[])
         return -2;
     }
     else {
+        // Задать пользователя и его группу. (DEV version) // todo
+        CoreAPI::setCurrentUser(1,1);
+
+        // Установить начало периода // todo
+        if (!CoreAPI::hasStartPoint()) {
+            CoreAPI::setStartPoint(QDate(2019,5,11));
+        }
+
         // Загрузить все группы расходов/доходов
         CoreAPI::loadGroups( false );
         CoreAPI::loadGroups( true );
@@ -99,14 +112,6 @@ int main(int argc, char *argv[])
         // Модель подсказок по умолчанию показывает расходы
         CoreAPI::switchHintModel(false);
 
-        // Задать пользователя и его группу. (DEV version) // todo
-        CoreAPI::setCurrentUser(1,1);
-
-        // Установить начало периода // todo
-        if (!CoreAPI::hasStartPoint()) {
-            CoreAPI::setStartPoint(QDate(2019,5,11));
-        }
-
         CoreAPI::setPurchaseViewPeriod(mmanager.periodModel()->size() - 1);
     };
 
@@ -117,8 +122,18 @@ int main(int argc, char *argv[])
     cout << "Loaded at " << d.count() << "ms" << endl;
 
     QQmlApplicationEngine engine;
+
+    const QUrl url(QStringLiteral("qrc:/main.qml"));
+
+    QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
+                     &app, [url](QObject *obj, const QUrl &objUrl) {
+        if (!obj && url == objUrl)
+            QCoreApplication::exit(-1);
+    }, Qt::QueuedConnection);
+
     engine.rootContext()->setContextProperty( "ModelManager", &mmanager );
     engine.rootContext()->setContextProperty( "SignalManager", &smanager );
+    engine.rootContext()->setContextProperty( "ChartManager", &chartManager );
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
 

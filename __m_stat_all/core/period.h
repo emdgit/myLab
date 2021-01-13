@@ -19,6 +19,7 @@ public:
     QString toString() const;
     QString fromAsString() const;
     QString toAsString() const;
+    QString name() const;
 
     void setFrom(QDate from);
     void setTo(QDate to);

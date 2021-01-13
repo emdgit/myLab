@@ -7,9 +7,11 @@
 #include "hintmodel.h"
 #include "typestorage.h"
 #include "modelmanager.h"
+#include "chartmanager.h"
 #include "purchasegroup.h"
 #include "signalmanager.h"
 #include "purchaserecord.h"
+#include "chartdatastorage.h"
 #include "purchasegroupmodel.h"
 
 #include <iostream>
@@ -359,6 +361,44 @@ QString CoreAPI::getCleanPercent()
     return QString::fromStdString(ss.str());
 }
 
+void CoreAPI::updateMainChartData()
+{
+    using data_arr = ChartDataStorage::data_arr;
+
+    auto p_model = _modelManager->periodModel();
+    auto profitSt = _chartManager->storageProfit();
+    auto spendSt = _chartManager->storageSpend();
+    auto func = TypeStorage::func(DB_COMMON(get_summ));
+
+    data_arr data_profit, data_spend;
+
+    auto get_db_data = [&](Period *p, bool profit) -> double {
+        (*func)->bindValue("date_from", p->from());
+        (*func)->bindValue("date_to", p->to());
+        (*func)->bindValue("profit", profit);
+
+        auto res = std::unique_ptr<Answer>(_pg_worker->execute(**func));
+        double val;
+
+        if (!res->tryConvert<double>(val)) {
+            return 0.0;
+        }
+
+        return val;
+    };
+
+    for (int i(0); i < p_model->size(); ++i) {
+        auto period = p_model->period(i);
+        data_profit.emplace_back(get_db_data(period, true), period->name());
+        data_spend.emplace_back(get_db_data(period, false), period->name());
+    }
+
+    *profitSt = move(data_profit);
+    *spendSt = move(data_spend);
+
+//    _chartManager->updateMain();
+}
+
 void CoreAPI::setModelManager(ModelManager *mm) noexcept
 {
     _modelManager = mm;
@@ -367,6 +407,11 @@ void CoreAPI::setModelManager(ModelManager *mm) noexcept
 void CoreAPI::setSignalManager(SignalManager *sm) noexcept
 {
     _signalManager = sm;
+}
+
+void CoreAPI::setChartManager(ChartManager * cm) noexcept
+{
+    _chartManager = cm;
 }
 
 void CoreAPI::initProfitGroupCallback() noexcept
@@ -543,6 +588,7 @@ void CoreAPI::addTransaction( const QString &rec, QString summ, const
     auto period = _modelManager->periodModel()->period(_purchase_view_period);
 
     _signalManager->purchaseAdd();
+    _chartManager->updateMain();
 
     if (Period(currentPeriod()).containsDate(date)) {
         _signalManager->lastPeriodPurchaseAdd();
@@ -751,4 +797,5 @@ void CoreAPI::loadPurchases(const QDate & from, const QDate & to, bool profit)
         }
     }
 }
+
 
