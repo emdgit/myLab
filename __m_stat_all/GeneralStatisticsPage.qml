@@ -121,7 +121,7 @@ Item {
             verticalCenter: parent.verticalCenter
         }
 
-        border.color: black
+        border.color: "black"
         border.width: 2
 
         ChartView {
@@ -132,7 +132,7 @@ Item {
             anchors.fill: parent
 
             Component.onCompleted: {
-                ChartManager.registerProfit(chartProfit)
+                ChartManager.registerMain(chartProfit)
             }
         }
     }

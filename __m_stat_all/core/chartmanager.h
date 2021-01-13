@@ -32,30 +32,27 @@ public:
     explicit ChartManager(QObject *parent = nullptr);
     ~ChartManager() override;
 
-    /// Зарегистрировать график общей прибыли
+    /// Зарегистрировать главный график (прибыль / расход)
     Q_INVOKABLE
-    void registerProfit(QQuickItem *item);
-
-    /// Зарегистрировать график общего расхода
-    Q_INVOKABLE
-    void registerSpend(QQuickItem *item);
+    void registerMain(QQuickItem *item);
 
     /// Зарегистрировать график чистой прибыли
     Q_INVOKABLE
     void registerCleanProfit(QQuickItem *item);
 
-    void updateProfit();
+    void updateMain();
 
     data_arr * chartStorage(QQuickItem *item) const;
     data_arr * storageProfit() const;
+    data_arr * storageSpend() const;
+    data_arr * storageClean() const;
 
 
 private:
 
     static inline chart_data    charts_;
 
-    chart_ptr   profit_chart_ = nullptr;
-    chart_ptr   spend_chart_ = nullptr;
+    chart_ptr   main_chart_ = nullptr;
     chart_ptr   clean_profit_chart_ = nullptr;
 
     chart_st    storage_;

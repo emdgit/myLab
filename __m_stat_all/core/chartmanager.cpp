@@ -16,6 +16,7 @@ static constexpr auto axis_step = 50000;
 
 class ChartManagerPrivate
 {
+    using data_arr = ChartManager::data_arr;
 public:
     ChartManagerPrivate(ChartManager *cm) :
         cm_(cm) {}
@@ -66,12 +67,29 @@ public:
         }
     }
 
+    /// Заполнить данный 'series' значениями из 'arr',
+    /// определить максимальное и минимальное значение из набора.
+    void fillXYSeries(QtCharts::QXYSeries *series, const data_arr &arr,
+                      int &min, int &max) const
+    {
+        int i(1);
+
+        for (const auto &point : arr) {
+            series->append(i, point.first);
+            ++i;
+            if (point.first < min) {
+                min = point.first;
+            }
+            if (point.first > max) {
+                max = point.first;
+            }
+        }
+    }
+
     ChartMetaObject * findMetaObject(QtCharts::QChart *chart) const
     {
-        if (cm_->profit_chart_->chart() == chart) {
-            return cm_->profit_chart_;
-        } else if (cm_->spend_chart_->chart() == chart) {
-            return cm_->spend_chart_;
+        if (cm_->main_chart_->chart() == chart) {
+            return cm_->main_chart_;
         } else if (cm_->clean_profit_chart_->chart() == chart) {
             return cm_->clean_profit_chart_;
         } else {
@@ -104,17 +122,12 @@ ChartManager::~ChartManager()
     delete d_ptr;
 }
 
-void ChartManager::registerProfit(QQuickItem * item)
+void ChartManager::registerMain(QQuickItem * item)
 {
     Q_D(ChartManager);
 
-    d->registerMainChart(item, &profit_chart_, ChartMetaObject::Profit);
-    CoreAPI::updateProfitChartData();
-}
-
-void ChartManager::registerSpend(QQuickItem * item)
-{
-    (void)item;
+    d->registerMainChart(item, &main_chart_, ChartMetaObject::Profit);
+    updateMain();
 }
 
 void ChartManager::registerCleanProfit(QQuickItem * item)
@@ -122,30 +135,30 @@ void ChartManager::registerCleanProfit(QQuickItem * item)
     (void)item;
 }
 
-void ChartManager::updateProfit()
+void ChartManager::updateMain()
 {
     using namespace QtCharts;
 
-    int i(1), minY(INT_MAX), maxY(-INT_MAX);
+    CoreAPI::updateMainChartData();
 
-    auto chart = profit_chart_->chart();
-    auto series = new QLineSeries(chart);
+    int minY(INT_MAX), maxY(-INT_MAX);
 
-    for (const auto &point : *profit_chart_->storage()) {
-        series->append(i, point.first);
-        ++i;
-        if (point.first < minY) {
-            minY = point.first;
-        }
-        if (point.first > maxY) {
-            maxY = point.first;
-        }
-    }
+    auto chart = main_chart_->chart();
+    auto series_profit = new QLineSeries(chart);
+    auto series_spend = new QLineSeries(chart);
+
+    Q_D(ChartManager);
+
+    d->fillXYSeries(series_profit, storage_->profits_, minY, maxY);
+    d->fillXYSeries(series_spend, storage_->spends_, minY, maxY);
 
     chart->removeAllSeries();
 
-    series->setName(QString::fromUtf8("Доход"));
-    series->setPointsVisible(true);
+    series_profit->setName(QString::fromUtf8("Доход"));
+    series_profit->setPointsVisible(true);
+
+    series_spend->setName(QString::fromUtf8("Расход"));
+    series_spend->setPointsVisible(true);
 
     if (minY % axis_step != 0) {
         auto min = minY - axis_step;
@@ -156,19 +169,35 @@ void ChartManager::updateProfit()
         maxY = (max / axis_step) * axis_step;
     }
 
-    auto yAxies = new QValueAxis(chart);
+    QValueAxis * yAxies = nullptr;
+
+    auto axes_list = chart->axes(Qt::Vertical);
+
+    if (axes_list.empty()) {
+        yAxies = new QValueAxis(chart);
+        chart->addAxis(yAxies, Qt::AlignLeft);
+    } else {
+        yAxies = static_cast<QValueAxis*>(axes_list.front());
+    }
+
     yAxies->setMin(minY);
     yAxies->setMax(maxY);
     yAxies->setTickCount((maxY - minY) / axis_step + 1);
 
-    chart->addAxis(yAxies, Qt::AlignLeft);
-    chart->addSeries(series);
-    series->attachAxis(yAxies);
+    chart->addSeries(series_profit);
+    chart->addSeries(series_spend);
 
-    QPen pen;
-    pen.setColor(QColor("#183A8F"));
-    pen.setWidthF(2.5);
-    series->setPen(pen);
+    series_profit->attachAxis(yAxies);
+    series_spend->attachAxis(yAxies);
+
+    QPen pen_profit, pen_spend;
+    pen_profit.setColor(QColor("#183A8F"));
+    pen_profit.setWidthF(2.5);
+    pen_spend.setColor(QColor("#FF0700"));
+    pen_spend.setWidthF(2.5);
+
+    series_profit->setPen(pen_profit);
+    series_spend->setPen(pen_spend);
 }
 
 ChartManager::data_arr * ChartManager::chartStorage(QQuickItem * item) const
@@ -192,8 +221,26 @@ ChartManager::data_arr * ChartManager::chartStorage(QQuickItem * item) const
 
 ChartManager::data_arr * ChartManager::storageProfit() const
 {
-    if (profit_chart_) {
-        return profit_chart_->storage();
+    if (storage_) {
+        return &storage_->profits_;
+    }
+
+    return nullptr;
+}
+
+ChartManager::data_arr * ChartManager::storageSpend() const
+{
+    if (storage_) {
+        return &storage_->spends_;
+    }
+
+    return nullptr;
+}
+
+ChartManager::data_arr * ChartManager::storageClean() const
+{
+    if (storage_) {
+        return &storage_->clean_profit_;
     }
 
     return nullptr;

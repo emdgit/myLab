@@ -1,9 +1,10 @@
 #include <QFile>
-#include <QDebug>
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QSqlRecord>
 #include <QSqlField>
+
+#include <iostream>
 
 #include "connecter.h"
 #include "config.h"
@@ -168,7 +169,10 @@ pg::Connecter::Connecter() {}
 
 bool pg::Connecter::connect() noexcept
 {
-    if ( !pg::Config::isFull() )
+    using namespace pg;
+    using namespace std;
+
+    if ( !Config::isFull() )
         return false;
 
     if ( _db.isValid() )
@@ -189,12 +193,16 @@ bool pg::Connecter::connect() noexcept
         QSqlDatabase::removeDatabase( QSqlDatabase::defaultConnection );
     }
 
+    cout << "Connecting to DB '" << Config::dbName.toStdString()
+             << "' on " << Config::dbHost.toStdString() << ":"
+             << Config::dbPort << endl;
+
     _db = QSqlDatabase::addDatabase( "QPSQL" );
-    _db.setHostName( pg::Config::dbHost );
-    _db.setPort( pg::Config::dbPort );
-    _db.setDatabaseName( pg::Config::dbName );
-    _db.setUserName( pg::Config::dbUser );
-    _db.setPassword( pg::Config::dbPswd );
+    _db.setHostName( Config::dbHost );
+    _db.setPort( Config::dbPort );
+    _db.setDatabaseName( Config::dbName );
+    _db.setUserName( Config::dbUser );
+    _db.setPassword( Config::dbPswd );
 
     return _db.open();
 }

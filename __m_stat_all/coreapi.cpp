@@ -361,33 +361,42 @@ QString CoreAPI::getCleanPercent()
     return QString::fromStdString(ss.str());
 }
 
-void CoreAPI::updateProfitChartData()
+void CoreAPI::updateMainChartData()
 {
     using data_arr = ChartDataStorage::data_arr;
 
     auto p_model = _modelManager->periodModel();
-    auto chartST = _chartManager->storageProfit();
+    auto profitSt = _chartManager->storageProfit();
+    auto spendSt = _chartManager->storageSpend();
     auto func = TypeStorage::func(DB_COMMON(get_summ));
 
-    data_arr data;
+    data_arr data_profit, data_spend;
 
-    for (int i(0); i < p_model->size(); ++i) {
-        auto period = p_model->period(i);
-        (*func)->bindValue("date_from", period->from());
-        (*func)->bindValue("date_to", period->to());
-        (*func)->bindValue("profit", true);
+    auto get_db_data = [&](Period *p, bool profit) -> double {
+        (*func)->bindValue("date_from", p->from());
+        (*func)->bindValue("date_to", p->to());
+        (*func)->bindValue("profit", profit);
 
         auto res = std::unique_ptr<Answer>(_pg_worker->execute(**func));
         double val;
+
         if (!res->tryConvert<double>(val)) {
-            val = 0.0;
+            return 0.0;
         }
 
-        data.emplace_back(val, period->name());
+        return val;
+    };
+
+    for (int i(0); i < p_model->size(); ++i) {
+        auto period = p_model->period(i);
+        data_profit.emplace_back(get_db_data(period, true), period->name());
+        data_spend.emplace_back(get_db_data(period, false), period->name());
     }
 
-    *chartST = move(data);
-    _chartManager->updateProfit();
+    *profitSt = move(data_profit);
+    *spendSt = move(data_spend);
+
+//    _chartManager->updateMain();
 }
 
 void CoreAPI::setModelManager(ModelManager *mm) noexcept
@@ -579,6 +588,7 @@ void CoreAPI::addTransaction( const QString &rec, QString summ, const
     auto period = _modelManager->periodModel()->period(_purchase_view_period);
 
     _signalManager->purchaseAdd();
+    _chartManager->updateMain();
 
     if (Period(currentPeriod()).containsDate(date)) {
         _signalManager->lastPeriodPurchaseAdd();

@@ -22,6 +22,7 @@ public:
 
 private:
 
+    friend class ChartManager;
     friend class ChartManagerPrivate;
 
     /// Суммы по доходам за каждый месяц

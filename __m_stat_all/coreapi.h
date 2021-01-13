@@ -213,10 +213,10 @@ public:
 
 
     /*!
-     * \brief Загрузить данные для графика общей прибыли
+     * \brief Загрузить данные для главного графика (прибыль / расход)
      */
     Q_INVOKABLE
-    static void updateProfitChartData();
+    static void updateMainChartData();
 
 
     static void setModelManager(ModelManager * mm) noexcept;
