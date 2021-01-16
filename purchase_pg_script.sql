@@ -269,6 +269,156 @@ END;
 $BODY$
   LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION service.update_record_prices_add(
+    record_id integer,
+    summ real)
+  RETURNS boolean AS
+$BODY$
+BEGIN
+	-- Record existance MUST be guaranteed.
+	if not exists (
+		select 	*
+		from 	common.record_prices_stat	AS rps
+		where
+			rps.record_id = $1		AND
+			rps.summ = $2
+	)
+	then
+		insert 
+		into	common.record_prices_stat
+		values	($1, $2, 1);
+	else
+		update 	common.record_prices_stat	AS rps
+		set 	count = count + 1
+		where	rps.record_id = $1		AND
+			rps.summ = $2;
+	end if;
+
+	RETURN true;
+END;
+$BODY$
+  LANGUAGE plpgsql;
+ALTER FUNCTION service.update_record_prices_add(integer, real)
+  OWNER TO postgres;
+  
+ CREATE OR REPLACE FUNCTION service.update_record_prices_del(
+    record_id integer,
+    summ real)
+  RETURNS boolean AS
+$BODY$
+DECLARE
+	_new_count	integer;
+BEGIN
+	-- Record existance MUST be guaranteed.
+	if not exists (
+		select 	*
+		from 	common.record_prices_stat	AS rps
+		where
+			rps.record_id = $1		AND
+			rps.summ = $2
+	)
+	then
+		RETURN	false;
+	end if;
+	
+	update 	common.record_prices_stat	AS rps
+	set 	count = count - 1
+	where	rps.record_id = $1		AND
+		rps.summ = $2		
+	returning count into _new_count;
+
+	if (_new_count < 1)
+	then
+		delete
+		from	common.record_prices_stat	AS rps
+		where	rps.record_id = $1		AND
+			rps.summ = $2;
+	end if;
+
+	RETURN true;
+END;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION service.update_record_prices_del(integer, real)
+  OWNER TO postgres;
+  
+  CREATE OR REPLACE FUNCTION service.update_records_stat_add(
+    user_id integer,
+    user_group_id integer,
+    record_id integer)
+  RETURNS boolean AS
+$BODY$
+BEGIN
+	if not exists (
+		select 	* 
+		from 	common.record_stat	AS rs
+		where 	rs.user_id = $1 	AND
+			rs.user_group_id = $2	AND
+			rs.record_id = $3
+	)
+	then
+		insert 
+		into 	common.record_stat
+		values 	($3, $1, $2, 1);
+	else
+		update 	common.record_stat 	AS rs
+		set 	count = count + 1
+		where 	rs.user_id = $1 	AND
+			rs.user_group_id = $2	AND
+			rs.record_id = $3;
+	end if;
+
+	RETURN true;
+END;
+$BODY$
+  LANGUAGE plpgsql;
+ALTER FUNCTION service.update_records_stat_add(integer, integer, integer)
+  OWNER TO postgres;
+  
+  CREATE OR REPLACE FUNCTION service.update_records_stat_del(
+    user_id integer,
+    user_group_id integer,
+    record_id integer)
+  RETURNS boolean AS
+$BODY$
+DECLARE
+	_new_count	integer;
+BEGIN
+	-- Record existance MUST be guaranteed.
+	if not exists (
+		select 	* 
+		from 	common.record_stat	AS rs
+		where 	rs.user_id = $1 	AND
+			rs.user_group_id = $2	AND
+			rs.record_id = $3
+	)
+	then
+		RETURN 	false;
+	end if;
+
+	update 	common.record_stat 	AS rs
+	set 	count = count - 1
+	where 	rs.user_id = $1 	AND
+		rs.user_group_id = $2	AND
+		rs.record_id = $3
+	returning rs.count into _new_count;
+
+	if (_new_count < 1)
+	then
+		delete
+		from	common.record_stat	AS rs
+		where	rs.user_id = $1 	AND
+			rs.user_group_id = $2	AND
+			rs.record_id = $3;
+	end if;
+
+	RETURN true;
+END;
+$BODY$
+  LANGUAGE plpgsql;
+ALTER FUNCTION service.update_records_stat_del(integer, integer, integer)
+  OWNER TO postgres;
 
   
   ---------------------------------------------------------------------------------------
@@ -1159,6 +1309,65 @@ COMMENT ON FUNCTION common.get_summ(date, date, boolean) IS 'Рассчитыв�
 Возвращает результат одним значением.
 Не берет в расчет ни группы, ни записи.';
 
+
+---------------------------------------------------FUNC_REMOVE_PURCHASE_BY_ID
+
+
+CREATE OR REPLACE FUNCTION common.remove_purchase_by_id(purchase_id integer)
+  RETURNS boolean AS
+$BODY$
+DECLARE
+	_is_profit	boolean;
+	_summ		double precision;
+	_all_profit	double precision;
+	_all_spend	double precision;
+	_clean		double precision;
+	_saved		double precision;
+BEGIN
+	if exists (
+		select * from common.purchases
+		where id = $1
+	)
+	then
+		select	p.is_profit, p.summ
+		from 	common.purchases	as p
+		into	_is_profit, _summ
+		where	p.id = $1;
+		
+		delete from	common.purchases
+		where		id = $1;
+
+		select 	a.all_profit, a.all_spend
+		from	common.accumulation	as a
+		into	_all_profit, _all_spend;
+
+		if (_is_profit)
+		then
+			_all_profit := _all_profit - _summ;
+		else
+			_all_spend := _all_spend - _summ;
+		end if;
+
+		_clean := _all_profit - _all_spend;
+		_saved := _clean * 100 / _all_profit;
+
+		update	common.accumulation
+		set	all_profit = _all_profit,
+			all_spend = _all_spend,
+			clean_profit = _clean,
+			saved_percent = _saved;
+		
+		RETURN TRUE;
+	else
+		RETURN FALSE;
+	end if;
+END;
+$BODY$
+  LANGUAGE plpgsql;
+  
+ALTER FUNCTION common.remove_purchase_by_id(integer) OWNER TO postgres;
+
+
   
   ---------------------------------------------------TRIGGER_FUNC_ON_PURCHASE_ADD
   
@@ -1167,47 +1376,17 @@ CREATE OR REPLACE FUNCTION on_purchase_add()
 $BODY$
 DECLARE
 	_accum_result	boolean;
+	_ursa		boolean;
+	_urpa		boolean;
 begin
 	-- add record to record_stat
-	if not exists (
-		select * 
-		from 
-			common.record_stat	as rs
-		where 
-			rs.user_id = NEW.user_id AND
-			rs.user_group_id = NEW.user_group_id AND
-			rs.record_id = NEW.record_id
-	)
-	then
-		insert into common.record_stat
-		values (NEW.record_id, NEW.user_id, NEW.user_group_id, 1);
-	else
-		update common.record_stat as rs
-		set count = count + 1
-		where 
-			rs.user_id = NEW.user_id AND
-			rs.user_group_id = NEW.user_group_id AND
-			rs.record_id = NEW.record_id;
-	end if;
+	_ursa := service.update_records_stat_add(NEW.user_id, 
+		NEW.user_group_id, 
+		NEW.record_id
+	);
 
-	-- add record to record_purchase_stat
-	if not exists (
-		select *
-		from common.record_prices_stat as rps
-		where
-			rps.record_id = NEW.record_id AND
-			rps.summ = NEW.summ
-	)
-	then
-		insert into common.record_prices_stat
-		values(NEW.record_id, NEW.summ, 1);
-	else
-		update common.record_prices_stat as rps
-		set count = count + 1
-		where
-			rps.record_id = NEW.record_id AND
-			rps.summ = NEW.summ;
-	end if;
+	-- add record to record_prices_stat
+	_urpa := service.update_record_prices_add(NEW.record_id, NEW.summ::real);
 
 	-- accumulate summ
 	_accum_result := service.update_accumulation_t(NEW.summ, NEW.record_id);
@@ -1215,7 +1394,10 @@ begin
 	return NEW;
 end;
 $BODY$
-  LANGUAGE plpgsql;
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION on_purchase_add()
+  OWNER TO postgres;
   
   ---------------------------------------------------TRIGGER_PURCHASE_ADD
   
