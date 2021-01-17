@@ -79,35 +79,7 @@ Rectangle {
             onFocusChanged: {
             }
             onAccepted: {
-
-                function checkIfNeedNewRecord() {
-                    if ( !ModelManager.hintModel.containsRecord( text ) ) {
-                        /// Нужно создать новую запись
-                        topRect.needNewRecord( text );
-                    } else {
-                        topRect.recordAccepted();
-                    }
-                    textField.focus = false;
-                    textRect.triggerHintPanel( false );
-                }
-
-                if ( hintRect.hidden ) {
-                    checkIfNeedNewRecord();
-                    return;
-                }
-
-                if ( hintRect.currentIndex < 0 ) {
-                    checkIfNeedNewRecord();
-                    return;
-                }
-
-                /// Взять выбранную из подсказок запись
-                text = hintRect.currentHint;
-
-                textField.focus = false;
-                textRect.triggerHintPanel( false );
-
-                topRect.recordAccepted();
+                textRect.onRecordAccepted();
             }
             onTextEdited: {
                 if ( hintRect.hidden ) {
@@ -144,16 +116,22 @@ Rectangle {
             property alias viewOpacity: hintView.opacity
             property alias count: hintView.count
 
-            property string currentHint : ""
             property bool hidden: true
             property int currentIndex: -1
+
+            function getCurrentHint() {
+                if (currentIndex === -1) {
+                    return "";
+                }
+                return hintView.itemAtIndex(currentIndex).d;
+            }
 
             ListView {
                 property bool hasHover: false
                 id: hintView
                 anchors.fill: parent
                 clip: true
-                //snapMode: ListView.SnapToItem
+//                snapMode: ListView.SnapToItem
 //                maximumFlickVelocity: 1500
                 model: ModelManager.hintModel.model
 
@@ -171,6 +149,7 @@ Rectangle {
                 delegate: Rectangle {
                     property string d: modelData
                     property bool hovered: false
+
                     height: 30
                     color: isHovered() ? Script.hintHoveredColor()
                                        : Script.hintUnhoveredColor()
@@ -199,7 +178,8 @@ Rectangle {
                             hintView.hasHover = false;
                         }
                         onClicked: {
-                            console.log(parent.d, "Click");
+                            hintRect.currentIndex = parent.getIndex();
+                            textRect.onRecordAccepted();
                         }
                     }
 
@@ -209,10 +189,13 @@ Rectangle {
                         } else if (hintView.hasHover === true) {
                             return false;
                         } else if (index === hintRect.currentIndex) {
-                            hintRect.currentHint = d
                             return true;
                         }
                         return false;
+                    }
+
+                    function getIndex() {
+                        return index;
                     }
                 }
             }
@@ -288,6 +271,38 @@ Rectangle {
             hintRect.currentIndex--;
         }
 
+        /// Обработчик нажатия "Enter", при вводе записи в textField
+        /// Или запись выбрана мышью из выпадающих подсказок
+        function onRecordAccepted() {
+            function checkIfNeedNewRecord() {
+                if (!ModelManager.hintModel.containsRecord(textField.text)) {
+                    /// Нужно создать новую запись
+                    topRect.needNewRecord(textField.text);
+                } else {
+                    topRect.recordAccepted();
+                }
+                textField.focus = false;
+                textRect.triggerHintPanel( false );
+            }
+
+            if (hintRect.hidden) {
+                checkIfNeedNewRecord();
+                return;
+            }
+
+            if (hintRect.currentIndex < 0) {
+                checkIfNeedNewRecord();
+                return;
+            }
+
+            /// Взять выбранную из подсказок запись
+            textField.text = hintRect.getCurrentHint();
+            textField.focus = false;
+
+            textRect.triggerHintPanel(false);
+
+            topRect.recordAccepted();
+        }
     }
 
     function clear() {
