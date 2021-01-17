@@ -52,6 +52,26 @@ function defaultUnhoveredColor() {
     return "#2A2440";
 }
 
+/// Цвет фона элементов выпадающего меню подсказок при выделении. (про Записи)
+function hintHoveredColor() {
+    return hoveredColor();
+}
+
+/// Дефолтный цвет фона элементов выпадающего меню подсказок. (про Записи)
+function hintUnhoveredColor() {
+    return "white";
+}
+
+/// Цвет текста в выпадающем меню подсказок при выделении. (про Записи)
+function hintTextColorHovered() {
+    return menuTextColor();
+}
+
+/// Дефолтный цвет текста в выпадающем меню подсказок. (про Записи)
+function hintTextColorUnhovered() {
+    return "black";
+}
+
 /// Цвет текста в меню
 function menuTextColor() {
     return "#F2EEDC";

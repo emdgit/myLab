@@ -5,9 +5,7 @@ import "./notifiers"
 
 import "Common.js" as Script
 
-/// Двигающийся "виджет" с лейблом слева и полем для ввода данных
-/// справа.
-/// При вводе текста в поле ввода появляется popup с подсказками
+/// TextLine для ввода данных записи и суммы
 Rectangle {
 
     id: topRect
@@ -24,7 +22,7 @@ Rectangle {
     /// Внутренний идентификатор
     property int internalId: 0
 
-    /// Корректность введенных значений. Зеленый или красный кружок.
+    /// Корректность введенных значений.
     property bool isComplete: false
 
 
@@ -151,12 +149,14 @@ Rectangle {
             property int currentIndex: -1
 
             ListView {
+                property bool hasHover: false
                 id: hintView
                 anchors.fill: parent
                 clip: true
                 //snapMode: ListView.SnapToItem
 //                maximumFlickVelocity: 1500
                 model: ModelManager.hintModel.model
+
                 onModelChanged: {
                     if ( count === 0 ) {
                         // Подсказок нет
@@ -170,15 +170,10 @@ Rectangle {
                 }
                 delegate: Rectangle {
                     property string d: modelData
+                    property bool hovered: false
                     height: 30
-                    color: {
-                        if ( index === hintRect.currentIndex ) {
-                            hintRect.currentHint = d
-                            return Script.defaultUnhoveredColor()
-                        }
-
-                        return Script.hoveredColor()
-                    }
+                    color: isHovered() ? Script.hintHoveredColor()
+                                       : Script.hintUnhoveredColor()
                     width: topRect.m_width
 
                     Text {
@@ -186,8 +181,38 @@ Rectangle {
                         text: d
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
-                        color: Script.menuTextColor()
+                        color: parent.isHovered() ? Script.hintTextColorHovered()
+                                                  : Script.hintTextColorUnhovered()
                         font.family: Script.menuTextFontFamily()
+                        font.bold: parent.isHovered() ? true : false
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        onEntered: {
+                            parent.hovered = true;
+                            hintView.hasHover = true;
+                        }
+                        onExited: {
+                            parent.hovered = false;
+                            hintView.hasHover = false;
+                        }
+                        onClicked: {
+                            console.log(parent.d, "Click");
+                        }
+                    }
+
+                    function isHovered() {
+                        if (hovered) {
+                            return true;
+                        } else if (hintView.hasHover === true) {
+                            return false;
+                        } else if (index === hintRect.currentIndex) {
+                            hintRect.currentHint = d
+                            return true;
+                        }
+                        return false;
                     }
                 }
             }
@@ -196,7 +221,6 @@ Rectangle {
                 top: textField.bottom
                 left: parent.left
                 right: parent.right
-                //bottom: parent.bottom
                 leftMargin: topRect.border.width
                 rightMargin: topRect.border.width
             }
