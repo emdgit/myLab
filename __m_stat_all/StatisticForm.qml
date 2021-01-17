@@ -47,7 +47,7 @@ Item {
     SwipeView {
         id: swipeView
         orientation: Qt.Horizontal
-        currentIndex: 0
+        currentIndex: 1
 
         anchors {
             top: titleMenuBtn.bottom
@@ -62,7 +62,7 @@ Item {
             GeneralStatisticsPage { anchors.fill: parent }
         }
         Item {
-            SFAddPage {
+            AddPurchasePage {
                 anchors.fill: parent
             }
         }

@@ -15,12 +15,8 @@ Rectangle {
     /// Отступ
     readonly property int hMargin: 6
 
-    /// Установка текста в лейбл (слева)
-    property alias text: label.text
-
-    /// Текст из эдитора
-    property alias record: textField.text
-
+    /// Текст из эдитора по умолчанию
+    property alias placeholderText: textField.placeholderText
 
     /// Ширина виджета
     property int m_width: 300
@@ -57,34 +53,11 @@ Rectangle {
     height: 40
     width: m_width
 
-    Label {
-        id: label
-
-        x: hMargin
-        y: (topRect.height / 2) - ( height / 2 )
-
-        width: topRect.width * 0.25 - hMargin
-
-        text: qsTr(topRect.text)
-
-        Behavior on width {
-            NumberAnimation {
-                duration: 300
-            }
-        }
-
-        Behavior on opacity {
-            NumberAnimation {
-                duration: 200
-            }
-        }
-    }
-
     Rectangle {
         id: textRect
-        x: hMargin + label.width
+        x: hMargin
         y: hMargin
-        width: textRectDefaultWidth()
+        width: topRect.m_width
         height: heightFunc()
         border.color: "lightgray"
         radius: 15
@@ -106,19 +79,6 @@ Rectangle {
                 color: "transparent"
             }
             onFocusChanged: {
-                if (focus) {
-                    label.width = 0
-                    label.opacity = 0
-                    textRect.width = topRect.width - 2*hMargin;
-                    textField.placeholderText = label.text + "..."
-                    topRect.activated(topRect.internalId)
-                } else {
-                    label.width = topRect.width * 0.25 - hMargin
-                    label.opacity = 1
-                    textRect.width = textRect.textRectDefaultWidth()
-                    textField.placeholderText = ""
-                    textRect.triggerHintPanel( false )
-                }
             }
             onAccepted: {
 
@@ -193,6 +153,9 @@ Rectangle {
             ListView {
                 id: hintView
                 anchors.fill: parent
+                clip: true
+                //snapMode: ListView.SnapToItem
+//                maximumFlickVelocity: 1500
                 model: ModelManager.hintModel.model
                 onModelChanged: {
                     if ( count === 0 ) {
@@ -216,7 +179,7 @@ Rectangle {
 
                         return Script.hoveredColor()
                     }
-                    width: parent.width
+                    width: topRect.m_width
 
                     Text {
                         anchors.fill: parent
@@ -233,6 +196,7 @@ Rectangle {
                 top: textField.bottom
                 left: parent.left
                 right: parent.right
+                //bottom: parent.bottom
                 leftMargin: topRect.border.width
                 rightMargin: topRect.border.width
             }
@@ -251,7 +215,7 @@ Rectangle {
                     when: !hintRect.hidden
                     PropertyChanges {
                         target: hintRect
-                        height: 100
+                        height: 400
                         viewOpacity: 1
                         currentIndex: -1
                     }
@@ -300,9 +264,6 @@ Rectangle {
             hintRect.currentIndex--;
         }
 
-        function textRectDefaultWidth() {
-            return topRect.width * 0.75 - topRect.hMargin;
-        }
     }
 
     function clear() {

@@ -10,19 +10,12 @@ import "Common.js" as Script
 
 /// Страница добавления данных на форме статистик
 /// Statistic Form Add Page
+///                             !!!     DEPRECATED      !!!
 Item {
 
     id: topItem
 
-    /// Фон. Подождёт рабочего функционала
-    /*
-    Image {
-        id: name
-        source: "qrc:/img/images/background.jpg"
-        anchors.fill: parent
-        fillMode: Image.Tile
-    }
-    */
+
 
     // Активный режим. Прибыль / расход.
     property bool profit: false
