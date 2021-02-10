@@ -7,23 +7,21 @@
         <file>TextRect.qml</file>
         <file>Common.js</file>
         <file>UserForm.qml</file>
-        <file>StackElement.qml</file>
         <file>StatisticForm.qml</file>
         <file>TopStatisticMenu.qml</file>
-        <file>SFAddPage.qml</file>
-        <file>SlideEditorPopup.qml</file>
-        <file>SlideEditor.qml</file>
+        <file>RecordEditorPopup.qml</file>
+        <file>SummEditor.qml</file>
         <file>PGroupsTree.qml</file>
-        <file>notifiers/NoRecordNotifier.qml</file>
         <file>PicButton.qml</file>
         <file>MSpinBox.qml</file>
-        <file>notifiers/Bulb.qml</file>
         <file>CartButton.qml</file>
         <file>GeneralStatisticsPage.qml</file>
         <file>MoneyLabel.qml</file>
         <file>PurchaseView.qml</file>
         <file>PeriodSelector.qml</file>
         <file>AddPurchasePage.qml</file>
+        <file>InfoForm.qml</file>
+        <file>GroupsForm.qml</file>
     </qresource>
     <qresource prefix="/img">
         <file>graphs.jpg</file>

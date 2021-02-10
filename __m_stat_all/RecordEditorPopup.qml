@@ -1,17 +1,13 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.0
 
-import "./notifiers"
-
 import "Common.js" as Script
 
-/// TextLine для ввода данных записи и суммы
+/// Поле с закругленными краями для ввода записи с
+/// выпадающими подсказками.
 Rectangle {
 
     id: topRect
-
-    /// Отступ
-    readonly property int hMargin: 6
 
     /// Текст из эдитора по умолчанию
     property alias placeholderText: textField.placeholderText
@@ -53,30 +49,28 @@ Rectangle {
 
     Rectangle {
         id: textRect
-        x: hMargin
-        y: hMargin
-        width: topRect.m_width
+
+        anchors {
+            left: parent.left
+            right: parent.right
+            top: parent.top
+        }
+
         height: heightFunc()
         border.color: "lightgray"
         radius: 15
-        Behavior on width {
-            NumberAnimation {
-                duration: 300
-            }
-        }
+
         TextField {
             id: textField
             height: 28
-            font.family: Script.menuTextFontFamily()
             anchors {
                 top: parent.top
                 left: parent.left
                 right: parent.right
             }
+            font.family: Script.menuTextFontFamily()
             background: Rectangle {
                 color: "transparent"
-            }
-            onFocusChanged: {
             }
             onAccepted: {
                 textRect.onRecordAccepted();
@@ -131,8 +125,6 @@ Rectangle {
                 id: hintView
                 anchors.fill: parent
                 clip: true
-//                snapMode: ListView.SnapToItem
-//                maximumFlickVelocity: 1500
                 model: ModelManager.hintModel.model
 
                 onModelChanged: {
@@ -146,6 +138,7 @@ Rectangle {
                         }
                     }
                 }
+
                 delegate: Rectangle {
                     property string d: modelData
                     property bool hovered: false

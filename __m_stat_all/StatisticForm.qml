@@ -62,7 +62,9 @@ Item {
             GeneralStatisticsPage { anchors.fill: parent }
         }
         Item {
+            id: page2
             AddPurchasePage {
+                id: widget
                 anchors.fill: parent
             }
         }
@@ -76,9 +78,5 @@ Item {
     /// Вертит SwipeView
     function swipeTo(index) {
         swipeView.currentIndex = index
-
-        if ( index === 1 ) {
-            CoreAPI.switchHintModel(false)
-        }
     }
 }

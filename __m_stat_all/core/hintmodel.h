@@ -12,7 +12,10 @@ class HintModel : public QObject
 
     Q_OBJECT
 
-    Q_PROPERTY(QStringList model READ model WRITE setModel NOTIFY modelChanged)
+    Q_PROPERTY(QStringList model
+               READ model
+               WRITE setModel
+               NOTIFY modelChanged)
 
     using RecordVec = std::vector<PurchaseRecord*>;
 
