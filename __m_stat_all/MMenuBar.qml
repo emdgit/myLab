@@ -80,18 +80,18 @@ Rectangle {
         }
 
         MenuButton {
-            id: users
+            id: info
             number: 2
 
             Text {
-                id: usersText
+                id: infoText
 
-                text: qsTr("Users")
+                text: qsTr("Info")
 
                 font.family:    "Franklin Gothic Medium Cond"
                 font.pixelSize: 22
 
-                color: "#F2EEDC"
+                color: Script.menuTextColor()
 
                 anchors.fill: parent
                 horizontalAlignment: Text.AlignHCenter
@@ -99,7 +99,7 @@ Rectangle {
             }
 
             onReleased: {
-                buttonClicked( "users", number )
+                buttonClicked( "Info", number )
             }
         }
 

@@ -7,6 +7,7 @@
 
 class PurchaseRecord;
 
+/// Модель предоставляет подсказки при вводе записи в GUI.
 class HintModel : public QObject
 {
 

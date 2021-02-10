@@ -1,6 +1,7 @@
 #include "coreapi.h"
 
 #include "period.h"
+#include "config.h"
 #include "storage.h"
 #include "purchase.h"
 #include "connecter.h"
@@ -396,7 +397,12 @@ void CoreAPI::updateMainChartData()
     *profitSt = move(data_profit);
     *spendSt = move(data_spend);
 
-//    _chartManager->updateMain();
+    //    _chartManager->updateMain();
+}
+
+QString CoreAPI::getDatabaseName()
+{
+    return pg::Config::dbName;
 }
 
 void CoreAPI::setModelManager(ModelManager *mm) noexcept

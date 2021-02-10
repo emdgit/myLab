@@ -37,15 +37,14 @@ Window {
 
         currentIndex: 1
 
-        StackElement{
+        GroupsForm{
             id: first
         }
         StatisticForm{
             id:second
         }
-        StackElement{
+        InfoForm{
             id: third
-            color: 'blue'
         }
 
     }

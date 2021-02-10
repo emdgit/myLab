@@ -75,6 +75,10 @@ public:
     static void loadRecords( bool profit = false );
 
 
+    /*!
+     * Управляет моделью подсказок. Переключает
+     * доходные / расходные записи.
+     */
     Q_INVOKABLE
     static void switchHintModel( bool profit );
 
@@ -217,6 +221,10 @@ public:
      */
     Q_INVOKABLE
     static void updateMainChartData();
+
+
+    Q_INVOKABLE
+    static QString getDatabaseName();
 
 
     static void setModelManager(ModelManager * mm) noexcept;

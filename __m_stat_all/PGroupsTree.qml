@@ -21,14 +21,8 @@ Item {
 
     property alias model: treeView.model
 
-    /// Сигнал эмитируется, когда была нажата кнопка "Выбрать"
-    /// Передает id выбранной группы
-    signal accept( int groupId )
-
     QtObject {
         id: _d
-        /// Вертикальное расстояноие под нижние кнопки
-        readonly property int buttonsH: 40
         readonly property int controlRectMargin: 6
         readonly property string rootName: qsTr("Корневая группа")
 
@@ -50,12 +44,8 @@ Item {
 
         model: ModelManager.spendModel
         horizontalScrollBarPolicy: Qt.ScrollBarAlwaysOff
-        height: parent.height - _d.buttonsH
-        anchors {
-            top: parent.top
-            left: parent.left
-            right: parent.right
-        }
+        anchors.fill: parent
+
         style: TreeViewStyle {
             backgroundColor: "transparent"
             alternateBackgroundColor: "transparent"
@@ -65,29 +55,35 @@ Item {
             branchDelegate: Item {
                 id: branchIcon
                 width: indentation
-                height: 16
+//                height: 16
+                height: indentation
                 Image {
                     id: icon
                     visible: styleData.column === 0 && styleData.hasChildren
                     source: styleData.isExpanded ? "qrc:/img/images/folder_opened.svg"
                                                  : "qrc:/img/images/folder_closed.svg"
                     anchors.centerIn: parent
-                    anchors.verticalCenterOffset: 2
+//                    anchors.verticalCenterOffset: 2
                 }
             }
         }
+
         headerDelegate: Rectangle{ height: 1 }
+
         TableViewColumn {
             width: treeView.width
             role: "r_pgroup_name"
         }
+
         selection: ItemSelectionModel {
             id: selector
             model: treeView.model
         }
+
         onClicked: { lastIndex = index; }
+
         onModelChanged: {
-            var showRoot = controlSwipeView.currentIndex === 1;
+            var showRoot = false;
             treeView.model.setShowRoot(showRoot);
             if ( treeView.model.rootName !== _d.rootName ) {
                 treeView.model.setRootName( _d.rootName );
@@ -101,139 +97,6 @@ Item {
         NumberAnimation {
             duration: 300
         }
-    }
-
-    SwipeView {
-        id: controlSwipeView
-        interactive: false
-        currentIndex: 0
-        clip: true
-
-        anchors {
-            top: treeView.bottom
-            left: parent.left
-            right: parent.right
-            bottom: parent.bottom
-        }
-
-        Item {
-            id: controlItem
-            Rectangle {
-
-                id: controlRect
-                anchors.fill: parent
-
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.rightMargin: _d.controlRectMargin
-
-                    PicButton {
-                        id: hideButton
-
-                        defaultPic: "qrc:/img/images/arrow_right_square.svg"
-                        hoverPic: "qrc:/img/images/arrow_right_square_hover.svg"
-                        unactivePic: "qrc:/img/images/arrow_right_square_unactive.svg"
-
-                        Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
-                        Layout.margins: _d.controlRectMargin
-
-
-                        onClicked: { topItem.opacity = 0 }
-                    }
-
-                    PicButton {
-                        id: newGroupButton
-
-                        defaultPic: "qrc:/img/images/folder_plus.svg"
-                        hoverPic: "qrc:/img/images/folder_plus_hover.svg"
-                        unactivePic: "qrc:/img/images/folder_plus_unactive.svg"
-
-                        Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
-
-                        onClicked: { controlSwipeView.swipeTo(1); }
-                    }
-
-                    PicButton {
-                        id: acceptButton
-
-                        defaultPic: "qrc:/img/images/check.svg"
-                        hoverPic: "qrc:/img/images/check_hover.svg"
-                        unactivePic: "qrc:/img/images/check_unactive.svg"
-
-                        Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
-
-                        onClicked: {
-
-                            var index = treeView.lastIndex;
-
-                            if ( index === 0 ) {
-                                return;
-                            }
-
-                            var groupId = treeView.model.groupId(index);
-                            topItem.accept( groupId );
-                            topItem.opacity = 0;
-                        }
-                    }
-
-                    Rectangle { Layout.fillWidth: true }
-                }
-            }
-        }
-        Item {
-            id: addGroupItem
-            SlideEditor {
-                text: qsTr( "Имя:" )
-                alternativePlaceholder: qsTr("Имя новой группы..")
-                onAccepted: {
-                    var index = treeView.lastIndex;
-
-                    if ( index !== 0 ) {
-                        var groupId = treeView.model.groupId(index)
-                        CoreAPI.addPurchaseGroup(editorText, groupId, topItem.profit);
-                    }
-
-                    controlSwipeView.swipeTo(0);
-                }
-                onEscaped: {
-                    controlSwipeView.swipeTo(0);
-                }
-            }
-        }
-
-        /// Вертит SwipeView
-        function swipeTo( index ) {
-
-            if ( index < 0 || index > 1 ) {
-                return;
-            }
-
-            if ( index === 0 ) {
-                controlSwipeView.currentIndex = 0;
-                ModelManager.spendModel.setShowRoot(false);
-                treeView.model.setShowRoot(false);
-            }
-            else {
-                controlSwipeView.currentIndex = 1;
-                treeView.model.setShowRoot(true);
-            }
-
-            treeView.resetLastIndex();
-            currentIndex = index;
-        }
-
-    }
-
-    /// Обработчик нажатия кнопки "Выбрать"
-    function onAcceptClicked() {
-        var index = treeView.currentIndex;
-        var group_id = treeView.model.groupId( index );
-
-        if ( group_id < 0 ) {
-            return;
-        }
-
-        accept( group_id )
     }
 
 }
