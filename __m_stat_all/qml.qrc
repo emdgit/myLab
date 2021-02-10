@@ -24,22 +24,11 @@
         <file>GroupsForm.qml</file>
     </qresource>
     <qresource prefix="/img">
-        <file>graphs.jpg</file>
-        <file>qqq.jpg</file>
-        <file>users.png</file>
         <file>images/lined_menu.svg</file>
         <file>images/folder_closed.svg</file>
         <file>images/folder_opened.svg</file>
         <file>images/search.svg</file>
-        <file>images/background.jpg</file>
         <file>images/folder_plus.svg</file>
-        <file>images/clipboadr_plus.svg</file>
-        <file>images/arrow_right_square.svg</file>
-        <file>images/arrow_right_square_hover.svg</file>
-        <file>images/arrow_right_square_unactive.svg</file>
-        <file>images/check_hover.svg</file>
-        <file>images/check_unactive.svg</file>
-        <file>images/check.svg</file>
         <file>images/folder_plus_hover.svg</file>
         <file>images/folder_plus_unactive.svg</file>
         <file>images/arrow_down_hovered.svg</file>
@@ -48,18 +37,10 @@
         <file>images/arrow_up_hovered.svg</file>
         <file>images/arrow_up_unactive.svg</file>
         <file>images/arrow_up.svg</file>
-        <file>images/green_circle.svg</file>
-        <file>images/red_circle.svg</file>
         <file>images/cart_hovered.svg</file>
         <file>images/cart.svg</file>
         <file>images/money.svg</file>
         <file>images/money_hovered.svg</file>
-        <file>images/left_circle_arrow.svg</file>
-        <file>images/left_circle_arrow_hover.svg</file>
-        <file>images/left_circle_arrow_unactive.svg</file>
-        <file>images/right_circle_arrow.svg</file>
-        <file>images/right_circle_arrow_hover.svg</file>
-        <file>images/right_circle_arrow_unactive.svg</file>
     </qresource>
     <qresource prefix="/notifiers"/>
 </RCC>
