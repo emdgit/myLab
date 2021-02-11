@@ -18,7 +18,7 @@ Rectangle {
     anchors.top:    parent.top
     anchors.bottom: parent.bottom
 
-    signal buttonClicked ( string name, int number )
+    signal buttonClicked(int number)
 
     Column {
 
@@ -44,7 +44,7 @@ Rectangle {
             }
 
             onReleased: {
-                buttonClicked( "groups", number )
+                buttonClicked(number)
             }
         }
 
@@ -53,7 +53,7 @@ Rectangle {
             number: 1
 
             onReleased: {
-                buttonClicked( "graphs", number )
+                buttonClicked(number)
             }
 
             Chart {
@@ -99,7 +99,7 @@ Rectangle {
             }
 
             onReleased: {
-                buttonClicked( "Info", number )
+                buttonClicked(number)
             }
         }
 

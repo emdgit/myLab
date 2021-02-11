@@ -16,8 +16,8 @@ Window {
         id: bar
 
         onButtonClicked: {
-            topLabel.setText( name )
-            mainWindow.onButtonClicked( number )
+            topLabel.setText(topLabelText(number))
+            mainWindow.onButtonClicked(number)
         }
 
     }
@@ -35,7 +35,7 @@ Window {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
 
-        currentIndex: 1
+        currentIndex: 0
 
         GroupsForm{
             id: first
@@ -49,11 +49,24 @@ Window {
 
     }
 
+    Component.onCompleted: {
+        topLabel.text = topLabelText(layout.currentIndex);
+    }
+
     // Handler of menu buttons click
     function onButtonClicked( number ) {
         if ( number !== layout.currentIndex ) {
             layout.itemAt(layout.currentIndex).focus = false
             layout.currentIndex = number
+        }
+    }
+
+    function topLabelText(number) {
+        switch (number) {
+            case 0: return qsTr("Группы и записи");
+            case 1: return qsTr("Статистика и учёт");
+            case 2: return qsTr("Информация. Всякая. Надо так. Пока что.");
+            default: return qsTr("Кто-то налажал в main.qml");
         }
     }
 }

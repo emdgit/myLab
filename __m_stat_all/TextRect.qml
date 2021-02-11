@@ -1,5 +1,7 @@
 import QtQuick 2.0
 
+import "Common.js" as Script
+
 Rectangle {
 
     property alias text : rectText.text
@@ -14,15 +16,20 @@ Rectangle {
     x: -width
     y: 0
 
+    color: "#120C2A"
 
     Text {
         id: rectText
         anchors.fill: parent
-        font.family: "Arial Black"
-        horizontalAlignment: Qt.AlignHCenter
-        verticalAlignment: Qt.AlignVCenter
-    }
 
+        font.family:            Script.menuTextFontFamily()
+        font.pixelSize:         Script.menuTextFontSize()
+
+        color:                  Script.menuTextColor()
+
+        horizontalAlignment:    Qt.AlignHCenter
+        verticalAlignment:      Qt.AlignVCenter
+    }
 
     states: [
 
@@ -52,7 +59,6 @@ Rectangle {
 
 
     ]
-
 
     Behavior on x {
         NumberAnimation {
