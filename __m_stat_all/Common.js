@@ -42,6 +42,11 @@ function removeOldTextRects() {
     }
 }
 
+/// Фон верхней надписи с названием текущей формы
+function topLabelBackgroundColor() {
+    return "#120C2A";
+}
+
 /// Цвет кнопки левого меню при её выделении
 function hoveredColor() {
     return "#3A2E5C";

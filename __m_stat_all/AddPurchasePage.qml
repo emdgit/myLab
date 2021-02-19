@@ -28,6 +28,7 @@ Item {
         placeholderText: qsTr("Сумма...")
         validator: IntValidator {
             bottom: 1
+            // Оптимистично, не правда ли?
             top: 2000000000
         }
     }

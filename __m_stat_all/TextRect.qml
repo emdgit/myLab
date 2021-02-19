@@ -16,7 +16,7 @@ Rectangle {
     x: -width
     y: 0
 
-    color: "#120C2A"
+    color: Script.topLabelBackgroundColor()
 
     Text {
         id: rectText
