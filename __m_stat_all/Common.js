@@ -2,6 +2,8 @@ var component;
 var textRect;
 var nextName;
 
+var counter = 1;
+
 var textRectArr = new Array;
 
 function finishTextRect() {
@@ -40,6 +42,12 @@ function removeOldTextRects() {
     while ( textRectArr.length !== 0 ) {
         textRectArr.pop();
     }
+}
+
+function getUniqueNumber() {
+    let tmp = counter;
+    counter++;
+    return tmp;
 }
 
 /// Фон верхней надписи с названием текущей формы

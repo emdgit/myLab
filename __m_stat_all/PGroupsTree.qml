@@ -3,6 +3,8 @@ import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import QtQml.Models 2.11
 
+import QtQuick 2.15
+
 import OwlComponents 1.0
 
 import "Common.js" as Script
@@ -26,6 +28,9 @@ Item {
         function setup() {
             ModelManager.spendModel.setRootName(rootName);
             ModelManager.profitModel.setRootName(rootName);
+
+            ModelManager.spendModel.setShowRoot(rootName);
+            ModelManager.profitModel.setShowRoot(rootName);
             return true;
         }
     }
@@ -44,24 +49,11 @@ Item {
 
         model: ModelManager.spendModel
         clip: false
-
         horizontalScrollBarPolicy: Qt.ScrollBarAlwaysOff
 
-        onDoubleClicked: {
-            /// Note: This signal is only emitted if
-            /// the row or item delegate does not accept mouse events.
-            if (model.rowCount(index) === 0) {
-                return;
-            }
-
-            if (isExpanded(index)) {
-                collapse(index);
-            } else {
-                expand(index);
-            }
-        }
-
         style: TreeViewStyle {
+
+            id: tvStyle
 
             backgroundColor: "transparent"
             alternateBackgroundColor: "transparent"
@@ -81,13 +73,18 @@ Item {
             branchDelegate: Item {}
 
             rowDelegate: Rectangle {
+                id: rowDlg
                 height: treeView.rowHeight
                 color: Script.defaultUnhoveredColor()
             }
 
             itemDelegate: Rectangle {
 
-                color: Script.defaultUnhoveredColor()
+                id: itemDlg
+
+                readonly property int _id: Script.getUniqueNumber()
+
+                color: tst()
 
                 /// Иконка раскрыто / схлопнуто
                 Rectangle {
@@ -121,6 +118,7 @@ Item {
                                                           : undefined
                     }
                 }
+
                 Text {
                     anchors {
                         left: icon.right
@@ -134,6 +132,53 @@ Item {
                     color: Script.menuTextColor()
                     font.family: Script.menuTextFontFamily()
                     font.pixelSize: 17
+                }
+
+                MouseArea {
+                    id: mArea
+                    anchors.fill: parent
+                    acceptedButtons: Qt.LeftButton | Qt.RightButton
+                    hoverEnabled: true
+                    onEntered: {
+                        hoverEngine.number = itemDlg._id;
+                    }
+                    onMouseXChanged: {
+                        hoverEngine.number = itemDlg._id;
+                    }
+
+                    onClicked: {
+//                        let button = mouse.button;
+//                        if (button === Qt.LeftButton) {
+//                            let ind = styleData.index;
+//                            let cmd = ItemSelectionModel.Select;
+//                            selector.setCurrentIndex(ind, cmd)
+//                        } else if (button === Qt.RightButton) {
+//                            selector.clearCurrentIndex();
+//                        }
+                    }
+                    onDoubleClicked: {
+                        let index = styleData.index;
+                        if (treeView.model.rowCount(index) === 0) {
+                            return;
+                        }
+                        if (styleData.isExpanded) {
+                            treeView.collapse(index);
+                        } else {
+                            treeView.expand(index);
+                        }
+                    }
+                }
+                function tst() {
+                    let s = styleData.selected;
+                    if (s) {
+                        return "red";
+                    } else if (itemDlg._id === hoverEngine.number) {
+                        return "blue";
+                    } else {
+                        return Script.defaultUnhoveredColor();
+                    }
+                }
+                Component.onCompleted: {
                 }
             }
 
@@ -176,6 +221,12 @@ Item {
         selection: ItemSelectionModel {
             id: selector
             model: treeView.model
+
+        }
+
+        QtObject {
+            id: hoverEngine
+            property int number: -1
         }
 
         onClicked: { lastIndex = index; }
