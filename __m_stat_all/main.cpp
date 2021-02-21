@@ -56,11 +56,13 @@ int main(int argc, char *argv[])
     auto stSpend = ST.groupsSpend();
 
     auto hints = new HintModel();
+    auto spendGroupModel = new PurchaseGroupModel(stSpend);
+    auto profitGroupModel = new PurchaseGroupModel(stProfit);
 
     // Менеджер моделей
     ModelManager mmanager;
-    mmanager.setSpendModel( new PurchaseGroupModel(stSpend) );
-    mmanager.setProfitModel( new PurchaseGroupModel(stProfit) );
+    mmanager.setSpendModel( spendGroupModel );
+    mmanager.setProfitModel( profitGroupModel );
     mmanager.setHintModel( hints );
     mmanager.setPurchaseModelDaily(new PurchaseModelDaily());
     mmanager.setPeriodModel(new PeriodModel());
@@ -104,6 +106,9 @@ int main(int argc, char *argv[])
         // Загрузить все группы расходов/доходов
         CoreAPI::loadGroups( false );
         CoreAPI::loadGroups( true );
+
+        spendGroupModel->init();
+        profitGroupModel->init();
 
         // Загрузить все записи расходов/доходов
         CoreAPI::loadRecords( false );

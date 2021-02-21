@@ -1,33 +1,52 @@
-#ifndef PURCHASEGROUPMODEL_H
-#define PURCHASEGROUPMODEL_H
+#pragma once
 
-#include <QAbstractItemModel>
+#include <QAbstractListModel>
 
 #include <set>
 
 #include "storagedefinition.h"
 
-/// Иерархичная модель отображения групп
-class PurchaseGroupModel : public QAbstractItemModel
+/// Плоская интерпретаця иерархических данных
+/// о группах. Потому что туго с QML TreeView.
+class PurchaseGroupModel : public QAbstractListModel
 {
-
-    using IndexSet = std::set<PNodeIndex>;
 
     enum GroupRole {
         Name = Qt::UserRole    /// Имя группы. Роль
     };
 
+    /// Отображение иерархического узла.
+    struct NodeMeta {
+        using node_t = NodeMeta;
+        using index_t = PNodeIndex;
+        using st_t = PGStorage;
+
+        NodeMeta(st_t *st, const index_t &ind,
+                 int depth, node_t *parent = nullptr);
+
+        st_t *st;
+        node_t *parent;
+
+        index_t index;
+        std::list<node_t> children;
+
+        struct {
+            int depth : 16;
+            int rows_under : 15;
+            int expand_flag : 1;    // 1 - expanded
+        };
+
+        int rowCount() const;
+        int expand();
+        int collapse();
+
+        bool operator<(const NodeMeta &other) const;
+    };
+
+    using NodeList = std::list<NodeMeta>;
+    using IndexSet = std::set<PNodeIndex>;
+
     Q_OBJECT
-
-    Q_PROPERTY(bool showRoot
-               READ showRoot
-               WRITE setShowRoot
-               NOTIFY showRootChanged)
-
-    Q_PROPERTY(QString rootName
-               READ rootName
-               WRITE setRootName
-               NOTIFY rootNameChanged)
 
 public:
 
@@ -35,61 +54,62 @@ public:
     PurchaseGroupModel( PGStorage *st, QObject * parent = nullptr );
 
     // QAbstractItemModel interface
-    QModelIndex index(int row, int column, const QModelIndex & parent) const override;
-    QModelIndex parent(const QModelIndex & child) const override;
-
     int         rowCount(const QModelIndex & parent) const override;
-    int         columnCount(const QModelIndex & parent) const override;
-
     QVariant    data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
 
+    Q_INVOKABLE
+    QString     groupName(int row) const;
+
+    Q_INVOKABLE
+    bool        hasUnderGroup(int row) const;
+
+    Q_INVOKABLE
+    int         depth(int row) const;
+
+    Q_INVOKABLE
+    void        expand(int row);
+
+    Q_INVOKABLE
+    void        collapse(int row);
+
+    /// Зарегистрировать имена ролей в модели           !!! MAYBE RUDIMENTAL !!!
     QHash<int, QByteArray> roleNames() const override;
 
+    /// Вернуть идентификатор группы
     Q_INVOKABLE
     int         groupId( const QModelIndex &index ) const;
 
-    bool        showRoot() const;
+    /// Вернуть глубину элемента в дереве
+    Q_INVOKABLE
+    int         depth(const QModelIndex &index) const;
 
     /// Эквивалент 'resetModel()'
     void        reloadData();
 
-    QString     rootName() const;
-
-
-public slots:
-
-    void        setShowRoot(bool showRoot);
-    void        setRootName(QString rootName);
-
-
-signals:
-
-    void        showRootChanged(bool showRoot);
-    void        rootNameChanged(QString rootName);
+    void        init();
 
 
 protected:
 
+    /// Взять PNodeIndex из QModelIndex
     PNodeIndex *toPNodeIndex( const QModelIndex &index ) const noexcept;
+    /// Сохранить index в списке используемых, вернуть указатель
+    /// на сохраненный экземпляр
     PNodeIndex *insertAndGetRawPtr(PNodeIndex index) const;
+    /// Вернуть NodeMeta, соответствующий данной строке.
+    NodeMeta *node(int row) const;
 
 
 private:
 
-    PGStorage * _st;
+    PGStorage * _st = nullptr;
 
     /// Задействованые объекты PNodeIndex.
     /// Используются как internalPointer внутри QModelIndex
-    mutable IndexSet _index_set;
+    mutable IndexSet    _index_set;
 
-    /// Значение, которое будет отображаться для "мнииого корнегого" элемента,
-    /// если флаг '_showRoot' установлен.
-    QString     _rootName = "root";
+    NodeList            _node_list;
 
-    /// Флаг, обозначающий, следует ли отображать 'мнимый корневой' элемент.
-    /// Используется в GUI для добавления новых корневых групп.
-    bool        _showRoot = false;
+
 
 };
-
-#endif // PURCHASEGROUPMODEL_H
