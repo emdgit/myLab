@@ -93,6 +93,18 @@ Item {
                 return model.depth(row);
             }
 
+            function expand(row) {
+                model.expand(row);
+            }
+
+            function collapse(row) {
+                model.collapse(row);
+            }
+
+            function isExpanded(row) {
+                return model.isExpanded(row);
+            }
+
             delegate: Rectangle {
 
                 property bool hovered: false
@@ -177,6 +189,13 @@ Item {
                     anchors.fill: parent
                     onEntered: { dlg.hovered = true; }
                     onExited: { dlg.hovered = false; }
+                    onDoubleClicked: {
+                        let expanded = listView.isExpanded(index);
+
+                        if (!expanded) {
+                            listView.expand(index);
+                        }
+                    }
                 }
             }
         }

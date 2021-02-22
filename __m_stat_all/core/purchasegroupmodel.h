@@ -2,8 +2,6 @@
 
 #include <QAbstractListModel>
 
-#include <set>
-
 #include "storagedefinition.h"
 
 /// Плоская интерпретаця иерархических данных
@@ -21,30 +19,30 @@ class PurchaseGroupModel : public QAbstractListModel
         using index_t = PNodeIndex;
         using st_t = PGStorage;
 
-        NodeMeta(st_t *st, const index_t &ind,
-                 int depth, node_t *parent = nullptr);
+        NodeMeta(st_t *st, const index_t &ind, int depth);
 
         st_t *st;
-        node_t *parent;
+        node_t *parent = nullptr;
 
         index_t index;
-        std::list<node_t> children;
+        std::list<node_t*> children;
 
         struct {
-            int depth : 16;
-            int rows_under : 15;
+            int depth : 31;
             int expand_flag : 1;    // 1 - expanded
         };
 
         int rowCount() const;
-        int expand();
-        int collapse();
+
+        void expand() noexcept;
+        void collapse() noexcept;
+        void addChild(node_t *n);
 
         bool operator<(const NodeMeta &other) const;
     };
 
-    using NodeList = std::list<NodeMeta>;
-    using IndexSet = std::set<PNodeIndex>;
+    using NodeList = std::list<NodeMeta*>;
+    using NodePtrVec = std::vector<NodeMeta*>;
 
     Q_OBJECT
 
@@ -72,16 +70,12 @@ public:
     Q_INVOKABLE
     void        collapse(int row);
 
-    /// Зарегистрировать имена ролей в модели           !!! MAYBE RUDIMENTAL !!!
-    QHash<int, QByteArray> roleNames() const override;
+    Q_INVOKABLE
+    bool        isExpanded(int row) const;
 
     /// Вернуть идентификатор группы
     Q_INVOKABLE
-    int         groupId( const QModelIndex &index ) const;
-
-    /// Вернуть глубину элемента в дереве
-    Q_INVOKABLE
-    int         depth(const QModelIndex &index) const;
+    int         groupId(int row) const;
 
     /// Эквивалент 'resetModel()'
     void        reloadData();
@@ -91,25 +85,17 @@ public:
 
 protected:
 
-    /// Взять PNodeIndex из QModelIndex
-    PNodeIndex *toPNodeIndex( const QModelIndex &index ) const noexcept;
-    /// Сохранить index в списке используемых, вернуть указатель
-    /// на сохраненный экземпляр
-    PNodeIndex *insertAndGetRawPtr(PNodeIndex index) const;
     /// Вернуть NodeMeta, соответствующий данной строке.
-    NodeMeta *node(int row) const;
+    NodeMeta *  node(int row) const;
+    NodeMeta * siblingNode(NodeMeta * n) const;
+    void        updateProetcion(NodeMeta * n = nullptr);
 
 
 private:
 
     PGStorage * _st = nullptr;
 
-    /// Задействованые объекты PNodeIndex.
-    /// Используются как internalPointer внутри QModelIndex
-    mutable IndexSet    _index_set;
+    NodeList    _node_list;
 
-    NodeList            _node_list;
-
-
-
+    NodePtrVec  _node_proection;
 };

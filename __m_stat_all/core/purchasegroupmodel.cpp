@@ -1,34 +1,20 @@
 #include "purchasegroupmodel.h"
 
-#include <iostream>
-
 using namespace std;
 
 PurchaseGroupModel::PurchaseGroupModel(QObject * parent) :
-    QAbstractListModel(parent)
-{
-
-}
+    QAbstractListModel(parent) {}
 
 PurchaseGroupModel::PurchaseGroupModel(PGStorage * st, QObject * parent) :
-    QAbstractListModel (parent), _st(st)
-{
-}
+    QAbstractListModel (parent), _st(st) {}
 
 int PurchaseGroupModel::rowCount(const QModelIndex & parent) const
 {
-    cout << "rowCount()" << endl;
     if (parent.isValid()) {
         return 0;
     }
 
-    int res(0);
-
-    for (const auto &nm : _node_list) {
-        res += nm.rowCount();
-    }
-
-    return res;
+    return _node_proection.size();
 }
 
 QVariant PurchaseGroupModel::data(const QModelIndex & index, int role) const
@@ -37,33 +23,38 @@ QVariant PurchaseGroupModel::data(const QModelIndex & index, int role) const
         return QVariant();
     }
 
-    auto nm = node(index.row());
-    auto data = _st->node(nm->index)->_data;
-
-    return QString::fromStdString(data->name());
+    return groupName(index.row());
 }
 
 QString PurchaseGroupModel::groupName(int row) const
 {
-    auto n = node(row);
+    auto n = _node_proection[row];
     return QString::fromStdString(_st->node(n->index)->_data->name());
 }
 
 bool PurchaseGroupModel::hasUnderGroup(int row) const
 {
-    auto n = node(row);
+    auto n = _node_proection[row];
     return !n->children.empty();
 }
 
 int PurchaseGroupModel::depth(int row) const
 {
-    auto n = node(row);
+    auto n = _node_proection[row];
     return n->index.size() - 1;
 }
 
 void PurchaseGroupModel::expand(int row)
 {
-    (void)row;
+    // Required row is not "expanded". Guaranteed by GUI.
+    auto n = _node_proection[row];
+
+    n->expand();
+    auto rows = n->rowCount() - 1;
+
+    beginInsertRows({}, row + 1, row + rows);
+    updateProetcion();
+    endInsertRows();
 }
 
 void PurchaseGroupModel::collapse(int row)
@@ -71,15 +62,16 @@ void PurchaseGroupModel::collapse(int row)
     (void)row;
 }
 
-PNodeIndex *PurchaseGroupModel::toPNodeIndex(const QModelIndex & index) const noexcept
+bool PurchaseGroupModel::isExpanded(int row) const
 {
-    return static_cast<PNodeIndex*>( index.internalPointer() );
+    auto n = _node_proection[row];
+    return static_cast<bool>(n->expand_flag);
 }
 
-PNodeIndex *PurchaseGroupModel::insertAndGetRawPtr(PNodeIndex index) const {
-    auto pair = _index_set.insert( index );
-    auto raw_ptr = const_cast<PNodeIndex*>( &(*pair.first) );
-    return raw_ptr;
+int PurchaseGroupModel::groupId(int row) const
+{
+    auto n = _node_proection[row];
+    return _st->node(n->index)->_data->id();
 }
 
 PurchaseGroupModel::NodeMeta * PurchaseGroupModel::node(int row) const
@@ -88,29 +80,8 @@ PurchaseGroupModel::NodeMeta * PurchaseGroupModel::node(int row) const
         return nullptr;
     }
 
-    auto sibling = [&](const NodeMeta *n) {
-        const NodeList * lst = n->parent ? &n->parent->children
-                                         : &_node_list;
-        auto it = std::find_if(lst->begin(), lst->end(),
-                               [&](const auto &nl){
-            return !(nl < *n) && !(*n < nl);
-        });
-
-        if (it == lst->end()) {
-            throw runtime_error("Cannot find sibling");
-        }
-
-        ++it;
-
-        if (it == lst->end()) {
-            throw runtime_error("Cannot find sibling");
-        }
-
-        return &*it;
-    };
-
     int from(0);
-    const NodeMeta * meta = &_node_list.front();
+    NodeMeta * meta = const_cast<NodeMeta*>(_node_list.front());
 
     while (true) {
         if (row <= from + meta->rowCount() - 1) {
@@ -118,44 +89,63 @@ PurchaseGroupModel::NodeMeta * PurchaseGroupModel::node(int row) const
                 return const_cast<NodeMeta*>(meta);
             } else {
                 ++from;
-                meta = &meta->children.front();
+                meta = meta->children.front();
             }
         } else {
             from += meta->rowCount();
-            meta = sibling(meta);
+            meta = siblingNode(meta);
         }
     }
 }
 
-QHash<int, QByteArray> PurchaseGroupModel::roleNames() const
+PurchaseGroupModel::NodeMeta *
+PurchaseGroupModel::siblingNode(PurchaseGroupModel::NodeMeta * n) const
 {
-    QHash<int, QByteArray> hash;
+    const NodeList * lst = n->parent ? &n->parent->children
+                                     : &_node_list;
+    auto it = std::find_if(lst->begin(), lst->end(),
+                           [&](const auto &nl){
+        return !(*nl < *n) && !(*n < *nl);
+    });
 
-    hash.insert( Name, "r_pgroup_name" );
-
-    return hash;
-}
-
-int PurchaseGroupModel::groupId(const QModelIndex &index) const
-{
-    auto pIndex = toPNodeIndex( index );
-
-    if ( !pIndex ) {
-        return -1;
+    if (it == lst->end()) {
+        throw runtime_error("Cannot find given node");
     }
 
-    auto node = _st->node( *pIndex );
+    ++it;
 
-    if ( !node ) {
-        return 0;
+    if (it == lst->end()) {
+        return nullptr;
     }
 
-    return node->_data->id();
+    return const_cast<NodeMeta*>(*it);
 }
 
-int PurchaseGroupModel::depth(const QModelIndex & index) const
+void PurchaseGroupModel::updateProetcion(NodeMeta * n)
 {
-    return toPNodeIndex(index)->size() - 1;
+    if (!n) {
+        _node_proection.clear();
+
+        if (_node_list.empty()) {
+            return;
+        }
+    }
+
+    auto *p = n ? n : _node_list.front();
+
+    _node_proection.push_back(p);
+
+    if (p->expand_flag) {
+        if (!p->children.empty()) {
+            updateProetcion(p->children.front());
+        }
+    }
+
+    p = siblingNode(p);
+
+    if (p) {
+        updateProetcion(p);
+    }
 }
 
 void PurchaseGroupModel::reloadData()
@@ -169,8 +159,11 @@ void PurchaseGroupModel::init()
     const auto s = _st->childCount({});
 
     for (int i(0); i < s; ++i) {
-        _node_list.push_back({_st, {i}, 0});
+        auto n = new NodeMeta{_st, {i}, 0};
+        _node_list.push_back(n);
     }
+
+    updateProetcion();
 }
 
 
@@ -179,16 +172,15 @@ void PurchaseGroupModel::init()
 
 PurchaseGroupModel::NodeMeta::NodeMeta(PurchaseGroupModel::NodeMeta::st_t * st,
                                        const PurchaseGroupModel::NodeMeta::index_t & ind,
-                                       int depth, node_t * parent) :
-    st(st), parent(parent), index(ind), depth(depth), rows_under(0), expand_flag(0)
+                                       int depth) :
+    st(st), index(ind), depth(depth), expand_flag(0)
 {
     const auto s = st->childCount(index);
 
     for (int i(0); i < s; ++i) {
-        children.push_back({st, index + i, depth + 1, this});
+        auto child = new NodeMeta(st, index + i, depth + 1);
+        addChild(child);
     }
-
-    rows_under = children.size();
 }
 
 int PurchaseGroupModel::NodeMeta::rowCount() const
@@ -200,54 +192,29 @@ int PurchaseGroupModel::NodeMeta::rowCount() const
         return 1;
     }
 
-    return 1 + rows_under;
-}
-
-int PurchaseGroupModel::NodeMeta::expand()
-{
-    if (children.empty() || expand_flag) {
-        return 0;
-    }
-
-    expand_flag = 1;
-
-    int delta_rows(0);
+    int rows(1);
 
     for (const auto &ch : children) {
-        delta_rows += ch.rows_under + 1;
+        rows += ch->rowCount();
     }
 
-    rows_under += delta_rows;
-
-    auto *p = parent;
-
-    while (p) {
-        p->rows_under += delta_rows;
-        p = p->parent;
-    }
-
-    return delta_rows;
+    return rows;
 }
 
-int PurchaseGroupModel::NodeMeta::collapse()
+void PurchaseGroupModel::NodeMeta::expand() noexcept
 {
-    if (children.empty() || !expand_flag) {
-        return 0;
-    }
+    expand_flag = 1;
+}
 
-    auto delta_rows = rows_under;
-
+void PurchaseGroupModel::NodeMeta::collapse() noexcept
+{
     expand_flag = 0;
-    rows_under = 0;
+}
 
-    auto *p = parent;
-
-    while (p) {
-        p->rows_under -= delta_rows;
-        p = p->parent;
-    }
-
-    return delta_rows;
+void PurchaseGroupModel::NodeMeta::addChild(PurchaseGroupModel::NodeMeta::node_t * n)
+{
+    children.push_back(n);
+    n->parent = this;
 }
 
 bool PurchaseGroupModel::NodeMeta::operator<(const NodeMeta & other) const
