@@ -194,6 +194,8 @@ Item {
 
                         if (!expanded) {
                             listView.expand(index);
+                        } else {
+                            listView.collapse(index);
                         }
                     }
                 }

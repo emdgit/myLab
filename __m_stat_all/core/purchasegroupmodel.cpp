@@ -67,7 +67,17 @@ void PurchaseGroupModel::expand(int row)
 
 void PurchaseGroupModel::collapse(int row)
 {
-    (void)row;
+    // Required row is "expanded". Guaranteed by GUI.
+    auto n = _node_proection[row];
+
+    auto rowsBefore = n->rowCount() - 1;
+    n->collapse();
+    auto rowsAfter = n->rowCount() - 1;
+    auto rows = rowsBefore - rowsAfter;
+
+    beginRemoveRows({}, row + 1, row + rows);
+    updateProetcion();
+    endRemoveRows();
 }
 
 bool PurchaseGroupModel::isExpanded(int row) const
