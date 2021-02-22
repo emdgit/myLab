@@ -8,6 +8,14 @@ PurchaseGroupModel::PurchaseGroupModel(QObject * parent) :
 PurchaseGroupModel::PurchaseGroupModel(PGStorage * st, QObject * parent) :
     QAbstractListModel (parent), _st(st) {}
 
+PurchaseGroupModel::~PurchaseGroupModel()
+{
+    _node_proection.clear();
+    for (auto &n : _node_list) {
+        delete n;
+    }
+}
+
 int PurchaseGroupModel::rowCount(const QModelIndex & parent) const
 {
     if (parent.isValid()) {
@@ -180,6 +188,13 @@ PurchaseGroupModel::NodeMeta::NodeMeta(PurchaseGroupModel::NodeMeta::st_t * st,
     for (int i(0); i < s; ++i) {
         auto child = new NodeMeta(st, index + i, depth + 1);
         addChild(child);
+    }
+}
+
+PurchaseGroupModel::NodeMeta::~NodeMeta()
+{
+    for (auto &ch : children) {
+        delete ch;
     }
 }
 

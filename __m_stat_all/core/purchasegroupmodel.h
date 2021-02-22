@@ -20,6 +20,7 @@ class PurchaseGroupModel : public QAbstractListModel
         using st_t = PGStorage;
 
         NodeMeta(st_t *st, const index_t &ind, int depth);
+        ~NodeMeta();
 
         st_t *st;
         node_t *parent = nullptr;
@@ -50,6 +51,7 @@ public:
 
     PurchaseGroupModel( QObject * parent = nullptr );
     PurchaseGroupModel( PGStorage *st, QObject * parent = nullptr );
+    ~PurchaseGroupModel() override;
 
     // QAbstractItemModel interface
     int         rowCount(const QModelIndex & parent) const override;
