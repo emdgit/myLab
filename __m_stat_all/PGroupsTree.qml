@@ -112,7 +112,7 @@ Item {
                 id: dlg
 
                 height: _d.lineH
-                width: parent.width
+                width: listView.width
 
                 color: _d.defaultLineColor
 
