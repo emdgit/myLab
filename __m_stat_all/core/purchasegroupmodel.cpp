@@ -36,24 +36,40 @@ QVariant PurchaseGroupModel::data(const QModelIndex & index, int role) const
 
 QString PurchaseGroupModel::groupName(int row) const
 {
+    if (row >= rowCount({}) || row < 0) {
+        return "";
+    }
+
     auto n = _node_proection[row];
     return QString::fromStdString(_st->node(n->index)->_data->name());
 }
 
 bool PurchaseGroupModel::hasUnderGroup(int row) const
 {
+    if (row >= rowCount({}) || row < 0) {
+        return false;
+    }
+
     auto n = _node_proection[row];
     return !n->children.empty();
 }
 
 int PurchaseGroupModel::depth(int row) const
 {
+    if (row >= rowCount({}) || row < 0) {
+        return 0;
+    }
+
     auto n = _node_proection[row];
     return n->index.size() - 1;
 }
 
 void PurchaseGroupModel::expand(int row)
 {
+    if (row >= rowCount({}) || row < 0) {
+        return;
+    }
+
     // Required row is not "expanded". Guaranteed by GUI.
     auto n = _node_proection[row];
 
@@ -67,34 +83,42 @@ void PurchaseGroupModel::expand(int row)
 
 void PurchaseGroupModel::collapse(int row)
 {
+    if (row >= rowCount({}) || row < 0) {
+        return;
+    }
+
     // Required row is "expanded". Guaranteed by GUI.
     auto n = _node_proection[row];
-
-    auto rowsBefore = n->rowCount() - 1;
-    n->collapse();
-    auto rowsAfter = n->rowCount() - 1;
-    auto rows = rowsBefore - rowsAfter;
+    auto rows = n->rowCount() - 1;
 
     beginRemoveRows({}, row + 1, row + rows);
+    n->collapse();
     updateProetcion();
     endRemoveRows();
 }
 
 bool PurchaseGroupModel::isExpanded(int row) const
 {
+    if (row >= rowCount({}) || row < 0) {
+        return false;
+    }
+
     auto n = _node_proection[row];
     return static_cast<bool>(n->expand_flag);
 }
 
 int PurchaseGroupModel::groupId(int row) const
 {
+    if (row < 0) {
+        return 0;
+    }
     auto n = _node_proection[row];
     return _st->node(n->index)->_data->id();
 }
 
 PurchaseGroupModel::NodeMeta * PurchaseGroupModel::node(int row) const
 {
-    if (row >= rowCount({})) {
+    if (row >= rowCount({}) || row < 0) {
         return nullptr;
     }
 
