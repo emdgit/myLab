@@ -4,6 +4,7 @@ import OwlComponents 1.0
 
 import "Common.js" as Script
 
+/// Форма информации.
 Item {
     id: topItem
 

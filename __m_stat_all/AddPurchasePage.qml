@@ -11,10 +11,21 @@ Item {
         }
     }
 
+    SpendProfitButton {
+        id: profitSwitch
+        anchors {
+            top: parent.top
+//            topMargin: 15
+            left: parent.left
+            leftMargin: 15
+        }
+    }
+
     RecordEditorPopup {
         id: textEditor
-        z: 100
+//        z: 100
         anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
         placeholderText: qsTr("Запись...")
     }
 

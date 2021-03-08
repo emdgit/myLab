@@ -77,11 +77,6 @@ Item {
             }
         }
 
-//        Rectangle {
-//            anchors.fill: parent
-//            color: _d.defaultLineColor
-//        }
-
         ListView {
 
             property int groupId: -1

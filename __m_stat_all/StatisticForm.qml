@@ -8,6 +8,8 @@ import OwlComponents 1.0
 // Form which opens when statistic button pressed
 Item {
 
+    /// Кнопка, показать/скрыть меню навигации
+    /// по Форме Статистики
     Button {
         id: titleMenuBtn
         height: 30
@@ -22,16 +24,18 @@ Item {
             button: "transparent"
         }
 
-        Image {
-            anchors.fill: parent
-            source: "qrc:/img/images/lined_menu.svg"
-        }
+//        Image {
+//            anchors.fill: parent
+//            source: "qrc:/img/images/lined_menu.svg"
+//        }
 
-        onClicked: {
-            parent.showTopMenu()
-        }
+//        onClicked: {
+//            parent.showTopMenu()
+//        }
     }
 
+    /*
+    /// Меню навигации по Форме Статистики
     TopStatisticMenu {
         anchors {
             top: parent.top
@@ -43,6 +47,7 @@ Item {
             swipeTo(number)
         }
     }
+    */
 
     SwipeView {
         id: swipeView
