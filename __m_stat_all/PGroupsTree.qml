@@ -78,6 +78,7 @@ Item {
             id: listView
             anchors.fill: parent
             model: ModelManager.spendModel
+            currentIndex: -1
             clip: true
 
             function hasChildren(row) {
@@ -118,6 +119,54 @@ Item {
                 width: listView.width
 
                 color: _d.defaultLineColor
+
+                Rectangle {
+                    id: backgroundRect
+                    anchors {
+                        top: parent.top
+                        bottom: parent.bottom
+                        left: parent.left
+                    }
+                    width: 0
+                    antialiasing: true
+                    gradient: Gradient {
+                        orientation: Gradient.Horizontal
+                        GradientStop {
+                            position: 0.0
+                            color: _d.defaultLineColor
+                        }
+                        GradientStop {
+                            position: 1.0
+                            color: _d.hoveredLineColor
+                        }
+                    }
+
+                    Behavior on width {
+                        NumberAnimation {
+                            duration: 300
+                            easing.type: Easing.InOutQuad
+                        }
+                    }
+
+                    states: [
+                        State {
+                            name: "checked"
+                            when: listView.currentIndex == index
+                            PropertyChanges {
+                                target: backgroundRect
+                                width: listView.width
+                            }
+                        },
+                        State {
+                            name: "notChecked"
+                            when: listView.currentIndex != index
+                            PropertyChanges {
+                                target: backgroundRect
+                                width: 0
+                            }
+                        }
+                    ]
+                }
 
                 Rectangle {
 
@@ -181,7 +230,7 @@ Item {
                     id: icon
                     height: 30
                     width: 30
-                    color: _d.defaultLineColor
+                    color: "transparent"
 
                     anchors {
                         left: selectionZone.right
@@ -269,6 +318,7 @@ Item {
                             expandOrCollapse();
                         } else {
                             topItem.accepted(listView.groupId(index));
+                            listView.currentIndex = index;
                         }
                     }
                     onDoubleClicked: {
