@@ -27,6 +27,11 @@ const int &PurchaseGroup::parentId() const noexcept
     return _parentId;
 }
 
+bool PurchaseGroup::isProfit() const noexcept
+{
+    return _type == GroupType::Profit;
+}
+
 const std::string PurchaseGroup::name() const noexcept
 {
     return _name;

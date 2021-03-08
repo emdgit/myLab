@@ -26,6 +26,8 @@ public:
     int                 id() const noexcept;
     const int &         parentId() const noexcept;
 
+    bool                isProfit() const noexcept;
+
     const std::string   name() const noexcept;
 
     void                setId(int id) noexcept;

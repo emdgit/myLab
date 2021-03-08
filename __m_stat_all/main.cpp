@@ -11,15 +11,12 @@
 
 #include "chart.h"
 #include "config.h"
-#include "connecter.h"
-#include "pnode.h"
-#include "coreapi.h"
-#include "modelmanager.h"
-#include "hintmodel.h"
-#include "storage.h"
-#include "purchasegroupmodel.h"
-#include "signalmanager.h"
 #include "period.h"
+#include "coreapi.h"
+#include "storage.h"
+#include "connecter.h"
+#include "modelmanager.h"
+#include "signalmanager.h"
 #include "chartmanager.h"
 
 using namespace std;
@@ -44,10 +41,7 @@ int main(int argc, char *argv[])
     qRegisterMetaType<PNodeIndex>( "PNodeIndex" );
 
     qmlRegisterType<Chart>( "OwlComponents", 1, 0, "Chart" );
-    qmlRegisterType<PurchaseGroupModel>( "OwlComponents", 1, 0, "PGroupModel" );
     qmlRegisterSingletonType<CoreAPI>( "OwlComponents", 1, 0, "CoreAPI", core_api_singleton_f );
-    qmlRegisterUncreatableType<HintModel>( "OwlComponents", 1, 0, "HintModel",
-                                         "HintModel is an uncreatable type" );
 
     // Хранилище доходных групп
     auto stProfit = ST.groupsProfit();
@@ -66,6 +60,7 @@ int main(int argc, char *argv[])
     mmanager.setHintModel( hints );
     mmanager.setPurchaseModelDaily(new PurchaseModelDaily());
     mmanager.setPeriodModel(new PeriodModel());
+    mmanager.setRecordByGroupModel(new RecordByGroupModel());
 
     // Менеджер сигналов
     SignalManager smanager;
@@ -142,8 +137,9 @@ int main(int argc, char *argv[])
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
 
-    if (engine.rootObjects().isEmpty())
+    if (engine.rootObjects().isEmpty()) {
         return -3;
+    }
 
     return app.exec();
 }

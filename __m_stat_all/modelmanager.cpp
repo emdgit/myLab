@@ -35,6 +35,11 @@ PeriodModel *ModelManager::periodModel() const
     return _periodModel;
 }
 
+RecordByGroupModel * ModelManager::recordByGroupModel() const
+{
+    return _recordByGroupModel;
+}
+
 void ModelManager::setProfitModel(PurchaseGroupModel * profitModel)
 {
     if (_profitModel == profitModel)
@@ -89,4 +94,14 @@ void ModelManager::setPeriodModel(PeriodModel *periodModel)
 
     _periodModel = periodModel;
     emit periodModelChanged(_periodModel);
+}
+
+void ModelManager::setRecordByGroupModel(RecordByGroupModel * model)
+{
+    if (_recordByGroupModel == model) {
+        return;
+    }
+
+    _recordByGroupModel = model;
+    emit recordByGroupModelChanged(_recordByGroupModel);
 }

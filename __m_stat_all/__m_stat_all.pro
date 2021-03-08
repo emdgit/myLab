@@ -16,6 +16,7 @@ DEPENDPATH  +=  $$PWD/core/
 
 SOURCES     +=           \
             core/chartmetaobject.cpp \
+            core/recordbygroupmodel.cpp \
             main.cpp      \
             coreapi.cpp    \
             templates.cpp   \
@@ -57,6 +58,7 @@ RESOURCES   +=  qml.qrc \
 HEADERS     +=        \
             Error.h \
             core/chartmetaobject.h \
+            core/recordbygroupmodel.h \
             private.h  \
             coreapi.h   \
             templates.h  \

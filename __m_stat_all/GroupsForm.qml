@@ -39,9 +39,6 @@ Item {
 
         width: parent.width * 0.25
 
-        // need later
-//        color: "transparent"
-
         anchors {
             left: groupRect.right
             leftMargin: 10
@@ -50,7 +47,17 @@ Item {
             bottom: parent.bottom
         }
 
-//        border.color: Script.defaultUnhoveredColor()
+        Connections {
+            target: groupTree
+            function onAccepted(id) {
+                recordList.setGroupId(id);
+            }
+        }
+
+        RecordList {
+            id: recordList
+            anchors.fill: parent
+        }
     }
 }
 

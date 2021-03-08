@@ -11,7 +11,6 @@
         <file>TopStatisticMenu.qml</file>
         <file>RecordEditorPopup.qml</file>
         <file>SummEditor.qml</file>
-        <file>PGroupsTree.qml</file>
         <file>PicButton.qml</file>
         <file>MSpinBox.qml</file>
         <file>CartButton.qml</file>
@@ -21,7 +20,10 @@
         <file>PeriodSelector.qml</file>
         <file>AddPurchasePage.qml</file>
         <file>InfoForm.qml</file>
+        <file>PGroupsTree.qml</file>
         <file>GroupsForm.qml</file>
+        <file>ColorSchema.js</file>
+        <file>RecordList.qml</file>
     </qresource>
     <qresource prefix="/img">
         <file>images/lined_menu.svg</file>
@@ -46,4 +48,5 @@
         <file>images/folder_closed_hover.svg</file>
     </qresource>
     <qresource prefix="/notifiers"/>
+    <qresource lang="qml" prefix="/group_form"/>
 </RCC>

@@ -11,6 +11,7 @@ Window {
     width: Screen.desktopAvailableWidth
     height: Screen.desktopAvailableHeight
     title: qsTr("Uot tak uot")
+//    color: "black"
 
     MMenuBar {
         id: bar

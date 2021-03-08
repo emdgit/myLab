@@ -16,6 +16,8 @@ Item {
 
     width: 300
 
+    signal accepted(int groupId)
+
     QtObject {
         id: _d
 
@@ -54,6 +56,7 @@ Item {
                 implicitHeight: 50
                 radius: 5
                 border.color: "black"
+                border.width: 1.2
                 antialiasing: true
             }
 
@@ -67,11 +70,7 @@ Item {
             decrementControl: Rectangle {
                 width: 12
                 height: 0
-                color: _d.defaultLineColor
-                border.width: 0
-                border.color: _d.defaultLineColor
             }
-
         }
 
         ListView {
@@ -87,6 +86,10 @@ Item {
 
             function groupName(row) {
                 return model.groupName(row);
+            }
+
+            function groupId(row) {
+                return model.groupId(row);
             }
 
             function depth(row) {
@@ -264,6 +267,8 @@ Item {
                     onClicked: {
                         if (icon.inIconImage(mouseX, mouseY)) {
                             expandOrCollapse();
+                        } else {
+                            topItem.accepted(listView.groupId(index));
                         }
                     }
                     onDoubleClicked: {

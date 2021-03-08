@@ -109,7 +109,7 @@ bool PurchaseGroupModel::isExpanded(int row) const
 
 int PurchaseGroupModel::groupId(int row) const
 {
-    if (row < 0) {
+    if (row >= rowCount({}) || row < 0) {
         return 0;
     }
     auto n = _node_proection[row];

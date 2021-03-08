@@ -8,6 +8,7 @@
 #include "purchasemodel.h"
 #include "purchasegroupmodel.h"
 #include "purchasemodeldaily.h"
+#include "recordbygroupmodel.h"
 
 class ModelManager : public QObject
 {
@@ -43,6 +44,11 @@ class ModelManager : public QObject
                setPeriodModel
                NOTIFY periodModelChanged)
 
+    Q_PROPERTY(RecordByGroupModel* recordByGroupModel
+               READ recordByGroupModel
+               WRITE setRecordByGroupModel
+               NOTIFY recordByGroupModelChanged)
+
     Q_OBJECT
 
 public:
@@ -55,6 +61,7 @@ public:
     HintModel*          hintModel() const;
     PurchaseModelDaily* purchaseModelDaily() const;
     PeriodModel*        periodModel() const;
+    RecordByGroupModel* recordByGroupModel() const;
 
 
 public slots:
@@ -65,6 +72,7 @@ public slots:
     void setPurchaseModel(PurchaseModel *purchaseModel);
     void setPurchaseModelDaily(PurchaseModelDaily* purchaseModelDaily);
     void setPeriodModel(PeriodModel* periodModel);
+    void setRecordByGroupModel(RecordByGroupModel *model);
 
 
 signals:
@@ -75,6 +83,7 @@ signals:
     void purchaseModelChanged(PurchaseModel* purchaseModel);
     void purchaseModelDailyChanged(PurchaseModelDaily* purchaseModelDaily);
     void periodModelChanged(PeriodModel* periodModel);
+    void recordByGroupModelChanged(RecordByGroupModel *model);
 
 
 private:
@@ -85,6 +94,7 @@ private:
     PurchaseModel*      _purchaseModel      = nullptr;
     PurchaseModelDaily* _purchaseModelDaily = nullptr;
     PeriodModel*        _periodModel        = nullptr;
+    RecordByGroupModel* _recordByGroupModel = nullptr;
 };
 
 #endif // MODELMANAGER_H

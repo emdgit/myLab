@@ -7,6 +7,12 @@ import "Common.js" as Script
 Item {
     id: topItem
 
+    Rectangle {
+        id: blackRect
+        anchors.fill: parent
+        color: "black"
+    }
+
     Text {
         id: dbName
         anchors {
@@ -18,6 +24,7 @@ Item {
 
         font.pixelSize: 22
         font.family: Script.menuTextFontFamily()
+        color: Script.menuTextColor()
 
         text: "DataBase: " + CoreAPI.getDatabaseName()
     }
