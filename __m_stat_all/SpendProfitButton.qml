@@ -10,7 +10,7 @@ Item {
     property bool isProfit: false
 
     width: w
-    height: w - 5
+    height: w - 7
 
     onIsProfitChanged: {
         if (isProfit) {

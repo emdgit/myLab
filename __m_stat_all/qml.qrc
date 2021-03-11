@@ -25,6 +25,9 @@
         <file>ColorSchema.js</file>
         <file>RecordList.qml</file>
         <file>SpendProfitButton.qml</file>
+        <file>GroupListHeader.qml</file>
+        <file>GreenFrameButton.qml</file>
+        <file>RecordListHeader.qml</file>
     </qresource>
     <qresource prefix="/img">
         <file>images/lined_menu.svg</file>
@@ -49,6 +52,8 @@
         <file>images/folder_closed_hover.svg</file>
         <file>images/profit.svg</file>
         <file>images/spend.svg</file>
+        <file>images/plus.svg</file>
+        <file>images/edit_pencil.svg</file>
     </qresource>
     <qresource prefix="/notifiers"/>
     <qresource prefix="/group_form" lang="qml"/>

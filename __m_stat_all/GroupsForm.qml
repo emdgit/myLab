@@ -15,7 +15,6 @@ Item {
         id: groupRect
 
         width: parent.width * 0.25
-
         color: "transparent"
 
         anchors {
@@ -26,11 +25,24 @@ Item {
             bottom: parent.bottom
         }
 
-//        border.color: Script.defaultUnhoveredColor()
+        GroupListHeader {
+            id: groupHeader
+            anchors {
+                left: parent.left
+                right: parent.right
+                top: parent.top
+            }
+        }
 
         PGroupsTree {
             id: groupTree
-            anchors.fill: parent
+            anchors {
+                top: groupHeader.bottom
+                topMargin: 2
+                left: parent.left
+                right: parent.right
+                bottom: parent.bottom
+            }
         }
     }
 
@@ -38,6 +50,7 @@ Item {
         id: recordRect
 
         width: parent.width * 0.25
+        color: "transparent"
 
         anchors {
             left: groupRect.right
@@ -54,9 +67,24 @@ Item {
             }
         }
 
+        RecordListHeader {
+            id: recordHeader
+            anchors {
+                left: parent.left
+                right: parent.right
+                top: parent.top
+            }
+        }
+
         RecordList {
             id: recordList
-            anchors.fill: parent
+            anchors {
+                top: recordHeader.bottom
+                topMargin: 2
+                left: parent.left
+                right: parent.right
+                bottom: parent.bottom
+            }
         }
     }
 }
