@@ -199,6 +199,9 @@ Item {
                                                  isProfit);
                         interactiveRect.setMode(Enums.None);
                     }
+                    onEscaped: {
+                        interactiveRect.setMode(Enums.None);
+                    }
                 }
             }
         }

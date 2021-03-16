@@ -31,6 +31,9 @@ Rectangle {
     /// Сигнал вызывается, когда нажат Enter, передает текс из эдитора
     signal accepted(string editorText)
 
+    /// Сигнал вызывается, когда был нажат escape
+    signal escaped()
+
     /// Сигнал вызывается, когда текст был изменен
     signal textChanged(string editorText)
 
@@ -96,7 +99,8 @@ Rectangle {
             }
 
             Keys.onEscapePressed: {
-                textField.focus = false
+                textField.focus = false;
+                topRect.escaped();
             }
         }
     }
