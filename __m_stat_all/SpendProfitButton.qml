@@ -52,8 +52,15 @@ Item {
 
     MouseArea {
         anchors.fill: parent
+        hoverEnabled: true
         onClicked: {
             topItem.isProfit = !topItem.isProfit;
+        }
+        onEntered: {
+            cursorShape = Qt.PointingHandCursor;
+        }
+        onExited: {
+            cursorShape = Qt.ArrowCursor;
         }
     }
 }

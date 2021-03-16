@@ -1,5 +1,6 @@
 #include "pnode.h"
 
+#include <regex>
 
 IndexTree::IndexTree() : i( -1 ) {}
 
@@ -54,7 +55,8 @@ void IndexTree::removeLast(PNodeIndex index)
     }
 }
 
-void IndexTree::indexesAtDistance(PNodeIndex from, PNodeIndex copy, PIndexVec &to, int distance, int dOrigin) const
+void IndexTree::indexesAtDistance(PNodeIndex from, PNodeIndex copy,
+                                  PIndexVec &to, int distance, int dOrigin) const
 {
     if ( from.indexQueue.empty() )  //  Collect
     {
@@ -158,6 +160,15 @@ void PNodeIndex::popFront()
     indexQueue.pop_front();
 }
 
+bool PNodeIndex::isValid() const noexcept
+{
+    if (indexQueue.size() == 1) {
+        return indexQueue.front() >= 0;
+    }
+
+    return true;
+}
+
 size_t PNodeIndex::size() const noexcept
 {
     return indexQueue.size();
@@ -172,6 +183,50 @@ bool PNodeIndex::isPartOf(const PNodeIndex &other) const
             return false;
 
     return true;
+}
+
+std::string PNodeIndex::toString() const
+{
+    if (indexQueue.empty()) {
+        return {};
+    }
+
+    std::string out_str;
+
+    for (const int &v : indexQueue) {
+        out_str += '/' + std::to_string(v);
+    }
+
+    return out_str;
+}
+
+PNodeIndex PNodeIndex::fromString(const std::string &str)
+{
+    if (str.empty()) {
+        return {};
+    }
+
+    if (str.size() == 1) {
+        return {-1};
+    }
+
+    std::regex full_rx("(\\/(\\d+))+");
+
+    if (!std::regex_match(str, full_rx)) {
+        throw std::runtime_error("Invalid input str. Cannot construct PNodeIndex");
+    }
+
+    std::regex d_rx("\\/(\\d+)");
+    std::sregex_iterator d_begin(str.begin(), str.end(), d_rx);
+    std::sregex_iterator d_end = {};
+
+    PNodeIndex out_index;
+
+    for (auto it = d_begin; it != d_end; ++it) {
+        out_index += atoi((*it)[1].str().c_str());
+    }
+
+    return out_index;
 }
 
 bool PNodeIndex::operator==(const PNodeIndex & other) const

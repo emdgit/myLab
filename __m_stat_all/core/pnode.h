@@ -38,10 +38,31 @@ struct PNodeIndex
     /// Удалить первый индекс
     void            popFront();
 
+    /// Проверить, является ли индекс валидным.
+    /// Невалидный в случае, если содержит 1 отрицательный элемент.
+    bool            isValid() const noexcept;
+
     size_t          size() const noexcept;
 
     /// Проверяет, является ли данный индекс частью переданного
     bool            isPartOf( const PNodeIndex &other ) const;
+
+    /// Сериализация в строку типа '/x/y/k'
+    /*!
+     * \example
+     * Индекс {0, 2, 4} -> "/0/2/4"
+     * Индекс {2} -> "/2"
+     * Индекс {} -> ""
+     */
+    std::string     toString() const;
+
+    /// Конструирует Индекс по переданной строке.
+    /*!
+     * \param[in] str Строка типа '/x/y/k', или пустая строка.
+     * Строка длины 1 - невалидный индекс.
+     * \throw runtime_error в случае некорректной строки.
+     */
+    static PNodeIndex fromString(const std::string &str);
 
     /// Сериализация вывода в qDebug()
     friend QDebug & operator<<( QDebug &out, const PNodeIndex &ind )

@@ -16,7 +16,7 @@ Item {
 
     width: 300
 
-    signal accepted(int groupId)
+    signal accepted(int groupId, string groupName)
 
     QtObject {
         id: _d
@@ -317,7 +317,8 @@ Item {
                         if (icon.inIconImage(mouseX, mouseY)) {
                             expandOrCollapse();
                         } else {
-                            topItem.accepted(listView.groupId(index));
+                            topItem.accepted(listView.groupId(index),
+                                             listView.groupName(index));
                             listView.currentIndex = index;
                         }
                     }

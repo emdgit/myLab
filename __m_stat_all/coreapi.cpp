@@ -405,6 +405,20 @@ QString CoreAPI::getDatabaseName()
     return pg::Config::dbName;
 }
 
+QColor CoreAPI::rgba(int red, int green, int blue, double alpha)
+{
+    return {red, green, blue, static_cast<int>(alpha * 255)};
+}
+
+bool CoreAPI::purchaseGroupExists(const QString &name,
+                                  const QString &parentIndex,
+                                  bool isProfit)
+{
+    auto model = isProfit ? _modelManager->profitModel()
+                          : _modelManager->spendModel();
+    return model->hasGroup(name, parentIndex);
+}
+
 void CoreAPI::setModelManager(ModelManager *mm) noexcept
 {
     _modelManager = mm;

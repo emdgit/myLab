@@ -61,6 +61,9 @@ public:
     QString     groupName(int row) const;
 
     Q_INVOKABLE
+    QString     groupIndex(int row) const;
+
+    Q_INVOKABLE
     bool        hasUnderGroup(int row) const;
 
     Q_INVOKABLE
@@ -74,6 +77,11 @@ public:
 
     Q_INVOKABLE
     bool        isExpanded(int row) const;
+
+    /// Проверить, есть ли группа с заданным именем в рамках
+    /// группы по идексу parentIndex
+    Q_INVOKABLE
+    bool        hasGroup(const QString &name, const QString &parentIndex) const;
 
     /// Вернуть идентификатор группы
     Q_INVOKABLE
@@ -89,8 +97,9 @@ protected:
 
     /// Вернуть NodeMeta, соответствующий данной строке.
     NodeMeta *  node(int row) const;
-    NodeMeta * siblingNode(NodeMeta * n) const;
+    NodeMeta *  siblingNode(NodeMeta * n) const;
     void        updateProetcion(NodeMeta * n = nullptr);
+    void        clearData();
 
 
 private:

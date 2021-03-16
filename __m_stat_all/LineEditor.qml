@@ -1,9 +1,11 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.0
 
+import OwlComponents 1.0
+
 import "Common.js" as Script
 
-/// Поле для ввода суммы записи.
+/// Line editor с закругленными краями
 Rectangle {
 
     id: topRect
@@ -23,11 +25,26 @@ Rectangle {
     /// Ширина виджета
     property int m_width: 300
 
-    /// Сигнал вызывается, когда нажат Enter, передает текс из эдитора
-    signal accepted( string editorText )
+    /// Если есть ошибка, текст краснеет, не вызывается 'accepted'
+    property bool hasError: false
 
-    height: 40
+    /// Сигнал вызывается, когда нажат Enter, передает текс из эдитора
+    signal accepted(string editorText)
+
+    /// Сигнал вызывается, когда текст был изменен
+    signal textChanged(string editorText)
+
+    function clear() {
+        textField.text = "";
+    }
+
+    function setError(err) {
+        hasError = err;
+    }
+
+    height: textRect.height
     width: m_width
+    color: "transparent"
 
     Rectangle {
 
@@ -40,14 +57,14 @@ Rectangle {
         }
 
         height: textField.height
-        border.color: "lightgray"
+        border.color: "#183A8F"
+        color: Script.topLabelBackgroundColor()
         radius: 15
 
         TextField {
 
             id: textField
 
-            height: 28
             anchors {
                 top: parent.top
                 left: parent.left
@@ -57,24 +74,31 @@ Rectangle {
             enabled: false
 
             font.family: Script.menuTextFontFamily()
+            font.pixelSize: 16
 
-            background: Rectangle {
-                color: "transparent"
-            }
+            verticalAlignment: Text.AlignVCenter
+
+            background: Rectangle { color: "transparent"; }
+
+            color: topRect.hasError ? CoreAPI.rgba(217, 65, 61, 1)
+                                    : Script.menuTextColor()
+            placeholderTextColor: CoreAPI.rgba(228, 238, 208, 0.5)
 
             onAccepted: {
-                textField.focus = false;
-                topRect.accepted( text );
+                if (!topRect.hasError) {
+                    textField.focus = false;
+                    topRect.accepted( text );
+                }
+            }
+
+            onTextChanged: {
+                topRect.textChanged(text);
             }
 
             Keys.onEscapePressed: {
                 textField.focus = false
             }
         }
-    }
-
-    function clear() {
-        textField.text = "";
     }
 }
 

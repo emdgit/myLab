@@ -10,10 +10,7 @@ PurchaseGroupModel::PurchaseGroupModel(PGStorage * st, QObject * parent) :
 
 PurchaseGroupModel::~PurchaseGroupModel()
 {
-    _node_proection.clear();
-    for (auto &n : _node_list) {
-        delete n;
-    }
+    clearData();
 }
 
 int PurchaseGroupModel::rowCount(const QModelIndex & parent) const
@@ -42,6 +39,16 @@ QString PurchaseGroupModel::groupName(int row) const
 
     auto n = _node_proection[row];
     return QString::fromStdString(_st->node(n->index)->_data->name());
+}
+
+QString PurchaseGroupModel::groupIndex(int row) const
+{
+    if (row >= rowCount({}) || row < 0) {
+        return " ";
+    }
+
+    auto n = _node_proection[row];
+    return QString::fromStdString(n->index.toString());
 }
 
 bool PurchaseGroupModel::hasUnderGroup(int row) const
@@ -114,6 +121,27 @@ int PurchaseGroupModel::groupId(int row) const
     }
     auto n = _node_proection[row];
     return _st->node(n->index)->_data->id();
+}
+
+bool PurchaseGroupModel::hasGroup(const QString &name, const QString &parentIndex) const
+{
+    auto p_index = PNodeIndex::fromString(parentIndex.toStdString());
+
+    if (!p_index.isValid()) {
+        return false;
+    }
+
+    int s = _st->childCount(p_index);
+
+    for (int i(0); i < s; ++i) {
+        auto node = _st->node(p_index + i);
+        if (!name.compare(QString::fromStdString(node->_data->name()),
+                          Qt::CaseInsensitive)) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 PurchaseGroupModel::NodeMeta * PurchaseGroupModel::node(int row) const
@@ -190,14 +218,25 @@ void PurchaseGroupModel::updateProetcion(NodeMeta * n)
     }
 }
 
+void PurchaseGroupModel::clearData()
+{
+    _node_proection.clear();
+    for (auto &n : _node_list) {
+        delete n;
+    }
+    _node_list.clear();
+}
+
 void PurchaseGroupModel::reloadData()
 {
     beginResetModel();
+    init();
     endResetModel();
 }
 
 void PurchaseGroupModel::init()
 {
+    clearData();
     const auto s = _st->childCount({});
 
     for (int i(0); i < s; ++i) {

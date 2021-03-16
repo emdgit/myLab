@@ -29,7 +29,7 @@ Item {
         placeholderText: qsTr("Запись...")
     }
 
-    SummEditor {
+    LineEditor {
         id: summEditor
         anchors {
             horizontalCenter: parent.horizontalCenter

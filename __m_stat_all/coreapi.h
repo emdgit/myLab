@@ -2,6 +2,7 @@
 #define COREAPI_H
 
 #include <QObject>
+#include <QColor>
 #include <QDate>
 
 #include <vector>
@@ -225,6 +226,27 @@ public:
 
     Q_INVOKABLE
     static QString getDatabaseName();
+
+
+    /*!
+     * \brief Вернуть значение цвета. Параметры R, G и B передаются
+     * в диапазоне [0-255], alpha - [0.0 - 1.0].
+     */
+    Q_INVOKABLE
+    static QColor rgba(int red, int green, int blue, double alpha);
+
+
+    /*!
+     * \brief Проверить, существует ли группа с данным именем в
+     * рамках указанной родительской группы.
+     * \param[in] name Имя группы, существование которой проверяется.
+     * \param[in] parentIndex Строковое представление
+     * индекса (PNodeIndex) родительской группы. "" - корневая.
+     */
+    Q_INVOKABLE
+    static bool purchaseGroupExists(const QString &name,
+                                    const QString &parentIndex,
+                                    bool isProfit);
 
 
     static void setModelManager(ModelManager * mm) noexcept;

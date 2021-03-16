@@ -9,6 +9,7 @@
 
 #include <iostream>
 
+#include "enums.h"
 #include "chart.h"
 #include "config.h"
 #include "period.h"
@@ -41,6 +42,7 @@ int main(int argc, char *argv[])
     qRegisterMetaType<PNodeIndex>( "PNodeIndex" );
 
     qmlRegisterType<Chart>( "OwlComponents", 1, 0, "Chart" );
+    qmlRegisterUncreatableType<Enums>("enums", 1, 0, "Enums", "");
     qmlRegisterSingletonType<CoreAPI>( "OwlComponents", 1, 0, "CoreAPI", core_api_singleton_f );
 
     // Хранилище доходных групп

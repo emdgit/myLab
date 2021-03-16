@@ -15,8 +15,6 @@ INCLUDEPATH +=  $$PWD/core/
 DEPENDPATH  +=  $$PWD/core/
 
 SOURCES     +=           \
-            core/chartmetaobject.cpp \
-            core/recordbygroupmodel.cpp \
             main.cpp      \
             coreapi.cpp    \
             templates.cpp   \
@@ -34,6 +32,7 @@ SOURCES     +=           \
             paint/gline.cpp    \
             paint/gpoliline.cpp \
             paint/graphbase.cpp  \
+            core/enums.cpp \
             core/pnode.cpp  \
             core/period.cpp  \
             core/iobject.cpp  \
@@ -46,19 +45,19 @@ SOURCES     +=           \
             core/purchasemodel.cpp   \
             core/purchasegroup.cpp    \
             core/purchaserecord.cpp    \
-            core/chartdatastorage.cpp   \
-            core/purchasegroupmodel.cpp  \
-            core/hierarchicalstorage.cpp  \
-            core/purchasemodeldaily.cpp
+            core/chartmetaobject.cpp    \
+            core/chartdatastorage.cpp    \
+            core/purchasegroupmodel.cpp   \
+            core/purchasemodeldaily.cpp    \
+            core/recordbygroupmodel.cpp     \
+            core/hierarchicalstorage.cpp
 
 RESOURCES   +=  qml.qrc \
                 sql.qrc  \
                 conf.qrc
 
-HEADERS     +=        \
-            Error.h \
-            core/chartmetaobject.h \
-            core/recordbygroupmodel.h \
+HEADERS     +=       \
+            Error.h   \
             private.h  \
             coreapi.h   \
             templates.h  \
@@ -80,22 +79,25 @@ HEADERS     +=        \
             paint/gpoliline.h \
             paint/graphbase.h  \
             core/log.h  \
-            core/pnode.h \
-            core/period.h \
-            core/storage.h \
-            core/iobject.h  \
-            core/purchase.h  \
-            core/singleton.h  \
-            core/hintmodel.h   \
-            core/periodmodel.h  \
-            core/chartmanager.h  \
-            core/purchasemodel.h  \
-            core/purchasegroup.h   \
-            core/signalmanager.h    \
-            core/purchaserecord.h    \
-            core/chartdatastorage.h   \
-            core/storagedefinition.h   \
-            core/purchasegroupmodel.h   \
-            core/purchasemodeldaily.h    \
+            core/enums.h \
+            core/pnode.h  \
+            core/period.h  \
+            core/storage.h  \
+            core/iobject.h   \
+            core/purchase.h   \
+            core/singleton.h   \
+            core/hintmodel.h    \
+            core/periodmodel.h   \
+            core/chartmanager.h   \
+            core/purchasemodel.h   \
+            core/purchasegroup.h    \
+            core/signalmanager.h     \
+            core/purchaserecord.h     \
+            core/chartmetaobject.h     \
+            core/chartdatastorage.h     \
+            core/storagedefinition.h     \
+            core/purchasegroupmodel.h     \
+            core/purchasemodeldaily.h      \
+            core/recordbygroupmodel.h       \
             core/hierarchicalstorage.h
 

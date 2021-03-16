@@ -10,7 +10,7 @@
         <file>StatisticForm.qml</file>
         <file>TopStatisticMenu.qml</file>
         <file>RecordEditorPopup.qml</file>
-        <file>SummEditor.qml</file>
+        <file>LineEditor.qml</file>
         <file>PicButton.qml</file>
         <file>MSpinBox.qml</file>
         <file>CartButton.qml</file>
@@ -26,7 +26,7 @@
         <file>RecordList.qml</file>
         <file>SpendProfitButton.qml</file>
         <file>GroupListHeader.qml</file>
-        <file>GreenFrameButton.qml</file>
+        <file>FramedButton.qml</file>
         <file>RecordListHeader.qml</file>
     </qresource>
     <qresource prefix="/img">
@@ -56,5 +56,5 @@
         <file>images/edit_pencil.svg</file>
     </qresource>
     <qresource prefix="/notifiers"/>
-    <qresource prefix="/group_form" lang="qml"/>
+    <qresource lang="qml" prefix="/group_form"/>
 </RCC>

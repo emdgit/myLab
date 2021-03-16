@@ -29,7 +29,7 @@ Rectangle {
         elide: Text.ElideRight
     }
 
-    GreenFrameButton {
+    FramedButton {
         id: plusButton
         anchors {
             right: parent.right
